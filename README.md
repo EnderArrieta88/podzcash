@@ -42,6 +42,7 @@ en **/estudio/invitaciones**.
 | `/estudio/invitaciones` | Generar códigos (solo admin) |
 | `/explorar` | Búsqueda y filtros (`?q=`, `?tipo=`, `?tag=`) |
 | `/c/[handle]` | Página pública del canal |
+| `/c/[handle]/donar` | Donación con QR y ZIP-321 |
 | `/c/[handle]/[slug]` | Episodio público |
 | `/api/upload?kind=audio\|image` | Subida en streaming (sin cargar en memoria) |
 | `/media/[...path]` | Archivos locales con soporte de `Range` |
@@ -111,6 +112,18 @@ gestiona Prisma**: las tablas virtuales de FTS aparecen como deriva en
   búsqueda.
 - Para forzar un reindexado: borra `.data/search.db` y busca de nuevo.
 
+## Donaciones
+
+El creador pega su dirección en `/estudio/canal`. La plataforma **nunca toca
+los fondos**: solo genera un QR y un enlace ZIP-321.
+
+- Se valida el checksum real de la dirección: **Base58Check** en `t1`/`t3` y
+  **Bech32/Bech32m** en `zs1`/`u1`. Se rechazan direcciones de testnet y Sprout.
+- La URI es
+  `zcash:<dirección>?amount=<zec>&memo=<base64url>&message=<texto>`.
+- El memo va en base64url sin padding, como define ZIP-321.
+- El QR se regenera en el navegador al cambiar monto o memo.
+
 ## Fases
 
 - [x] **Fase 0** — Fundaciones: proyecto, base de datos, diseño base
@@ -118,7 +131,7 @@ gestiona Prisma**: las tablas virtuales de FTS aparecen como deriva en
 - [x] **Fase 2** — Subida de audio y estudio del creador
 - [x] **Fase 3** — Reproductor persistente y páginas de episodio
 - [x] **Fase 4** — Descubrimiento y búsqueda
-- [ ] **Fase 5** — Donaciones ZEC (QR + ZIP-321)
+- [x] **Fase 5** — Donaciones ZEC (QR + ZIP-321)
 - [ ] **Fase 6** — RSS y embeds
 - [ ] **Fase 7** — Administración y moderación
 - [ ] **Fase 8** — Despliegue

@@ -68,6 +68,7 @@ export const channelSchema = z.object({
     .max(60, "El nombre del canal es demasiado largo."),
   handle: handleSchema,
   bio: z.string().trim().max(500, "La bio no puede pasar de 500 caracteres."),
+  zcashAddress: z.string().trim().max(200).optional(),
 });
 
 export const episodeSchema = z.object({

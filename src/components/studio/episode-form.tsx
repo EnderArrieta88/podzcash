@@ -135,6 +135,19 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
 
+  // Controlados: una Server Action resetea los campos no controlados y se
+  // perdería lo escrito si la validación falla.
+  const [meta, setMeta] = useState({
+    title: episode?.title ?? "",
+    description: episode?.description ?? "",
+    tags: episode?.tags ?? "",
+    kind: episode?.kind ?? "podcast",
+  });
+
+  function updateMeta(field: keyof typeof meta, value: string) {
+    setMeta((current) => ({ ...current, [field]: value }));
+  }
+
   const audioInput = useRef<HTMLInputElement>(null);
   const coverInput = useRef<HTMLInputElement>(null);
 
@@ -386,7 +399,8 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
         <Input
           id="title"
           name="title"
-          defaultValue={episode?.title ?? ""}
+          value={meta.title}
+          onChange={(event) => updateMeta("title", event.target.value)}
           required
           maxLength={140}
           placeholder="El título del episodio o la canción"
@@ -409,7 +423,8 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
                 type="radio"
                 name="kind"
                 value={option.value}
-                defaultChecked={(episode?.kind ?? "podcast") === option.value}
+                checked={meta.kind === option.value}
+                onChange={() => updateMeta("kind", option.value)}
                 className="accent-[var(--color-brand)]"
               />
               {option.label}
@@ -424,7 +439,8 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
         <Textarea
           id="description"
           name="description"
-          defaultValue={episode?.description ?? ""}
+          value={meta.description}
+          onChange={(event) => updateMeta("description", event.target.value)}
           rows={5}
           maxLength={5000}
           placeholder="De qué trata, quién participa, enlaces mencionados…"
@@ -437,7 +453,8 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
         <Input
           id="tags"
           name="tags"
-          defaultValue={episode?.tags ?? ""}
+          value={meta.tags}
+          onChange={(event) => updateMeta("tags", event.target.value)}
           maxLength={240}
           placeholder="privacidad, zcash, entrevistas"
         />

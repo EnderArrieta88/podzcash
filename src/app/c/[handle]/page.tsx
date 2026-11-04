@@ -100,6 +100,18 @@ export default async function ChannelPage({ params }: PageProps) {
                 Editar canal
               </Link>
             )}
+
+            {channel.zcashAddress && !isOwner && (
+              <Link
+                href={`/c/${channel.handle}/donar`}
+                className="inline-flex h-9 items-center gap-2 rounded-full bg-brand px-4 text-sm font-medium text-[#17130a] transition-colors hover:bg-brand-strong"
+              >
+                <span className="flex size-4 items-center justify-center rounded-full bg-[#17130a] text-[9px] font-bold text-brand">
+                  Z
+                </span>
+                Apoyar con ZEC
+              </Link>
+            )}
           </div>
 
           <h1 className="mt-5 font-display text-4xl tracking-tight sm:text-5xl">
@@ -121,9 +133,11 @@ export default async function ChannelPage({ params }: PageProps) {
                 : `${channel._count.episodes} episodios`}
             </span>
 
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-subtle">
-              ZEC próximamente
-            </span>
+            {channel.zcashAddress && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/35 bg-brand-soft/50 px-3 py-1 text-xs text-brand">
+                Acepta ZEC
+              </span>
+            )}
 
             {links.map((link) => (
               <a

@@ -18,6 +18,7 @@ async function load(handle: string, slug: string) {
       handle: true,
       displayName: true,
       avatarKey: true,
+      zcashAddress: true,
     },
   });
 
@@ -155,6 +156,27 @@ export default async function EpisodePage({ params }: PageProps) {
               {tag.name}
             </span>
           ))}
+        </div>
+      )}
+
+      {channel.zcashAddress && (
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-brand/25 bg-brand-soft/40 p-5">
+          <div>
+            <p className="text-sm font-medium">¿Te sirvió este episodio?</p>
+            <p className="mt-1 text-xs text-muted">
+              Apoyá a {channel.displayName} directo en ZEC, sin intermediarios.
+            </p>
+          </div>
+
+          <Link
+            href={`/c/${channel.handle}/donar`}
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-brand px-4 text-sm font-medium text-[#17130a] transition-colors hover:bg-brand-strong"
+          >
+            <span className="flex size-4 items-center justify-center rounded-full bg-[#17130a] text-[9px] font-bold text-brand">
+              Z
+            </span>
+            Apoyar con ZEC
+          </Link>
         </div>
       )}
     </div>

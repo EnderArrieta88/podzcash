@@ -13,6 +13,7 @@ import { indexEpisode, reindexChannel, removeFromIndex } from "@/lib/search-inde
 import { storage } from "@/lib/storage";
 import { parseTags } from "@/lib/tags";
 import { channelSchema, episodeSchema, toFieldErrors } from "@/lib/validation";
+import { validateZcashAddress } from "@/lib/zcash-address";
 import type { ActionState } from "@/lib/action-state";
 
 export async function logoutAction(): Promise<void> {
@@ -30,6 +31,7 @@ export async function saveChannelAction(
     displayName: formData.get("displayName"),
     handle: formData.get("handle"),
     bio: formData.get("bio") ?? "",
+    zcashAddress: formData.get("zcashAddress") ?? "",
   });
 
   if (!parsed.success) {
@@ -38,6 +40,19 @@ export async function saveChannelAction(
 
   const { displayName, handle } = parsed.data;
   const bio = parsed.data.bio || null;
+
+  let zcashAddress: string | null = null;
+  const addressInput = (parsed.data.zcashAddress ?? "").trim();
+
+  if (addressInput) {
+    const address = validateZcashAddress(addressInput);
+
+    if (!address.ok) {
+      return { fields: { zcashAddress: address.error } };
+    }
+
+    zcashAddress = address.address;
+  }
 
   const clash = await prisma.channel.findFirst({
     where: { handle, NOT: { userId: user.id } },
@@ -97,6 +112,7 @@ export async function saveChannelAction(
     displayName,
     handle,
     bio,
+    zcashAddress,
     links: linksJson,
     ...(newAvatarKey ? { avatarKey: newAvatarKey } : {}),
   };

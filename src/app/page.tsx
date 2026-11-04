@@ -383,10 +383,19 @@ export default async function Home() {
                   </span>
                 </span>
               </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 text-brand">✓</span>
+                <span>
+                  Fase 5 — Donaciones en ZEC
+                  <span className="block text-xs text-muted">
+                    QR, ZIP-321 y validación de direcciones
+                  </span>
+                </span>
+              </li>
               <li className="flex items-start gap-3 text-muted">
                 <span className="mt-0.5 text-muted">○</span>
                 <span>
-                  Fase 5 — Donaciones en ZEC
+                  Fase 6 — RSS y embeds
                   <span className="block text-xs">Siguiente</span>
                 </span>
               </li>
