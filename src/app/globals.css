@@ -22,14 +22,18 @@
   --color-success: #22c55e;
   --color-danger: #ef4444;
 
-  /* Tipografía: serif editorial para títulos, sans para UI, mono para tiempo. */
+  /* Tipografía: serif editorial para títulos, sans para UI, mono para tiempo.
+     Va en un bloque "inline" aparte porque los valores encadenan variables
+     que define next/font en tiempo de ejecución. */
+  --ease-audio: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@theme inline {
   --font-sans: var(--font-sans-face), "Segoe UI", system-ui, -apple-system,
     "Helvetica Neue", Arial, sans-serif;
   --font-display: var(--font-display-face), Georgia, "Times New Roman", serif;
   --font-mono: var(--font-mono-face), ui-monospace, "Cascadia Code", Consolas,
     monospace;
-
-  --ease-audio: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @layer base {
@@ -41,7 +45,6 @@
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
-    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
 

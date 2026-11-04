@@ -36,7 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es">
       <body
-        className={`${display.variable} ${sans.variable} ${mono.variable} min-h-dvh antialiased`}
+        className={`${display.variable} ${sans.variable} ${mono.variable} min-h-dvh font-sans antialiased`}
       >
         <SiteHeader />
         <main>{children}</main>
