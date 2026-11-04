@@ -54,7 +54,7 @@ export default function Home() {
               Hecho para el ecosistema Zcash
             </span>
 
-            <h1 className="mt-6 text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 font-display text-5xl font-normal leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-7xl">
               El hogar de los{" "}
               <span className="bg-gradient-to-r from-brand to-brand-strong bg-clip-text text-transparent">
                 podcasts y la música
@@ -99,7 +99,7 @@ export default function Home() {
               <div className="mt-5 flex items-center gap-4">
                 <div className="size-16 shrink-0 rounded-xl bg-gradient-to-br from-brand via-amber-500 to-orange-700" />
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">
+                  <p className="truncate font-display text-xl">
                     Privacidad por defecto
                   </p>
                   <p className="truncate text-xs text-muted">
@@ -122,7 +122,7 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="mt-3 flex items-center justify-between text-[11px] text-muted">
+              <div className="mt-3 flex items-center justify-between font-mono text-[11px] tabular text-subtle">
                 <span>18:24</span>
                 <span>42:10</span>
               </div>
@@ -148,7 +148,7 @@ export default function Home() {
 
       <section id="creadores" className="border-t border-border/70">
         <div className="mx-auto w-full max-w-6xl px-5 py-20">
-          <h2 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl">
+          <h2 className="font-display text-3xl font-normal tracking-tight text-balance sm:text-4xl">
             Lo que hace diferente a PodZcash
           </h2>
           <p className="mt-3 max-w-2xl text-muted">
@@ -179,7 +179,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-6xl px-5 py-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h2 className="font-display text-3xl font-normal tracking-tight sm:text-4xl">
                 Cómo funciona
               </h2>
               <p className="mt-3 max-w-xl text-muted">
@@ -217,7 +217,7 @@ export default function Home() {
       <section id="donaciones" className="border-t border-border/70">
         <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-20 lg:grid-cols-2">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h2 className="font-display text-3xl font-normal tracking-tight sm:text-4xl">
               Donaciones que no pasan por nosotros
             </h2>
             <p className="mt-4 text-muted">

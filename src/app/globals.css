@@ -1,18 +1,35 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #08080a;
-  --color-surface: #101014;
-  --color-surface-2: #17171d;
-  --color-border: #26262e;
-  --color-text: #f2f2f5;
-  --color-muted: #8f8f9c;
+  /* Superficies cálidas: la elevación se comunica con luz, no con sombra. */
+  --color-bg: #0b0a08;
+  --color-surface: #131110;
+  --color-surface-2: #1b1815;
+  --color-surface-3: #241f1b;
+  --color-border: #2c2723;
+  --color-border-strong: #443c35;
+
+  --color-text: #f5f1e8;
+  --color-muted: #a8a099;
+  --color-subtle: #6b655f;
+
+  /* Dorado Zcash: color corazón para reproducción, foco y acciones. */
   --color-brand: #f4b728;
   --color-brand-strong: #ffcc4d;
+  --color-brand-soft: #3a2e1c;
   --color-brand-dim: #7a5c14;
 
-  --font-sans: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system,
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+
+  /* Tipografía: serif editorial para títulos, sans para UI, mono para tiempo. */
+  --font-sans: var(--font-sans-face), "Segoe UI", system-ui, -apple-system,
     "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-display-face), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-mono-face), ui-monospace, "Cascadia Code", Consolas,
+    monospace;
+
+  --ease-audio: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @layer base {
@@ -30,12 +47,26 @@
 
   ::selection {
     background-color: var(--color-brand);
-    color: #17130a;
+    color: #1a1405;
   }
 
   :focus-visible {
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
@@ -47,7 +78,7 @@
   .glow-brand {
     background-image: radial-gradient(
       60% 50% at 50% 0%,
-      color-mix(in oklab, var(--color-brand) 18%, transparent) 0%,
+      color-mix(in oklab, var(--color-brand) 16%, transparent) 0%,
       transparent 100%
     );
   }
@@ -64,5 +95,14 @@
         transparent 1px
       );
     background-size: 56px 56px;
+  }
+
+  /* Halo del episodio que está sonando: la única sombra permitida. */
+  .glow-playing {
+    box-shadow: 0 0 32px color-mix(in oklab, var(--color-brand) 18%, transparent);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }
