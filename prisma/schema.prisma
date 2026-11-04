@@ -1,0 +1,113 @@
+// PodZcash — esquema de datos
+// Local: SQLite. Producción: Postgres (mismo modelo, se cambia el provider).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ---------------------------------------------------------------------------
+// Cuentas y sesiones
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  // "admin" | "creator"
+  role         String    @default("creator")
+  // "pending" | "active" | "suspended"
+  status       String    @default("pending")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  channel  Channel?
+  sessions Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Canales y contenido
+// ---------------------------------------------------------------------------
+
+model Channel {
+  id           String   @id @default(cuid())
+  handle       String   @unique
+  displayName  String
+  bio          String?
+  avatarUrl    String?
+  bannerUrl    String?
+  // Dirección Zcash del creador (t1/t3/zs/u1...). Se usa para generar el QR.
+  zcashAddress String?
+  // JSON con enlaces sociales: [{ "label": "...", "url": "..." }]
+  links        String?
+  userId       String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  episodes Episode[]
+}
+
+model Episode {
+  id          String    @id @default(cuid())
+  channelId   String
+  title       String
+  slug        String
+  description String?
+  // "podcast" | "music"
+  kind        String    @default("podcast")
+  // Ruta relativa dentro de MEDIA_ROOT (nunca una URL absoluta)
+  audioPath   String
+  coverUrl    String?
+  durationSec Int?
+  fileSize    Int?
+  mimeType    String?
+  // "draft" | "published" | "hidden"
+  status      String    @default("draft")
+  publishedAt DateTime?
+  playCount   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  channel Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  tags    EpisodeTag[]
+
+  @@unique([channelId, slug])
+  @@index([status, publishedAt])
+  @@index([channelId, status])
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+
+  episodes EpisodeTag[]
+}
+
+model EpisodeTag {
+  episodeId String
+  tagId     String
+
+  episode Episode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([episodeId, tagId])
+  @@index([tagId])
+}
