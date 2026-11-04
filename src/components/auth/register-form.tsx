@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { registerAction } from "@/app/(auth)/actions";
+import { registerAction } from "@/app/(site)/(auth)/actions";
 import { Input, Label, FieldError, FieldHint } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 
@@ -95,3 +95,4 @@ export function RegisterForm({ firstUser }: { firstUser: boolean }) {
     </form>
   );
 }
+

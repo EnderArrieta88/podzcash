@@ -13,7 +13,7 @@ export default async function StudioLayout({
   const user = await requireUser();
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 py-10">
+    <div className="mx-auto w-full max-w-6xl">
       <div className="flex flex-col gap-8 lg:flex-row">
         <aside className="lg:w-56 lg:shrink-0">
           <div className="rounded-2xl border border-border bg-surface p-4">
@@ -76,3 +76,4 @@ export default async function StudioLayout({
     </div>
   );
 }
+

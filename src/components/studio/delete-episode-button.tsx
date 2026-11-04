@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteEpisodeAction } from "@/app/estudio/actions";
+import { deleteEpisodeAction } from "@/app/(app)/estudio/actions";
 
 export function DeleteEpisodeButton({ id }: { id: string }) {
   return (
@@ -24,3 +24,4 @@ export function DeleteEpisodeButton({ id }: { id: string }) {
     </form>
   );
 }
+

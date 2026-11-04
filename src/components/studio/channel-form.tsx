@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { saveChannelAction } from "@/app/estudio/actions";
+import { saveChannelAction } from "@/app/(app)/estudio/actions";
 import type { ChannelLink } from "@/lib/links";
 import { AvatarField } from "@/components/studio/avatar-field";
 import { LinksEditor } from "@/components/studio/links-editor";
@@ -141,3 +141,4 @@ export function ChannelForm({ channel, links }: ChannelFormProps) {
     </form>
   );
 }
+

@@ -65,7 +65,7 @@ export default async function EpisodePage({ params }: PageProps) {
   const audioUrl = storage.url(episode.audioPath);
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-5 py-10">
+    <div className="mx-auto w-full max-w-3xl">
       <Link
         href={`/c/${channel.handle}`}
         className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-text"
@@ -182,3 +182,4 @@ export default async function EpisodePage({ params }: PageProps) {
     </div>
   );
 }
+

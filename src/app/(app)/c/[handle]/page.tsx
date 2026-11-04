@@ -60,7 +60,7 @@ export default async function ChannelPage({ params }: PageProps) {
   const isOwner = viewer?.channel?.id === channel.id;
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-5 py-10">
+    <div className="mx-auto w-full max-w-5xl">
       <div className="overflow-hidden rounded-3xl border border-border bg-surface">
         <div className="relative h-36 sm:h-48">
           {channel.bannerKey ? (
@@ -241,3 +241,4 @@ export default async function ChannelPage({ params }: PageProps) {
     </div>
   );
 }
+

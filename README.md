@@ -41,6 +41,7 @@ en **/estudio/invitaciones**.
 | `/estudio/canal` | Crear / editar el canal |
 | `/estudio/invitaciones` | Generar códigos (solo admin) |
 | `/explorar` | Búsqueda y filtros (`?q=`, `?tipo=`, `?tag=`) |
+| `/design` | Laboratorio local del sistema de diseño |
 | `/c/[handle]` | Página pública del canal |
 | `/c/[handle]/donar` | Donación con QR y ZIP-321 |
 | `/c/[handle]/[slug]` | Episodio público |

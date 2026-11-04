@@ -80,7 +80,7 @@ export default async function ExplorePage({
     : null;
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 py-10">
+    <div className="mx-auto w-full max-w-6xl">
       <div className="max-w-2xl">
         <h1 className="font-display text-4xl tracking-tight sm:text-5xl">
           Explorar
@@ -201,3 +201,4 @@ export default async function ExplorePage({
     </div>
   );
 }
+

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import {
+  Instrument_Serif,
+  Inter,
+  Plus_Jakarta_Sans,
+  Space_Mono,
+} from "next/font/google";
 import { PlayerProvider } from "@/components/player/player-context";
 import { PlayerBar } from "@/components/player/player-bar";
 import "./globals.css";
@@ -19,8 +22,15 @@ const sans = Inter({
   display: "swap",
 });
 
-const mono = JetBrains_Mono({
+const heading = Plus_Jakarta_Sans({
   subsets: ["latin"],
+  variable: "--font-heading-face",
+  display: "swap",
+});
+
+const mono = Space_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
   variable: "--font-mono-face",
   display: "swap",
 });
@@ -38,13 +48,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es">
       <body
-        className={`${display.variable} ${sans.variable} ${mono.variable} min-h-dvh font-sans antialiased`}
+        className={`${display.variable} ${sans.variable} ${heading.variable} ${mono.variable} min-h-dvh antialiased`}
       >
         <PlayerProvider>
-          <SiteHeader />
-          <main>{children}</main>
-          <SiteFooter />
           <PlayerBar />
+          {children}
         </PlayerProvider>
       </body>
     </html>

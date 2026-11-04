@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { loginAction } from "@/app/(auth)/actions";
+import { loginAction } from "@/app/(site)/(auth)/actions";
 import { Input, Label, FieldError } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 
@@ -56,3 +56,4 @@ export function LoginForm() {
     </form>
   );
 }
+

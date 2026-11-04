@@ -8,7 +8,7 @@ import {
   Music2,
   X,
 } from "lucide-react";
-import { saveEpisodeAction } from "@/app/estudio/actions";
+import { saveEpisodeAction } from "@/app/(app)/estudio/actions";
 import {
   FieldError,
   FieldHint,
@@ -492,3 +492,4 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
     </form>
   );
 }
+

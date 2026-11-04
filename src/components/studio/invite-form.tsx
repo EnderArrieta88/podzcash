@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { createInviteAction } from "@/app/estudio/actions";
+import { createInviteAction } from "@/app/(app)/estudio/actions";
 import { Input } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 
@@ -27,3 +27,4 @@ export function InviteForm() {
     </form>
   );
 }
+
