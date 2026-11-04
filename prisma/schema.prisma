@@ -11,7 +11,7 @@ datasource db {
 }
 
 // ---------------------------------------------------------------------------
-// Cuentas y sesiones
+// Cuentas, sesiones e invitaciones
 // ---------------------------------------------------------------------------
 
 model User {
@@ -21,17 +21,20 @@ model User {
   name         String
   // "admin" | "creator"
   role         String    @default("creator")
-  // "pending" | "active" | "suspended"
-  status       String    @default("pending")
+  // "active" | "suspended"
+  status       String    @default("active")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  channel  Channel?
-  sessions Session[]
+  channel        Channel?
+  sessions       Session[]
+  invitesCreated Invite[]  @relation("InvitesCreated")
+  inviteUsed     Invite?   @relation("InviteUsed")
 }
 
 model Session {
   id        String   @id @default(cuid())
+  // SHA-256 del token: si la base se filtra, las sesiones no son utilizables.
   token     String   @unique
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -39,6 +42,21 @@ model Session {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model Invite {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  note        String?
+  createdById String?
+  createdBy   User?     @relation("InvitesCreated", fields: [createdById], references: [id], onDelete: SetNull)
+  usedById    String?   @unique
+  usedBy      User?     @relation("InviteUsed", fields: [usedById], references: [id], onDelete: SetNull)
+  expiresAt   DateTime?
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([createdById])
 }
 
 // ---------------------------------------------------------------------------
@@ -50,8 +68,8 @@ model Channel {
   handle       String   @unique
   displayName  String
   bio          String?
-  avatarUrl    String?
-  bannerUrl    String?
+  avatarKey    String?
+  bannerKey    String?
   // Dirección Zcash del creador (t1/t3/zs/u1...). Se usa para generar el QR.
   zcashAddress String?
   // JSON con enlaces sociales: [{ "label": "...", "url": "..." }]
@@ -74,7 +92,7 @@ model Episode {
   kind        String    @default("podcast")
   // Ruta relativa dentro de MEDIA_ROOT (nunca una URL absoluta)
   audioPath   String
-  coverUrl    String?
+  coverKey    String?
   durationSec Int?
   fileSize    Int?
   mimeType    String?

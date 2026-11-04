@@ -1,12 +1,15 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth/session";
 
 const navigation = [
-  { label: "Cómo funciona", href: "#como-funciona" },
-  { label: "Para creadores", href: "#creadores" },
-  { label: "Donaciones", href: "#donaciones" },
+  { label: "Cómo funciona", href: "/#como-funciona" },
+  { label: "Para creadores", href: "/#creadores" },
+  { label: "Donaciones", href: "/#donaciones" },
 ];
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const user = await getCurrentUser();
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-bg/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5">
@@ -31,19 +34,36 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-7 md:flex">
           {navigation.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="text-sm text-muted transition-colors hover:text-text"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
-        <span className="rounded-full border border-border px-3 py-1 text-xs text-muted">
-          En desarrollo
-        </span>
+        {user ? (
+          <Link
+            href="/estudio"
+            className="inline-flex h-9 items-center rounded-full bg-brand px-4 text-sm font-medium text-[#17130a] transition-colors hover:bg-brand-strong"
+          >
+            Mi estudio
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3">
+            <span className="hidden rounded-full border border-border px-3 py-1 text-xs text-muted sm:inline-block">
+              Por invitación
+            </span>
+            <Link
+              href="/entrar"
+              className="text-sm text-muted transition-colors hover:text-text"
+            >
+              Entrar
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   );

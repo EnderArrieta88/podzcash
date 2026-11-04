@@ -261,10 +261,19 @@ export default function Home() {
                   </span>
                 </span>
               </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 text-brand">✓</span>
+                <span>
+                  Fase 1 — Cuentas y canales
+                  <span className="block text-xs text-muted">
+                    Registro por invitación, estudio y página pública
+                  </span>
+                </span>
+              </li>
               <li className="flex items-start gap-3 text-muted">
                 <span className="mt-0.5 text-muted">○</span>
                 <span>
-                  Fase 1 — Cuentas y canales
+                  Fase 2 — Subida de audio
                   <span className="block text-xs">Siguiente</span>
                 </span>
               </li>

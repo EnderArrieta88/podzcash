@@ -24,6 +24,23 @@ npm run dev
 Abre <http://localhost:3000>. La sección "Estado del proyecto" de la home
 muestra si la base de datos responde.
 
+La **primera cuenta** que se registre queda como administradora y no necesita
+código. A partir de ahí el registro es por invitación: los códigos se generan
+en **/estudio/invitaciones**.
+
+## Rutas
+
+| Ruta | Qué es |
+|---|---|
+| `/` | Landing pública |
+| `/registro` | Crear cuenta (primera vez o con invitación) |
+| `/entrar` | Iniciar sesión |
+| `/estudio` | Panel del creador |
+| `/estudio/canal` | Crear / editar el canal |
+| `/estudio/invitaciones` | Generar códigos (solo admin) |
+| `/c/[handle]` | Página pública del canal |
+| `/media/[...path]` | Archivos locales con soporte de `Range` |
+
 ## Comandos útiles
 
 | Comando | Qué hace |
@@ -63,7 +80,7 @@ interfaz, para migrar sin reescribir:
 ## Fases
 
 - [x] **Fase 0** — Fundaciones: proyecto, base de datos, diseño base
-- [ ] **Fase 1** — Cuentas y canales
+- [x] **Fase 1** — Cuentas, invitaciones y canales
 - [ ] **Fase 2** — Subida de audio y estudio del creador
 - [ ] **Fase 3** — Reproductor y páginas de episodio
 - [ ] **Fase 4** — Descubrimiento y búsqueda
