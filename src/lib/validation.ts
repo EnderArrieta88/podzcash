@@ -70,6 +70,24 @@ export const channelSchema = z.object({
   bio: z.string().trim().max(500, "La bio no puede pasar de 500 caracteres."),
 });
 
+export const episodeSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(2, "El título necesita al menos 2 caracteres.")
+    .max(140, "El título no puede pasar de 140 caracteres."),
+  description: z
+    .string()
+    .trim()
+    .max(5000, "La descripción no puede pasar de 5000 caracteres."),
+  kind: z.enum(["podcast", "music"], {
+    message: "Elige podcast o música.",
+  }),
+  tags: z.string().trim().max(240).optional(),
+});
+
+export type EpisodeInput = z.infer<typeof episodeSchema>;
+
 export type FieldErrors = Record<string, string>;
 
 export function toFieldErrors(error: z.ZodError): FieldErrors {

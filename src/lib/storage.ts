@@ -1,37 +1,15 @@
+import { createWriteStream } from "node:fs";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { Readable, Transform } from "node:stream";
+import { pipeline } from "node:stream/promises";
 
 const MEDIA_ROOT = path.resolve(
   process.cwd(),
   process.env.MEDIA_ROOT ?? "./.media",
 );
 
-export const IMAGE_MIME: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/gif": "gif",
-};
-
-const MIME_BY_EXTENSION: Record<string, string> = {
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  webp: "image/webp",
-  gif: "image/gif",
-  mp3: "audio/mpeg",
-  m4a: "audio/mp4",
-  aac: "audio/aac",
-  ogg: "audio/ogg",
-  opus: "audio/ogg",
-  wav: "audio/wav",
-  flac: "audio/flac",
-};
-
-export function contentTypeFor(filePath: string): string {
-  const extension = path.extname(filePath).slice(1).toLowerCase();
-  return MIME_BY_EXTENSION[extension] ?? "application/octet-stream";
-}
+export { contentTypeFor } from "@/lib/media-types";
 
 /**
  * Resuelve una ruta relativa dentro de MEDIA_ROOT y bloquea cualquier intento
@@ -54,6 +32,7 @@ export function resolveMediaPath(relativePath: string): string {
  */
 export interface StorageAdapter {
   put(key: string, data: Buffer): Promise<void>;
+  putStream(key: string, body: ReadableStream<Uint8Array>): Promise<number>;
   remove(key: string): Promise<void>;
   url(key: string): string;
 }
@@ -63,6 +42,31 @@ export const storage: StorageAdapter = {
     const absolute = resolveMediaPath(key);
     await mkdir(path.dirname(absolute), { recursive: true });
     await writeFile(absolute, data);
+  },
+
+  /**
+   * Escribe el cuerpo de la petición directamente a disco, sin cargarlo en
+   * memoria. Devuelve los bytes escritos.
+   */
+  async putStream(key, body) {
+    const absolute = resolveMediaPath(key);
+    await mkdir(path.dirname(absolute), { recursive: true });
+
+    let bytes = 0;
+    const counter = new Transform({
+      transform(chunk: Buffer, _encoding, callback) {
+        bytes += chunk.length;
+        callback(null, chunk);
+      },
+    });
+
+    await pipeline(
+      Readable.fromWeb(body as Parameters<typeof Readable.fromWeb>[0]),
+      counter,
+      createWriteStream(absolute),
+    );
+
+    return bytes;
   },
 
   async remove(key) {

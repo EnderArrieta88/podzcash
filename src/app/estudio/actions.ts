@@ -7,8 +7,11 @@ import { prisma } from "@/lib/db";
 import { requireAdmin, requireUser } from "@/lib/auth/guards";
 import { destroySession } from "@/lib/auth/session";
 import { generateInviteCode, linkListSchema } from "@/lib/links";
-import { IMAGE_MIME, storage } from "@/lib/storage";
-import { channelSchema, toFieldErrors } from "@/lib/validation";
+import { slugify, uniqueSlug } from "@/lib/slug";
+import { IMAGE_MIME } from "@/lib/media-types";
+import { storage } from "@/lib/storage";
+import { parseTags } from "@/lib/tags";
+import { channelSchema, episodeSchema, toFieldErrors } from "@/lib/validation";
 import type { ActionState } from "@/lib/action-state";
 
 export async function logoutAction(): Promise<void> {
@@ -160,4 +163,171 @@ export async function revokeInviteAction(formData: FormData): Promise<void> {
   });
 
   revalidatePath("/estudio/invitaciones");
+}
+
+// ---------------------------------------------------------------------------
+// Episodios
+// ---------------------------------------------------------------------------
+
+export async function saveEpisodeAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = await requireUser();
+  const channel = user.channel;
+
+  if (!channel) redirect("/estudio/canal");
+
+  const episodeId = String(formData.get("id") ?? "").trim() || null;
+  const publish = formData.get("intent") === "publish";
+
+  const parsed = episodeSchema.safeParse({
+    title: formData.get("title"),
+    description: formData.get("description") ?? "",
+    kind: formData.get("kind") ?? "podcast",
+    tags: formData.get("tags") ?? "",
+  });
+
+  if (!parsed.success) {
+    return { fields: toFieldErrors(parsed.error) };
+  }
+
+  const { title, description, kind } = parsed.data;
+
+  const existing = episodeId
+    ? await prisma.episode.findFirst({
+        where: { id: episodeId, channelId: channel.id },
+      })
+    : null;
+
+  if (episodeId && !existing) {
+    return { error: "Ese episodio no existe." };
+  }
+
+  const newAudioKey = String(formData.get("audioKey") ?? "").trim() || null;
+  const audioPath = newAudioKey ?? existing?.audioPath ?? null;
+
+  if (!audioPath) {
+    return { fields: { audio: "Sube un archivo de audio antes de guardar." } };
+  }
+
+  const newCoverKey = String(formData.get("coverKey") ?? "").trim() || null;
+  const coverKey = newCoverKey ?? existing?.coverKey ?? null;
+
+  const durationRaw = Number(formData.get("durationSec") ?? "0");
+  const durationSec =
+    Number.isFinite(durationRaw) && durationRaw > 0
+      ? Math.round(durationRaw)
+      : (existing?.durationSec ?? null);
+
+  const fileSizeRaw = Number(formData.get("fileSize") ?? "0");
+  const fileSize =
+    Number.isFinite(fileSizeRaw) && fileSizeRaw > 0
+      ? Math.round(fileSizeRaw)
+      : (existing?.fileSize ?? null);
+
+  const mimeType =
+    String(formData.get("mimeType") ?? "").trim() || existing?.mimeType || null;
+
+  const tagNames = parseTags(formData.get("tags"));
+
+  let slug = existing?.slug ?? "";
+
+  if (!existing) {
+    const taken = new Set(
+      (
+        await prisma.episode.findMany({
+          where: { channelId: channel.id },
+          select: { slug: true },
+        })
+      ).map((episode) => episode.slug),
+    );
+
+    slug = uniqueSlug(slugify(title), taken);
+  }
+
+  const status = publish ? "published" : "draft";
+  const publishedAt = publish
+    ? (existing?.publishedAt ?? new Date())
+    : null;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const data = {
+        title,
+        description: description || null,
+        kind,
+        slug,
+        status,
+        publishedAt,
+        audioPath,
+        coverKey,
+        durationSec,
+        fileSize,
+        mimeType,
+      };
+
+      const episode = existing
+        ? await tx.episode.update({ where: { id: existing.id }, data })
+        : await tx.episode.create({
+            data: { ...data, channelId: channel.id },
+          });
+
+      await tx.episodeTag.deleteMany({ where: { episodeId: episode.id } });
+
+      for (const name of tagNames) {
+        const tagSlug = slugify(name);
+        const tag = await tx.tag.upsert({
+          where: { slug: tagSlug },
+          update: {},
+          create: { name, slug: tagSlug },
+        });
+
+        await tx.episodeTag.create({
+          data: { episodeId: episode.id, tagId: tag.id },
+        });
+      }
+    });
+  } catch (error) {
+    console.error("No se pudo guardar el episodio:", error);
+    return { error: "No se pudo guardar el episodio. Inténtalo otra vez." };
+  }
+
+  if (newAudioKey && existing && existing.audioPath !== newAudioKey) {
+    await storage.remove(existing.audioPath);
+  }
+
+  if (newCoverKey && existing?.coverKey && existing.coverKey !== newCoverKey) {
+    await storage.remove(existing.coverKey);
+  }
+
+  revalidatePath("/estudio/episodios");
+  revalidatePath(`/c/${channel.handle}`);
+  revalidatePath(`/c/${channel.handle}/${slug}`);
+
+  redirect("/estudio/episodios");
+}
+
+export async function deleteEpisodeAction(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const channel = user.channel;
+
+  if (!channel) redirect("/estudio/canal");
+
+  const id = String(formData.get("id") ?? "");
+  const episode = await prisma.episode.findFirst({
+    where: { id, channelId: channel.id },
+  });
+
+  if (!episode) redirect("/estudio/episodios");
+
+  await prisma.episode.delete({ where: { id: episode.id } });
+  await storage.remove(episode.audioPath);
+
+  if (episode.coverKey) {
+    await storage.remove(episode.coverKey);
+  }
+
+  revalidatePath("/estudio/episodios");
+  revalidatePath(`/c/${channel.handle}`);
 }

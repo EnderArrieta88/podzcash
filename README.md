@@ -36,9 +36,13 @@ en **/estudio/invitaciones**.
 | `/registro` | Crear cuenta (primera vez o con invitación) |
 | `/entrar` | Iniciar sesión |
 | `/estudio` | Panel del creador |
+| `/estudio/episodios` | Lista de episodios |
+| `/estudio/episodios/nuevo` | Subir episodio |
 | `/estudio/canal` | Crear / editar el canal |
 | `/estudio/invitaciones` | Generar códigos (solo admin) |
 | `/c/[handle]` | Página pública del canal |
+| `/c/[handle]/[slug]` | Episodio público |
+| `/api/upload?kind=audio\|image` | Subida en streaming (sin cargar en memoria) |
 | `/media/[...path]` | Archivos locales con soporte de `Range` |
 
 ## Comandos útiles
@@ -81,7 +85,7 @@ interfaz, para migrar sin reescribir:
 
 - [x] **Fase 0** — Fundaciones: proyecto, base de datos, diseño base
 - [x] **Fase 1** — Cuentas, invitaciones y canales
-- [ ] **Fase 2** — Subida de audio y estudio del creador
+- [x] **Fase 2** — Subida de audio y estudio del creador
 - [ ] **Fase 3** — Reproductor y páginas de episodio
 - [ ] **Fase 4** — Descubrimiento y búsqueda
 - [ ] **Fase 5** — Donaciones ZEC (QR + ZIP-321)

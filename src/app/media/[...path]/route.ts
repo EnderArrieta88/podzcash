@@ -1,7 +1,8 @@
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { Readable } from "node:stream";
-import { contentTypeFor, resolveMediaPath } from "@/lib/storage";
+import { contentTypeFor } from "@/lib/media-types";
+import { resolveMediaPath } from "@/lib/storage";
 
 export const runtime = "nodejs";
 

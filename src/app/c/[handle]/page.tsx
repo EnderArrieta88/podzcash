@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowUpRight, Mic2, PencilLine, Radio } from "lucide-react";
+import {
+  ArrowUpRight,
+  Mic2,
+  Music2,
+  PencilLine,
+  Play,
+  Radio,
+} from "lucide-react";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
+import { formatDuration, relativeDate } from "@/lib/format";
 import { parseLinks } from "@/lib/links";
 import { storage } from "@/lib/storage";
 
@@ -15,6 +23,11 @@ async function loadChannel(handle: string) {
     include: {
       _count: {
         select: { episodes: { where: { status: "published" } } },
+      },
+      episodes: {
+        where: { status: "published" },
+        orderBy: { publishedAt: "desc" },
+        take: 24,
       },
     },
   });
@@ -131,17 +144,68 @@ export default async function ChannelPage({ params }: PageProps) {
       <section className="mt-10">
         <h2 className="font-display text-2xl tracking-tight">Episodios</h2>
 
-        <div className="mt-4 rounded-2xl border border-dashed border-border bg-surface/50 px-6 py-14 text-center">
-          <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-surface-2 text-subtle">
-            <Mic2 size={20} />
-          </span>
-          <p className="mt-4 text-sm font-medium">Todavía no hay episodios</p>
-          <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted">
-            {isOwner
-              ? "Tu canal está listo. En la próxima fase vas a poder subir tu primer audio."
-              : "Este canal está empezando. Vuelve pronto para escucharlo."}
-          </p>
-        </div>
+        {channel.episodes.length === 0 ? (
+          <div className="mt-4 rounded-2xl border border-dashed border-border bg-surface/50 px-6 py-14 text-center">
+            <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-surface-2 text-subtle">
+              <Mic2 size={20} />
+            </span>
+            <p className="mt-4 text-sm font-medium">Todavía no hay episodios</p>
+            <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted">
+              {isOwner
+                ? "Tu canal está listo. Sube tu primer episodio desde el estudio."
+                : "Este canal está empezando. Vuelve pronto para escucharlo."}
+            </p>
+            {isOwner && (
+              <Link
+                href="/estudio/episodios/nuevo"
+                className="mt-5 inline-flex h-9 items-center rounded-full bg-brand px-4 text-sm font-medium text-[#17130a] transition-colors hover:bg-brand-strong"
+              >
+                Subir episodio
+              </Link>
+            )}
+          </div>
+        ) : (
+          <ul className="mt-4 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface">
+            {channel.episodes.map((episode) => (
+              <li key={episode.id}>
+                <Link
+                  href={`/c/${channel.handle}/${episode.slug}`}
+                  className="group flex items-center gap-4 p-4 transition-colors hover:bg-surface-2"
+                >
+                  <div className="size-16 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
+                    {episode.coverKey ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={storage.url(episode.coverKey)}
+                        alt=""
+                        className="size-full object-cover"
+                      />
+                    ) : (
+                      <span className="flex size-full items-center justify-center text-subtle">
+                        <Music2 size={18} />
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-display text-xl">
+                      {episode.title}
+                    </p>
+                    <p className="mt-1 font-mono text-xs tabular text-subtle">
+                      {episode.kind === "music" ? "Música" : "Podcast"} ·{" "}
+                      {formatDuration(episode.durationSec)} ·{" "}
+                      {relativeDate(episode.publishedAt ?? episode.createdAt)}
+                    </p>
+                  </div>
+
+                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-border text-muted transition-colors group-hover:border-brand/40 group-hover:text-brand">
+                    <Play size={15} />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

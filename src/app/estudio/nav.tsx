@@ -2,31 +2,38 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Radio, Ticket } from "lucide-react";
+import { LayoutDashboard, ListMusic, Radio, Ticket } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const items = [
-  { href: "/estudio", label: "Resumen", icon: LayoutDashboard },
+type NavItem = {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+};
+
+const baseItems: NavItem[] = [
+  { href: "/estudio", label: "Resumen", icon: LayoutDashboard, exact: true },
+  { href: "/estudio/episodios", label: "Episodios", icon: ListMusic },
   { href: "/estudio/canal", label: "Mi canal", icon: Radio },
 ];
 
 export function StudioNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
 
-  const links = isAdmin
+  const links: NavItem[] = isAdmin
     ? [
-        ...items,
+        ...baseItems,
         { href: "/estudio/invitaciones", label: "Invitaciones", icon: Ticket },
       ]
-    : items;
+    : baseItems;
 
   return (
     <nav className="mt-5 space-y-1">
       {links.map((item) => {
-        const active =
-          item.href === "/estudio"
-            ? pathname === item.href
-            : pathname.startsWith(item.href);
+        const active = item.exact
+          ? pathname === item.href
+          : pathname.startsWith(item.href);
 
         return (
           <Link

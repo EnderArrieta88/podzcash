@@ -270,10 +270,19 @@ export default function Home() {
                   </span>
                 </span>
               </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 text-brand">✓</span>
+                <span>
+                  Fase 2 — Subida de audio
+                  <span className="block text-xs text-muted">
+                    Streaming a disco, portadas, borradores y publicación
+                  </span>
+                </span>
+              </li>
               <li className="flex items-start gap-3 text-muted">
                 <span className="mt-0.5 text-muted">○</span>
                 <span>
-                  Fase 2 — Subida de audio
+                  Fase 3 — Reproductor
                   <span className="block text-xs">Siguiente</span>
                 </span>
               </li>
