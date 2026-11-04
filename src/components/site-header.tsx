@@ -12,9 +12,9 @@ export async function SiteHeader() {
   const user = await getCurrentUser();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-bg/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 glass border-b">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5">
-        <Link href="/" className="group flex items-center gap-2.5">
+        <Link href="/" className="flex items-center gap-2.5">
           <span className="flex size-8 items-center justify-center rounded-lg bg-brand text-[#17130a]">
             <svg
               width="16"
@@ -28,7 +28,7 @@ export async function SiteHeader() {
               <rect x="12.5" y="4.5" width="2" height="7" rx="1" fill="currentColor" />
             </svg>
           </span>
-          <span className="text-[15px] font-semibold tracking-tight">
+          <span className="font-heading text-[15px] font-bold tracking-tight">
             Pod<span className="text-brand">Zcash</span>
           </span>
         </Link>
@@ -48,7 +48,7 @@ export async function SiteHeader() {
         {user ? (
           <Link
             href="/estudio"
-            className="inline-flex h-9 items-center rounded-full bg-brand px-4 text-sm font-medium text-[#17130a] transition-colors hover:bg-brand-strong"
+            className="inline-flex h-9 items-center rounded-xl bg-brand px-4 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
           >
             Mi estudio
           </Link>

@@ -11,7 +11,7 @@ export default async function StudioPage() {
 
   if (!user.channel) {
     return (
-      <div className="rounded-2xl border border-border bg-surface p-8">
+      <div className="rounded-xl border border-border bg-surface p-8">
         <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
           Paso 1 de 2
         </p>
@@ -53,7 +53,7 @@ export default async function StudioPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-xl border border-border bg-surface p-6">
         <div className="flex flex-wrap items-start gap-5">
           {channel.avatarKey ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -109,20 +109,20 @@ export default async function StudioPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-border bg-surface p-5">
+        <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
             Episodios
           </p>
           <p className="mt-2 font-display text-3xl">{episodes}</p>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-5">
+        <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
             Donaciones
           </p>
           <p className="mt-2 font-display text-3xl">—</p>
           <p className="mt-1 text-xs text-subtle">Disponible en la fase 5</p>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-5">
+        <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
             Estado
           </p>
@@ -133,7 +133,7 @@ export default async function StudioPage() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-brand/25 bg-brand-soft/40 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-brand/25 bg-brand-soft/40 p-6">
         <div className="flex items-start gap-3">
           <span className="mt-0.5 inline-flex size-9 items-center justify-center rounded-xl bg-brand/15 text-brand">
             <Mic2 size={17} />
@@ -157,3 +157,4 @@ export default async function StudioPage() {
     </div>
   );
 }
+

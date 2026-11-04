@@ -33,11 +33,11 @@ export default async function InvitesPage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-xl border border-border bg-surface p-6">
         <InviteForm />
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+      <div className="overflow-hidden rounded-xl border border-border bg-surface">
         {invites.length === 0 ? (
           <p className="p-6 text-sm text-muted">
             Todavía no generaste códigos.
@@ -100,3 +100,4 @@ export default async function InvitesPage() {
     </div>
   );
 }
+

@@ -61,7 +61,7 @@ export default async function DonatePage({ params }: PageProps) {
 
   if (!channel.zcashAddress) {
     return (
-      <div className="mx-auto w-full max-w-lg px-5 py-20 text-center">
+      <div className="mx-auto w-full max-w-lg py-20 text-center">
         <p className="font-display text-3xl tracking-tight">
           {channel.displayName} todavía no acepta donaciones
         </p>
@@ -116,14 +116,16 @@ export default async function DonatePage({ params }: PageProps) {
         />
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
         {notes.map((note) => (
           <div
             key={note.title}
             className="rounded-xl border border-border bg-surface p-4"
           >
-            <note.icon size={16} className="text-brand" />
-            <p className="mt-2 text-sm font-medium">{note.title}</p>
+            <note.icon size={16} className="text-jade" />
+            <p className="mt-2 font-heading text-sm font-semibold">
+              {note.title}
+            </p>
             <p className="mt-1 text-xs leading-relaxed text-muted">
               {note.body}
             </p>
@@ -133,4 +135,3 @@ export default async function DonatePage({ params }: PageProps) {
     </div>
   );
 }
-

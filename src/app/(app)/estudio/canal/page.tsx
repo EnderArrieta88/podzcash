@@ -23,7 +23,7 @@ export default async function ChannelSettingsPage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-xl border border-border bg-surface p-6">
         <ChannelForm
           channel={
             channel
@@ -44,3 +44,4 @@ export default async function ChannelSettingsPage() {
     </div>
   );
 }
+

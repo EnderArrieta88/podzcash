@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
-import { Check, Copy, ExternalLink } from "lucide-react";
+import { Check, Copy, ExternalLink, ShieldCheck } from "lucide-react";
 import { AMOUNT_PRESETS, buildPaymentUri } from "@/lib/zip321";
 import { cn } from "@/lib/utils";
 
@@ -32,7 +32,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
     QRCode.toDataURL(uri, {
       margin: 2,
       width: 512,
-      color: { dark: "#0b0a08", light: "#f5f1e8" },
+      color: { dark: "#0b0d11", light: "#f5f1e8" },
       errorCorrectionLevel: "M",
     })
       .then((dataUrl) => {
@@ -58,7 +58,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
   }
 
   return (
-    <div className="grid gap-6 rounded-2xl border border-border bg-surface p-6 sm:grid-cols-[auto_1fr]">
+    <div className="grid gap-6 rounded-2xl border border-border bg-surface p-5 sm:grid-cols-[auto_1fr] sm:p-6">
       <div className="mx-auto sm:mx-0">
         <div className="flex size-56 items-center justify-center overflow-hidden rounded-xl bg-[#f5f1e8] p-2">
           {qr ? (
@@ -79,21 +79,28 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
 
       <div className="min-w-0 space-y-5">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-            Dirección Zcash
-          </p>
-          <div className="mt-2 flex items-start gap-2 rounded-[10px] border border-border bg-surface-2 p-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">
+              Dirección Zcash
+            </p>
+            <span className="inline-flex items-center gap-1 font-mono text-[10px] text-jade-bright">
+              <ShieldCheck size={11} />
+              verificada
+            </span>
+          </div>
+
+          <div className="mt-2 flex items-start gap-2 rounded-xl border border-border bg-surface-2 p-3">
             <code className="min-w-0 flex-1 break-all font-mono text-xs leading-relaxed text-text">
               {address}
             </code>
             <button
               type="button"
               onClick={() => copy(address, "address")}
-              className="inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-border text-muted transition-colors hover:border-border-strong hover:text-text"
+              className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-border-strong hover:text-text"
               aria-label="Copiar dirección"
             >
               {copied === "address" ? (
-                <Check size={14} className="text-success" />
+                <Check size={14} className="text-jade" />
               ) : (
                 <Copy size={14} />
               )}
@@ -102,7 +109,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
         </div>
 
         <div>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">
             Monto <span className="normal-case tracking-normal">(opcional)</span>
           </p>
 
@@ -117,10 +124,10 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
                   )
                 }
                 className={cn(
-                  "h-8 rounded-full border px-3 font-mono text-xs tabular transition-colors",
+                  "h-9 rounded-lg border px-3 font-mono text-xs tabular transition-colors",
                   amount === String(preset)
-                    ? "border-brand/40 bg-brand-soft/70 text-brand"
-                    : "border-border text-muted hover:border-border-strong hover:text-text",
+                    ? "border-brand/50 bg-brand-soft font-bold text-brand"
+                    : "border-border bg-surface-2 text-muted hover:border-border-strong hover:text-text",
                 )}
               >
                 {preset} ZEC
@@ -134,7 +141,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
                 onChange={(event) => setAmount(event.target.value)}
                 placeholder="Otro"
                 aria-label="Monto en ZEC"
-                className="h-8 w-24 rounded-full border border-border bg-surface-2 px-3 pr-9 font-mono text-xs tabular text-text placeholder:text-subtle outline-none focus:border-brand"
+                className="h-9 w-24 rounded-lg border border-border bg-surface-2 px-3 pr-9 font-mono text-xs tabular text-text placeholder:text-subtle outline-none focus:border-brand"
               />
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-subtle">
                 ZEC
@@ -146,7 +153,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
         <div>
           <label
             htmlFor="donation-memo"
-            className="text-[11px] uppercase tracking-[0.14em] text-subtle"
+            className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle"
           >
             Mensaje en el memo{" "}
             <span className="normal-case tracking-normal">(opcional)</span>
@@ -157,7 +164,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
             onChange={(event) => setMemo(event.target.value)}
             maxLength={200}
             placeholder="Gracias por el episodio"
-            className="mt-2 h-10 w-full rounded-[10px] border border-border bg-surface-2 px-3 text-sm text-text placeholder:text-subtle outline-none focus:border-brand focus:ring-4 focus:ring-brand/15"
+            className="mt-2 h-10 w-full rounded-xl border border-border bg-surface-2 px-3 text-sm text-text placeholder:text-subtle outline-none focus:border-brand focus:ring-4 focus:ring-brand/15"
           />
           <p className="mt-1.5 text-xs text-subtle">
             Solo funciona con transacciones protegidas y algunos wallets lo
@@ -168,7 +175,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
         <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
           <a
             href={uri}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-brand px-5 text-sm font-medium text-[#17130a] transition-colors hover:bg-brand-strong"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
           >
             Abrir en wallet
             <ExternalLink size={14} />
@@ -177,10 +184,10 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
           <button
             type="button"
             onClick={() => copy(uri, "uri")}
-            className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-surface-2 px-4 text-sm transition-colors hover:bg-border"
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-surface-2 px-4 text-sm transition-colors hover:bg-surface-3"
           >
             {copied === "uri" ? (
-              <Check size={14} className="text-success" />
+              <Check size={14} className="text-jade" />
             ) : (
               <Copy size={14} />
             )}

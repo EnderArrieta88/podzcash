@@ -45,7 +45,7 @@ export default async function EpisodesPage() {
       </div>
 
       {episodes.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-6 py-16 text-center">
+        <div className="rounded-xl border border-dashed border-border bg-surface/50 px-6 py-16 text-center">
           <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-surface-2 text-subtle">
             <Mic2 size={20} />
           </span>
@@ -60,7 +60,7 @@ export default async function EpisodesPage() {
           </ButtonLink>
         </div>
       ) : (
-        <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface">
+        <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">
           {episodes.map((episode) => {
             const cover = episode.coverKey
               ? storage.url(episode.coverKey)
@@ -150,3 +150,4 @@ export default async function EpisodesPage() {
     </div>
   );
 }
+

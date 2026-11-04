@@ -29,7 +29,7 @@ export function StudioNav({ isAdmin }: { isAdmin: boolean }) {
     : baseItems;
 
   return (
-    <nav className="mt-5 space-y-1">
+    <nav className="flex items-center gap-1 overflow-x-auto border-b border-border">
       {links.map((item) => {
         const active = item.exact
           ? pathname === item.href
@@ -40,14 +40,17 @@ export function StudioNav({ isAdmin }: { isAdmin: boolean }) {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center gap-2.5 rounded-[10px] px-3 py-2 text-sm transition-colors",
+              "relative flex shrink-0 items-center gap-2 px-3 py-2.5 text-sm transition-colors",
               active
-                ? "bg-brand-soft/70 text-brand"
-                : "text-muted hover:bg-surface-2 hover:text-text",
+                ? "font-semibold text-brand"
+                : "text-muted hover:text-text",
             )}
           >
-            <item.icon size={16} strokeWidth={1.75} />
+            <item.icon size={15} strokeWidth={1.8} />
             {item.label}
+            {active && (
+              <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-brand" />
+            )}
           </Link>
         );
       })}

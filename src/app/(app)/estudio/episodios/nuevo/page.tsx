@@ -22,9 +22,10 @@ export default async function NewEpisodePage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-xl border border-border bg-surface p-6">
         <EpisodeForm episode={null} />
       </div>
     </div>
   );
 }
+

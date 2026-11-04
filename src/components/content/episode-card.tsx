@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Music2 } from "lucide-react";
+import { Mic2 } from "lucide-react";
 import { PlayButton } from "@/components/player/play-button";
 import { formatDuration, relativeDate } from "@/lib/format";
 import { storage } from "@/lib/storage";
@@ -25,12 +25,12 @@ export function EpisodeCard({ episode }: { episode: EpisodeCardData }) {
             />
           ) : (
             <span className="flex size-full items-center justify-center text-subtle">
-              <Music2 size={26} />
+              <Mic2 size={26} />
             </span>
           )}
         </Link>
 
-        <div className="absolute bottom-3 right-3 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+        <div className="absolute bottom-3 right-3 translate-y-1 opacity-100 transition-all duration-200 sm:translate-y-0 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
           <PlayButton
             track={{
               id: episode.id,
@@ -41,12 +41,13 @@ export function EpisodeCard({ episode }: { episode: EpisodeCardData }) {
               src: storage.url(episode.audioPath),
               durationSec: episode.durationSec,
             }}
+            className="shadow-[0_0_24px_rgba(244,183,40,0.35)]"
           />
         </div>
       </div>
 
       <Link href={href} className="mt-3 block">
-        <h3 className="line-clamp-2 text-sm font-medium leading-snug transition-colors group-hover:text-brand">
+        <h3 className="line-clamp-2 font-heading text-sm font-semibold leading-snug transition-colors group-hover:text-brand">
           {episode.title}
         </h3>
       </Link>
@@ -55,8 +56,8 @@ export function EpisodeCard({ episode }: { episode: EpisodeCardData }) {
         {episode.channel.displayName}
       </p>
 
-      <p className="mt-0.5 font-mono text-[11px] tabular text-subtle">
-        {episode.kind === "music" ? "Música" : "Podcast"} ·{" "}
+      <p className="mt-1 font-mono text-[11px] tabular text-subtle">
+        {episode.kind === "music" ? "MÚSICA" : "PODCAST"} ·{" "}
         {formatDuration(episode.durationSec)} ·{" "}
         {relativeDate(episode.publishedAt ?? episode.createdAt)}
       </p>

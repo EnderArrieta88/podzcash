@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   ArrowRight,
   Check,
@@ -53,6 +54,9 @@ function Section({
 }
 
 export default async function DesignPage() {
+  // Laboratorio de diseño: solo existe en desarrollo.
+  if (process.env.NODE_ENV === "production") notFound();
+
   const [episodes, channel] = await Promise.all([
     getLatestEpisodes(4),
     prisma.channel.findFirst({
@@ -255,7 +259,7 @@ export default async function DesignPage() {
 
       {channel && (
         <Section title="Cabecera de canal" hint="serif solo en el nombre">
-          <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+          <div className="overflow-hidden rounded-xl border border-border bg-surface">
             <div className="relative h-40 bg-gradient-to-br from-brand/25 via-brand-soft to-surface" />
             <div className="px-6 pb-6">
               <div className="-mt-12 flex items-end gap-4">
@@ -445,3 +449,4 @@ export default async function DesignPage() {
     </div>
   );
 }
+

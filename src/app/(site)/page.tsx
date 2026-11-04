@@ -93,7 +93,7 @@ export default async function Home() {
 
           <div className="relative">
             <div className="absolute -inset-4 rounded-3xl bg-brand/5 blur-2xl" />
-            <div className="relative rounded-2xl border border-border bg-surface p-5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)]">
+            <div className="relative rounded-2xl border border-border bg-surface p-5 shadow-[0_0_80px_-30px_rgba(244,183,40,0.25)]">
               <div className="flex items-start justify-between">
                 <span className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted">
                   Podcast · Episodio 12
@@ -160,7 +160,7 @@ export default async function Home() {
         <div className="mx-auto w-full max-w-6xl px-5 py-16">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <h2 className="font-display text-3xl tracking-tight">
+              <h2 className="font-heading text-3xl font-bold tracking-tight">
                 Recién publicado
               </h2>
               <p className="mt-2 text-sm text-muted">
@@ -180,8 +180,8 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <div className="mt-9 rounded-2xl border border-dashed border-border bg-surface/50 px-6 py-14 text-center">
-              <p className="font-display text-2xl">Todavía no hay episodios</p>
+            <div className="mt-9 rounded-xl border border-dashed border-border bg-surface/50 px-6 py-14 text-center">
+              <p className="font-heading text-2xl font-bold">Todavía no hay episodios</p>
               <p className="mx-auto mt-2 max-w-md text-sm text-muted">
                 PodZcash está empezando. Sé de los primeros en publicar tu
                 podcast o tu música.
@@ -205,7 +205,7 @@ export default async function Home() {
 
       <section id="creadores" className="border-t border-border/70">
         <div className="mx-auto w-full max-w-6xl px-5 py-20">
-          <h2 className="font-display text-3xl font-normal tracking-tight text-balance sm:text-4xl">
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-balance sm:text-4xl">
             Lo que hace diferente a PodZcash
           </h2>
           <p className="mt-3 max-w-2xl text-muted">
@@ -217,7 +217,7 @@ export default async function Home() {
             {reasons.map((reason) => (
               <article
                 key={reason.title}
-                className="rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-brand/30"
+                className="rounded-xl border border-border bg-surface p-6 transition-colors hover:border-brand/30"
               >
                 <span className="inline-flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
                   <reason.icon size={18} strokeWidth={1.75} />
@@ -237,7 +237,7 @@ export default async function Home() {
           <div className="mx-auto w-full max-w-6xl px-5 py-20">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <h2 className="font-display text-3xl tracking-tight">
+                <h2 className="font-heading text-3xl font-bold tracking-tight">
                   Canales
                 </h2>
                 <p className="mt-2 text-sm text-muted">
@@ -265,7 +265,7 @@ export default async function Home() {
         <div className="mx-auto w-full max-w-6xl px-5 py-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="font-display text-3xl font-normal tracking-tight sm:text-4xl">
+              <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
                 Cómo funciona
               </h2>
               <p className="mt-3 max-w-xl text-muted">
@@ -282,7 +282,7 @@ export default async function Home() {
             {steps.map((step, index) => (
               <li
                 key={step.title}
-                className="relative rounded-2xl border border-border bg-surface p-6"
+                className="relative rounded-xl border border-border bg-surface p-6"
               >
                 <span className="absolute right-5 top-5 text-xs font-mono text-brand-dim">
                   0{index + 1}
@@ -303,7 +303,7 @@ export default async function Home() {
       <section id="donaciones" className="border-t border-border/70">
         <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-20 lg:grid-cols-2">
           <div>
-            <h2 className="font-display text-3xl font-normal tracking-tight sm:text-4xl">
+            <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
               Donaciones que no pasan por nosotros
             </h2>
             <p className="mt-4 text-muted">
@@ -330,7 +330,7 @@ export default async function Home() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-border bg-surface p-6">
+          <div className="rounded-xl border border-border bg-surface p-6">
             <p className="text-xs uppercase tracking-widest text-muted">
               Estado del proyecto
             </p>
@@ -406,3 +406,4 @@ export default async function Home() {
     </>
   );
 }
+
