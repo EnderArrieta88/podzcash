@@ -81,12 +81,30 @@ interfaz, para migrar sin reescribir:
 | Sesión con cookie propia | Magic link / OAuth |
 | QR + enlace ZIP-321 | Watcher de UFVK |
 
+## Reproductor
+
+El reproductor vive en el layout raíz, así que **la reproducción no se corta
+al navegar** entre páginas.
+
+| Acción | Cómo |
+|---|---|
+| Play / pausa | Botón dorado o `Espacio` |
+| ±15 s | Flechas `←` / `→` (o los botones de la barra) |
+| Velocidad | Botón `1×` (cicla 1 → 1.25 → 1.5 → 2 → 0.8) |
+| Posición | Clic o arrastre sobre la barra de progreso |
+| Continuar | Se guarda en `localStorage` cada 2 s y al cerrar la pestaña |
+
+La barra de progreso son 64 segmentos sobre la línea de tiempo, no una
+waveform de amplitud: dibujar la onda real requiere extraer picos del audio en
+el servidor (transcodificación) o decodificar el archivo completo en el
+navegador, y ninguna de las dos es viable todavía.
+
 ## Fases
 
 - [x] **Fase 0** — Fundaciones: proyecto, base de datos, diseño base
 - [x] **Fase 1** — Cuentas, invitaciones y canales
 - [x] **Fase 2** — Subida de audio y estudio del creador
-- [ ] **Fase 3** — Reproductor y páginas de episodio
+- [x] **Fase 3** — Reproductor persistente y páginas de episodio
 - [ ] **Fase 4** — Descubrimiento y búsqueda
 - [ ] **Fase 5** — Donaciones ZEC (QR + ZIP-321)
 - [ ] **Fase 6** — RSS y embeds

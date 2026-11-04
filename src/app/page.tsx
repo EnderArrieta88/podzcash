@@ -279,10 +279,19 @@ export default function Home() {
                   </span>
                 </span>
               </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 text-brand">✓</span>
+                <span>
+                  Fase 3 — Reproductor persistente
+                  <span className="block text-xs text-muted">
+                    No se corta al navegar, velocidad y continuar escuchando
+                  </span>
+                </span>
+              </li>
               <li className="flex items-start gap-3 text-muted">
                 <span className="mt-0.5 text-muted">○</span>
                 <span>
-                  Fase 3 — Reproductor
+                  Fase 4 — Descubrimiento
                   <span className="block text-xs">Siguiente</span>
                 </span>
               </li>

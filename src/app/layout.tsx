@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { PlayerProvider } from "@/components/player/player-context";
+import { PlayerBar } from "@/components/player/player-bar";
 import "./globals.css";
 
 const display = Instrument_Serif({
@@ -38,9 +40,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body
         className={`${display.variable} ${sans.variable} ${mono.variable} min-h-dvh font-sans antialiased`}
       >
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
+        <PlayerProvider>
+          <SiteHeader />
+          <main>{children}</main>
+          <SiteFooter />
+          <PlayerBar />
+        </PlayerProvider>
       </body>
     </html>
   );

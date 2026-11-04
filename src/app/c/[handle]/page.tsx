@@ -6,7 +6,6 @@ import {
   Mic2,
   Music2,
   PencilLine,
-  Play,
   Radio,
 } from "lucide-react";
 import { prisma } from "@/lib/db";
@@ -14,6 +13,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { formatDuration, relativeDate } from "@/lib/format";
 import { parseLinks } from "@/lib/links";
 import { storage } from "@/lib/storage";
+import { PlayButton } from "@/components/player/play-button";
 
 type PageProps = { params: Promise<{ handle: string }> };
 
@@ -166,44 +166,61 @@ export default async function ChannelPage({ params }: PageProps) {
           </div>
         ) : (
           <ul className="mt-4 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface">
-            {channel.episodes.map((episode) => (
-              <li key={episode.id}>
-                <Link
-                  href={`/c/${channel.handle}/${episode.slug}`}
-                  className="group flex items-center gap-4 p-4 transition-colors hover:bg-surface-2"
+            {channel.episodes.map((episode) => {
+              const cover = episode.coverKey
+                ? storage.url(episode.coverKey)
+                : null;
+
+              return (
+                <li
+                  key={episode.id}
+                  className="group flex items-center gap-2 pr-4 transition-colors hover:bg-surface-2"
                 >
-                  <div className="size-16 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
-                    {episode.coverKey ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={storage.url(episode.coverKey)}
-                        alt=""
-                        className="size-full object-cover"
-                      />
-                    ) : (
-                      <span className="flex size-full items-center justify-center text-subtle">
-                        <Music2 size={18} />
-                      </span>
-                    )}
-                  </div>
+                  <Link
+                    href={`/c/${channel.handle}/${episode.slug}`}
+                    className="flex min-w-0 flex-1 items-center gap-4 p-4"
+                  >
+                    <div className="size-16 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
+                      {cover ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={cover}
+                          alt=""
+                          className="size-full object-cover"
+                        />
+                      ) : (
+                        <span className="flex size-full items-center justify-center text-subtle">
+                          <Music2 size={18} />
+                        </span>
+                      )}
+                    </div>
 
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-display text-xl">
-                      {episode.title}
-                    </p>
-                    <p className="mt-1 font-mono text-xs tabular text-subtle">
-                      {episode.kind === "music" ? "Música" : "Podcast"} ·{" "}
-                      {formatDuration(episode.durationSec)} ·{" "}
-                      {relativeDate(episode.publishedAt ?? episode.createdAt)}
-                    </p>
-                  </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-display text-xl">
+                        {episode.title}
+                      </p>
+                      <p className="mt-1 font-mono text-xs tabular text-subtle">
+                        {episode.kind === "music" ? "Música" : "Podcast"} ·{" "}
+                        {formatDuration(episode.durationSec)} ·{" "}
+                        {relativeDate(episode.publishedAt ?? episode.createdAt)}
+                      </p>
+                    </div>
+                  </Link>
 
-                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-border text-muted transition-colors group-hover:border-brand/40 group-hover:text-brand">
-                    <Play size={15} />
-                  </span>
-                </Link>
-              </li>
-            ))}
+                  <PlayButton
+                    track={{
+                      id: episode.id,
+                      title: episode.title,
+                      channelName: channel.displayName,
+                      channelHandle: channel.handle,
+                      coverUrl: cover,
+                      src: storage.url(episode.audioPath),
+                      durationSec: episode.durationSec,
+                    }}
+                  />
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>

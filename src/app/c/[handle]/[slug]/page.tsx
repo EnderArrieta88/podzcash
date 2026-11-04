@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { formatDate, formatDuration } from "@/lib/format";
 import { storage } from "@/lib/storage";
+import { PlayButton } from "@/components/player/play-button";
 
 type PageProps = { params: Promise<{ handle: string; slug: string }> };
 
@@ -111,14 +112,28 @@ export default async function EpisodePage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-border bg-surface p-4">
-        {/* Reproductor provisional: la Fase 3 lo reemplaza por uno persistente. */}
-        <audio
-          controls
-          preload="metadata"
-          src={audioUrl}
-          className="w-full"
+      <div className="mt-8 flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-surface p-4">
+        <PlayButton
+          size="lg"
+          label
+          track={{
+            id: episode.id,
+            title: episode.title,
+            channelName: channel.displayName,
+            channelHandle: channel.handle,
+            coverUrl: cover,
+            src: audioUrl,
+            durationSec: episode.durationSec,
+          }}
         />
+        <div className="min-w-0">
+          <p className="font-mono text-xs tabular text-subtle">
+            {formatDuration(episode.durationSec)}
+          </p>
+          <p className="mt-1 text-xs text-muted">
+            Sigue navegando: la reproducción no se corta.
+          </p>
+        </div>
       </div>
 
       {episode.description && (
