@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
 
 const navigation = [
+  { label: "Explorar", href: "/explorar" },
   { label: "Cómo funciona", href: "/#como-funciona" },
   { label: "Para creadores", href: "/#creadores" },
   { label: "Donaciones", href: "/#donaciones" },

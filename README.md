@@ -40,6 +40,7 @@ en **/estudio/invitaciones**.
 | `/estudio/episodios/nuevo` | Subir episodio |
 | `/estudio/canal` | Crear / editar el canal |
 | `/estudio/invitaciones` | Generar códigos (solo admin) |
+| `/explorar` | Búsqueda y filtros (`?q=`, `?tipo=`, `?tag=`) |
 | `/c/[handle]` | Página pública del canal |
 | `/c/[handle]/[slug]` | Episodio público |
 | `/api/upload?kind=audio\|image` | Subida en streaming (sin cargar en memoria) |
@@ -99,13 +100,24 @@ waveform de amplitud: dibujar la onda real requiere extraer picos del audio en
 el servidor (transcodificación) o decodificar el archivo completo en el
 navegador, y ninguna de las dos es viable todavía.
 
+## Búsqueda
+
+El índice full-text (FTS5) vive en `.data/search.db`, **fuera de la base que
+gestiona Prisma**: las tablas virtuales de FTS aparecen como deriva en
+`prisma migrate dev` y bloquean las migraciones.
+
+- Se actualiza al publicar, editar o borrar un episodio, y al renombrar un canal.
+- Si el archivo se borra o está vacío, se reconstruye solo en la primera
+  búsqueda.
+- Para forzar un reindexado: borra `.data/search.db` y busca de nuevo.
+
 ## Fases
 
 - [x] **Fase 0** — Fundaciones: proyecto, base de datos, diseño base
 - [x] **Fase 1** — Cuentas, invitaciones y canales
 - [x] **Fase 2** — Subida de audio y estudio del creador
 - [x] **Fase 3** — Reproductor persistente y páginas de episodio
-- [ ] **Fase 4** — Descubrimiento y búsqueda
+- [x] **Fase 4** — Descubrimiento y búsqueda
 - [ ] **Fase 5** — Donaciones ZEC (QR + ZIP-321)
 - [ ] **Fase 6** — RSS y embeds
 - [ ] **Fase 7** — Administración y moderación

@@ -1,6 +1,11 @@
 import { Mic, Radio, ShieldCheck, Upload, Users, Wallet } from "lucide-react";
+import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button-link";
 import { DbStatus } from "@/components/db-status";
+import { EpisodeCard } from "@/components/content/episode-card";
+import { ChannelCard } from "@/components/content/channel-card";
+import { SearchField } from "@/components/content/search-field";
+import { getChannels, getLatestEpisodes } from "@/lib/catalog";
 
 const waveform = [22, 38, 56, 34, 70, 48, 88, 62, 40, 74, 30, 54, 82, 44, 66, 28];
 
@@ -40,7 +45,12 @@ const steps = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const [latestEpisodes, channels] = await Promise.all([
+    getLatestEpisodes(8),
+    getChannels(6),
+  ]);
+
   return (
     <>
       <section className="relative overflow-hidden">
@@ -146,6 +156,53 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="border-t border-border/70">
+        <div className="mx-auto w-full max-w-6xl px-5 py-16">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <h2 className="font-display text-3xl tracking-tight">
+                Recién publicado
+              </h2>
+              <p className="mt-2 text-sm text-muted">
+                Lo último que subió la comunidad.
+              </p>
+            </div>
+
+            <div className="w-full max-w-sm">
+              <SearchField />
+            </div>
+          </div>
+
+          {latestEpisodes.length > 0 ? (
+            <div className="mt-9 grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 lg:grid-cols-4">
+              {latestEpisodes.map((episode) => (
+                <EpisodeCard key={episode.id} episode={episode} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-9 rounded-2xl border border-dashed border-border bg-surface/50 px-6 py-14 text-center">
+              <p className="font-display text-2xl">Todavía no hay episodios</p>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted">
+                PodZcash está empezando. Sé de los primeros en publicar tu
+                podcast o tu música.
+              </p>
+              <ButtonLink href="/registro" className="mt-6">
+                Crear mi canal
+              </ButtonLink>
+            </div>
+          )}
+
+          <div className="mt-8">
+            <Link
+              href="/explorar"
+              className="text-sm text-brand underline-offset-4 hover:underline"
+            >
+              Explorar todo →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section id="creadores" className="border-t border-border/70">
         <div className="mx-auto w-full max-w-6xl px-5 py-20">
           <h2 className="font-display text-3xl font-normal tracking-tight text-balance sm:text-4xl">
@@ -174,6 +231,35 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {channels.length > 0 && (
+        <section className="border-t border-border/70">
+          <div className="mx-auto w-full max-w-6xl px-5 py-20">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h2 className="font-display text-3xl tracking-tight">
+                  Canales
+                </h2>
+                <p className="mt-2 text-sm text-muted">
+                  Quiénes están publicando hoy.
+                </p>
+              </div>
+              <Link
+                href="/explorar"
+                className="text-sm text-brand underline-offset-4 hover:underline"
+              >
+                Ver todos →
+              </Link>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {channels.map((channel) => (
+                <ChannelCard key={channel.id} channel={channel} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section id="como-funciona" className="border-t border-border/70">
         <div className="mx-auto w-full max-w-6xl px-5 py-20">
@@ -288,10 +374,19 @@ export default function Home() {
                   </span>
                 </span>
               </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 text-brand">✓</span>
+                <span>
+                  Fase 4 — Descubrimiento
+                  <span className="block text-xs text-muted">
+                    Búsqueda full-text, filtros y exploración
+                  </span>
+                </span>
+              </li>
               <li className="flex items-start gap-3 text-muted">
                 <span className="mt-0.5 text-muted">○</span>
                 <span>
-                  Fase 4 — Descubrimiento
+                  Fase 5 — Donaciones en ZEC
                   <span className="block text-xs">Siguiente</span>
                 </span>
               </li>

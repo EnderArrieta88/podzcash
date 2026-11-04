@@ -49,3 +49,6 @@ next-env.d.ts
 
 # media local (audios y portadas)
 /.media
+
+# indice de busqueda local
+/.data

@@ -9,6 +9,7 @@ import { destroySession } from "@/lib/auth/session";
 import { generateInviteCode, linkListSchema } from "@/lib/links";
 import { slugify, uniqueSlug } from "@/lib/slug";
 import { IMAGE_MIME } from "@/lib/media-types";
+import { indexEpisode, reindexChannel, removeFromIndex } from "@/lib/search-index";
 import { storage } from "@/lib/storage";
 import { parseTags } from "@/lib/tags";
 import { channelSchema, episodeSchema, toFieldErrors } from "@/lib/validation";
@@ -109,6 +110,10 @@ export async function saveChannelAction(
       where: { id: user.channel.id },
       data,
     });
+
+    if (user.channel.displayName !== displayName) {
+      await reindexChannel(user.channel.id);
+    }
 
     if (newAvatarKey && user.channel.avatarKey) {
       await storage.remove(user.channel.avatarKey);
@@ -251,8 +256,10 @@ export async function saveEpisodeAction(
     ? (existing?.publishedAt ?? new Date())
     : null;
 
+  let savedEpisodeId = "";
+
   try {
-    await prisma.$transaction(async (tx) => {
+    savedEpisodeId = await prisma.$transaction(async (tx) => {
       const data = {
         title,
         description: description || null,
@@ -287,6 +294,8 @@ export async function saveEpisodeAction(
           data: { episodeId: episode.id, tagId: tag.id },
         });
       }
+
+      return episode.id;
     });
   } catch (error) {
     console.error("No se pudo guardar el episodio:", error);
@@ -300,6 +309,8 @@ export async function saveEpisodeAction(
   if (newCoverKey && existing?.coverKey && existing.coverKey !== newCoverKey) {
     await storage.remove(existing.coverKey);
   }
+
+  await indexEpisode(savedEpisodeId);
 
   revalidatePath("/estudio/episodios");
   revalidatePath(`/c/${channel.handle}`);
@@ -322,6 +333,7 @@ export async function deleteEpisodeAction(formData: FormData): Promise<void> {
   if (!episode) redirect("/estudio/episodios");
 
   await prisma.episode.delete({ where: { id: episode.id } });
+  removeFromIndex(episode.id);
   await storage.remove(episode.audioPath);
 
   if (episode.coverKey) {
