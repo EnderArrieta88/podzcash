@@ -217,31 +217,3 @@ jobs:
           fi
 
           echo "Sitio verificado"
-)
-          missing=1
-          for pass in $(seq 1 5); do
-            missing=0
-            for file in $files; do
-              url="${file#deploy}"
-              status=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
-              if [ "$status" != "200" ]; then
-                missing=$((missing + 1))
-                if [ "$missing" -le 5 ]; then
-                  printf 'ausente: %s (%s)\n' "$url" "$status"
-                fi
-              fi
-            done
-            if [ "$missing" -eq 0 ]; then
-              break
-            fi
-            echo "Pasada $pass: $missing archivos sin servir; reintentando en 30 s."
-            sleep 30
-          done
-
-          if [ "$missing" -ne 0 ]; then
-            echo "::error::$missing archivos estaticos no se sirven."
-            exit 1
-          fi
-
-          echo "Sitio verificado"
-
