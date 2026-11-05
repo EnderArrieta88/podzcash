@@ -13,6 +13,8 @@ export async function GET() {
     return NextResponse.json({
       ok: true,
       database: "sqlite",
+      // Marcador para verificar qué build está sirviendo el servidor.
+      build: "2026-11-05-b",
       channels,
       episodes,
     });
