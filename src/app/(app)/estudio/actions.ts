@@ -365,10 +365,7 @@ export async function deleteEpisodeAction(formData: FormData): Promise<void> {
 // Cuenta
 // ---------------------------------------------------------------------------
 
-export async function changePasswordAction(
-  _previous: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
+export async function changePasswordAction(formData: FormData): Promise<void> {
   const user = await requireUser();
 
   const parsed = passwordChangeSchema.safeParse({
@@ -378,7 +375,7 @@ export async function changePasswordAction(
   });
 
   if (!parsed.success) {
-    return { fields: toFieldErrors(parsed.error) };
+    redirect("/estudio/cuenta?error=invalid");
   }
 
   const { currentPassword, newPassword } = parsed.data;
@@ -386,13 +383,11 @@ export async function changePasswordAction(
   const valid = await verifyPassword(currentPassword, user.passwordHash);
 
   if (!valid) {
-    return {
-      fields: { currentPassword: "La contraseña actual no es correcta." },
-    };
+    redirect("/estudio/cuenta?error=current");
   }
 
   if (currentPassword === newPassword) {
-    return { fields: { newPassword: "La nueva contraseña debe ser distinta." } };
+    redirect("/estudio/cuenta?error=same");
   }
 
   const passwordHash = await hashPassword(newPassword);
@@ -403,5 +398,5 @@ export async function changePasswordAction(
   await prisma.session.deleteMany({ where: { userId: user.id } });
   await createSession(user.id);
 
-  return { ok: true };
+  redirect("/estudio/cuenta?ok=1");
 }
