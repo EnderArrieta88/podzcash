@@ -5,6 +5,20 @@ contenido, construyan su canal y reciban donaciones directas en ZEC.
 
 > Estado: **Fase 0 — Fundaciones**. Proyecto en desarrollo local.
 
+## Flujo de trabajo (obligatorio)
+
+1. **Todo se hace en local.** Se desarrolla y se verifica acá: `npm run dev`,
+   `npx tsc --noEmit`, `npm run lint` y `npm run build`.
+2. **Se sube a GitHub** cuando el cambio está terminado y verificado
+   (`git push origin main`).
+3. **El deploy es el último paso, y es manual.** No se despliega por cada
+   cambio ni de forma automática.
+   Solo cuando no habrá más cambios en esa tanda: **GitHub → Actions → Deploy a
+   producción → Run workflow → `deploy`**.
+
+El deploy nunca toca los datos: `prisma/dev.db`, `.media`, `.data`, `.env` y
+`.htaccess` están excluidos del workflow.
+
 ## Stack
 
 - **Next.js 16** (App Router) + TypeScript + Tailwind CSS 4
