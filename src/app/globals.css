@@ -130,7 +130,6 @@
   .text-balance {
     text-wrap: balance;
   }
-
   /* Vidrio flotante: barras persistentes, headers y modales. */
   .glass {
     background-color: color-mix(in srgb, var(--color-surface-3) 78%, transparent);
@@ -177,3 +176,11 @@
     font-variant-numeric: tabular-nums;
   }
 }
+
+/* El compilador descarta el backdrop-filter de .glass dentro de @layer utilities;
+   sin la capa, el vidrio vuelve a desenfocar lo que pasa por debajo. */
+.glass {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+

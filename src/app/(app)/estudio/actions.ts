@@ -61,7 +61,7 @@ export async function saveChannelAction(
   });
 
   if (clash) {
-    return { fields: { handle: "Ese handle ya está ocupado. Prueba otro." } };
+    return { fields: { handle: "Ese nombre de usuario ya está ocupado. Prueba otro." } };
   }
 
   let linksJson: string | null = null;

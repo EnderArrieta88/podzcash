@@ -61,13 +61,13 @@ export function ChannelForm({ channel, links }: ChannelFormProps) {
           onChange={(event) => update("displayName", event.target.value)}
           required
           maxLength={60}
-          placeholder="Zcash en Español"
+          placeholder="Mi podcast"
         />
         <FieldError>{state?.fields?.displayName}</FieldError>
       </div>
 
       <div>
-        <Label htmlFor="handle">Handle</Label>
+        <Label htmlFor="handle">Nombre de usuario</Label>
         <div className="flex items-center gap-2">
           <span className="shrink-0 font-mono text-sm text-subtle">
             /c/
@@ -80,7 +80,7 @@ export function ChannelForm({ channel, links }: ChannelFormProps) {
             required
             minLength={3}
             maxLength={30}
-            placeholder="zcash-es"
+            placeholder="mi-podcast"
             className="font-mono"
           />
         </div>

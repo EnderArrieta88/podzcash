@@ -19,7 +19,7 @@ export default async function ChannelSettingsPage() {
         <p className="mt-2 text-sm text-muted">
           {channel
             ? "Así te ve la comunidad. Los cambios se guardan al instante."
-            : "Elige tu handle y cuéntale a la comunidad quién eres."}
+            : "Elige tu nombre de usuario y cuéntale a la comunidad quién eres."}
         </p>
       </div>
 
