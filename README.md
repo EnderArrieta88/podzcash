@@ -59,6 +59,9 @@ en **/estudio/invitaciones**.
 | `/c/[handle]` | Página pública del canal |
 | `/c/[handle]/donar` | Donación con QR y ZIP-321 |
 | `/c/[handle]/[slug]` | Episodio público |
+| `/c/[handle]/feed.xml` | Feed RSS 2.0 + Podcasting 2.0 |
+| `/embed/[id]` | Reproductor embebible |
+| `/estudio/distribucion` | Feed, instrucciones y código de embed |
 | `/api/upload?kind=audio\|image` | Subida en streaming (sin cargar en memoria) |
 | `/media/[...path]` | Archivos locales con soporte de `Range` |
 
@@ -176,6 +179,6 @@ La app necesita permisos de escritura en `prisma/`, `.media/` y `.data/`.
 - [x] **Fase 3** — Reproductor persistente y páginas de episodio
 - [x] **Fase 4** — Descubrimiento y búsqueda
 - [x] **Fase 5** — Donaciones ZEC (QR + ZIP-321)
-- [ ] **Fase 6** — RSS y embeds
+- [x] **Fase 6** — RSS y embeds
 - [ ] **Fase 7** — Administración y moderación
 - [ ] **Fase 8** — Despliegue

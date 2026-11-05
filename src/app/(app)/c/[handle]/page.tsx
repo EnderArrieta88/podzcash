@@ -6,6 +6,7 @@ import {
   Mic2,
   PencilLine,
   Radio,
+  Rss,
   ShieldCheck,
 } from "lucide-react";
 import { prisma } from "@/lib/db";
@@ -169,6 +170,15 @@ export default async function ChannelPage({ params }: PageProps) {
                 <ArrowUpRight size={12} />
               </a>
             ))}
+
+            <a
+              href={`/c/${channel.handle}/feed.xml`}
+              className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-xs text-muted transition-colors hover:border-brand/40 hover:text-brand"
+              title="Feed RSS del canal"
+            >
+              <Rss size={12} />
+              RSS
+            </a>
           </div>
         </div>
       </div>

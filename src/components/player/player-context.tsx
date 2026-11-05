@@ -301,7 +301,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     <PlayerContext.Provider value={value}>
       {children}
 
-      {track && <div className="h-24" aria-hidden="true" />}
+      {track && <div className="player-spacer h-24" aria-hidden="true" />}
 
       <audio
         ref={audioRef}

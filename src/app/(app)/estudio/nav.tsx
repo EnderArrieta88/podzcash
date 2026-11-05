@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   ListMusic,
   Radio,
+  Rss,
   Ticket,
   UserRound,
 } from "lucide-react";
@@ -22,6 +23,7 @@ const baseItems: NavItem[] = [
   { href: "/estudio", label: "Resumen", icon: LayoutDashboard, exact: true },
   { href: "/estudio/episodios", label: "Episodios", icon: ListMusic },
   { href: "/estudio/canal", label: "Mi canal", icon: Radio },
+  { href: "/estudio/distribucion", label: "Distribución", icon: Rss },
   { href: "/estudio/cuenta", label: "Cuenta", icon: UserRound },
 ];
 

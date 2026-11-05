@@ -97,6 +97,12 @@
     left: 0;
   }
 
+  /* En un embed no se muestra el reproductor global: el embed tiene el suyo. */
+  body:has([data-embed]) .player-bar,
+  body:has([data-embed]) .player-spacer {
+    display: none;
+  }
+
   @media (min-width: 1024px) {
     /* La barra del reproductor se alinea con el rail cuando existe. Si el
        JavaScript todavía no definió la variable, usa el ancho expandido. */
