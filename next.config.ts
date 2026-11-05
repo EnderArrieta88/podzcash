@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Bundle autónomo para desplegar en hosting con Node (cPanel/Passenger).
+  output: "standalone",
   // better-sqlite3 es un módulo nativo: no debe pasar por el bundler.
   serverExternalPackages: ["better-sqlite3", "@prisma/adapter-better-sqlite3"],
   // Sin el indicador flotante de Next en desarrollo: estorba en las capturas.

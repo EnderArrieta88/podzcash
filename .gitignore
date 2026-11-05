@@ -52,3 +52,7 @@ next-env.d.ts
 
 # indice de busqueda local
 /.data
+
+# artefactos de despliegue
+/deploy/
+/podzcash-deploy.zip

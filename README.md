@@ -125,6 +125,35 @@ los fondos**: solo genera un QR y un enlace ZIP-321.
 - El memo va en base64url sin padding, como define ZIP-321.
 - El QR se regenera en el navegador al cambiar monto o memo.
 
+## Despliegue en hosting compartido (cPanel + Node.js Selector)
+
+El proyecto compila como bundle autónomo (`output: "standalone"`) para correr en
+un hosting con Node, sin VPS.
+
+1. **Build para Linux** (el servidor es Linux, así que el bundle se genera en
+   WSL para que `better-sqlite3` traiga el binario correcto):
+   ```bash
+   rsync -a --exclude node_modules --exclude .next --exclude .git \
+     --exclude .media --exclude .data /mnt/c/PodZcash/ ~/podzcash-build/
+   cd ~/podzcash-build && npm ci && npx prisma generate && npm run build
+   ```
+2. **Armar el bundle**: copiar `.next/standalone`, `.next/static`, `public`,
+   `prisma/dev.db`, `.media` y `.env` a una carpeta y comprimirla desde dentro
+   (`zip -qr ../app.zip .`) para que `server.js` quede en la raíz.
+3. **cPanel → Node.js → Create Application**:
+   - Versión: Node 22
+   - Modo: Production
+   - Application root: `podzcash` (fuera de `public_html`)
+   - Application URL: el dominio o subdominio
+   - Application startup file: `server.js`
+4. Subir el ZIP a esa carpeta, extraerlo y reiniciar la app.
+5. Variables (opcionales si va el `.env`):
+   `DATABASE_URL=file:./prisma/dev.db`, `MEDIA_ROOT=./.media`,
+   `SEARCH_DB_PATH=./.data/search.db`.
+6. Activar AutoSSL para HTTPS.
+
+La app necesita permisos de escritura en `prisma/`, `.media/` y `.data/`.
+
 ## Fases
 
 - [x] **Fase 0** — Fundaciones: proyecto, base de datos, diseño base
