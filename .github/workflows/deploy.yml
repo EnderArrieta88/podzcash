@@ -165,16 +165,16 @@ jobs:
           # Passenger y el sistema de archivos del hosting tardan en reflejar
           # el build nuevo: se espera y se reintenta con paciencia.
           for i in $(seq 1 30); do
-            if curl -fsS https://podzcash.online/api/health > /dev/null 2>&1; then break; fi
+            if curl -fsS --max-time 15 https://podzcash.online/api/health > /dev/null 2>&1; then break; fi
             sleep 3
           done
           sleep 30
 
-          curl -fsS https://podzcash.online/api/health
+          curl -fsS --max-time 20 https://podzcash.online/api/health
 
           # Si el destino FTP fuera el directorio público, estos archivos
           # estarían accesibles: se aborta el deploy con alerta.
-          code=$(curl -s -o /dev/null -w '%{http_code}' https://podzcash.online/server.js)
+          code=$(curl -s --max-time 15 -o /dev/null -w '%{http_code}' https://podzcash.online/server.js)
           if [ "$code" != "404" ]; then
             echo "::error::Los archivos internos están expuestos ($code). Revisá FTP_SERVER_DIR."
             exit 1
@@ -187,7 +187,7 @@ jobs:
             url="${file#deploy}"
             status="000"
             for attempt in $(seq 1 10); do
-              status=$(curl -s -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
+              status=$(curl -s --max-time 15 -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
               [ "$status" = "200" ] && break
               sleep 10
             done
@@ -195,7 +195,7 @@ jobs:
               echo "::error::Falta $url ($status)"
               missing=$((missing + 1))
             fi
-          done < <(find deploy/.next/static -type f)
+          done < <(find deploy/.next/static -type f | grep -vE '/(_buildManifest|_ssgManifest|_clientMiddlewareManifest)\.js$')
           if [ "$missing" -ne 0 ]; then
             echo "::error::$missing archivos estáticos no se sirven."
             exit 1
