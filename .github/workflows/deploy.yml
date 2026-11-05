@@ -162,11 +162,13 @@ jobs:
 
       - name: Verificar el sitio
         run: |
-          # Passenger en hosting compartido puede tardar en recargar.
-          for i in $(seq 1 20); do
+          # Passenger y el sistema de archivos del hosting tardan en reflejar
+          # el build nuevo: se espera y se reintenta con paciencia.
+          for i in $(seq 1 30); do
             if curl -fsS https://podzcash.online/api/health > /dev/null 2>&1; then break; fi
             sleep 3
           done
+          sleep 30
 
           curl -fsS https://podzcash.online/api/health
 
@@ -179,16 +181,15 @@ jobs:
           fi
 
           # Cada archivo estático del build debe servirse por HTTP. Un chunk
-          # faltante deja la página sin hidratar. Se reintenta: el hosting
-          # puede tardar unos segundos en ver los archivos nuevos.
+          # faltante deja la página sin hidratar.
           missing=0
           while IFS= read -r file; do
             url="${file#deploy}"
             status="000"
-            for attempt in 1 2 3 4 5; do
+            for attempt in $(seq 1 10); do
               status=$(curl -s -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
               [ "$status" = "200" ] && break
-              sleep 4
+              sleep 10
             done
             if [ "$status" != "200" ]; then
               echo "::error::Falta $url ($status)"
