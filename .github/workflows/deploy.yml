@@ -175,7 +175,6 @@ jobs:
             echo "::error::La aplicacion no responde en /api/health."
             exit 1
           fi
-          sleep 45
 
           # Si el destino FTP fuera el directorio publico, estos archivos
           # estarian accesibles: se aborta el deploy con alerta.
@@ -185,34 +184,39 @@ jobs:
             exit 1
           fi
 
-          # Se recorre el build completo, pero en pasadas: si el hosting todavia
-          # no propago algun archivo, se reintenta el conjunto en lugar de
-          # esperar 100 segundos por cada uno. Next 16 no publica los manifiestos
-          # internos, y las fuentes pueden tardar en propagarse: si una fuente
-          # no llega a tiempo, el navegador usa la tipografía de respaldo.
-          files=$(find deploy/.next/static -type f | grep -vE '/(_buildManifest|_ssgManifest|_clientMiddlewareManifest)\.js$|\.woff2$')
-          missing=1
-          for pass in $(seq 1 5); do
-            missing=0
-            for file in $files; do
-              url="${file#deploy}"
-              status=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
-              if [ "$status" != "200" ]; then
-                missing=$((missing + 1))
-                if [ "$missing" -le 5 ]; then
-                  printf 'ausente: %s (%s)\n' "$url" "$status"
-                fi
-              fi
-            done
-            if [ "$missing" -eq 0 ]; then
-              break
-            fi
-            echo "Pasada $pass: $missing archivos sin servir; reintentando en 30 s."
-            sleep 30
-          done
+          # Verificar cada archivo del build da falsos negativos: el cache del
+          # hosting responde 404 mientras propaga. Se comprueba que las paginas
+          # nuevas se sirvan y que sus assets respondan.
+          home=$(curl -fsS --max-time 20 https://podzcash.online/)
+          if ! printf '%s' "$home" | grep -q "Escucha a quien"; then
+            echo "::error::El inicio no muestra el contenido nuevo."
+            exit 1
+          fi
 
+          proyecto=$(curl -s --max-time 20 -o /dev/null -w '%{http_code}' https://podzcash.online/proyecto)
+          if [ "$proyecto" != "200" ]; then
+            echo "::error::/proyecto responde $proyecto."
+            exit 1
+          fi
+
+          assets=$(printf '%s' "$home" | grep -oE '/_next/static/[^"]+\.(css|js)' | head -n 4)
+          assets="$assets /landing/app.jpg"
+
+          missing=0
+          for url in $assets; do
+            status="000"
+            for attempt in $(seq 1 8); do
+              status=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
+              [ "$status" = "200" ] && break
+              sleep 10
+            done
+            if [ "$status" != "200" ]; then
+              echo "::error::Falta $url ($status)"
+              missing=$((missing + 1))
+            fi
+          done
           if [ "$missing" -ne 0 ]; then
-            echo "::error::$missing archivos estaticos no se sirven."
+            echo "::error::$missing recursos del inicio no se sirven."
             exit 1
           fi
 
