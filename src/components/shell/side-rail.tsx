@@ -11,6 +11,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Radio,
+  ShieldAlert,
   ShieldCheck,
   Upload,
 } from "lucide-react";
@@ -52,6 +53,16 @@ export function SideRail({
             href: `/c/${user.channel.handle}`,
             label: "Mi canal",
             icon: Radio,
+            exact: false,
+          },
+        ]
+      : []),
+    ...(user?.role === "admin"
+      ? [
+          {
+            href: "/estudio/admin",
+            label: "Administración",
+            icon: ShieldAlert,
             exact: false,
           },
         ]

@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
  * Los embeds deben poder insertarse en webs de terceros; el resto de la app
  * no. X-Frame-Options se aplica solo fuera de /embed.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   if (request.nextUrl.pathname.startsWith("/embed")) {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Mic2, Radio, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Flag, Mic2, Radio, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { formatDate, formatDuration } from "@/lib/format";
@@ -154,9 +154,16 @@ export default async function EpisodePage({ params }: PageProps) {
         </div>
       )}
 
+      <Link
+        href={`/reportar/${episode.id}`}
+        className="mt-6 inline-flex items-center gap-1.5 text-xs text-subtle transition-colors hover:text-text"
+      >
+        <Flag size={12} />
+        Reportar este episodio
+      </Link>
+
       {channel.zcashAddress && (
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-jade/25 bg-jade-soft p-5">
-          <div className="flex items-start gap-3">
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-jade/25 bg-jade-soft p-5">          <div className="flex items-start gap-3">
             <ShieldCheck size={18} className="mt-0.5 text-jade-bright" />
             <div>
               <p className="font-heading text-sm font-semibold text-jade-bright">

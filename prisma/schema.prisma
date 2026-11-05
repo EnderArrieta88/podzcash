@@ -30,6 +30,7 @@ model User {
   sessions       Session[]
   invitesCreated Invite[]  @relation("InvitesCreated")
   inviteUsed     Invite?   @relation("InviteUsed")
+  reportsResolved Report[] @relation("ReportsResolved")
 }
 
 model Session {
@@ -128,4 +129,23 @@ model EpisodeTag {
 
   @@id([episodeId, tagId])
   @@index([tagId])
+}
+
+model Report {
+  id            String    @id @default(cuid())
+  // "episode" | "channel"
+  targetType    String
+  targetId      String
+  reason        String
+  details       String?
+  reporterEmail String?
+  // "open" | "resolved" | "dismissed"
+  status        String    @default("open")
+  createdAt     DateTime  @default(now())
+  resolvedAt    DateTime?
+  resolvedById  String?
+  resolvedBy    User?     @relation("ReportsResolved", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
 }

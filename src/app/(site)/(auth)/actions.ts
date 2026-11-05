@@ -12,6 +12,7 @@ import {
   type FieldErrors,
 } from "@/lib/validation";
 import type { ActionState } from "@/lib/action-state";
+import { clearLimit, take } from "@/lib/rate-limit";
 
 class InviteTakenError extends Error {}
 
@@ -19,6 +20,10 @@ export async function registerAction(
   _previous: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  // Honeypot: los bots completan campos ocultos.
+  if (String(formData.get("website") ?? "").trim()) {
+    return { error: "No se pudo crear la cuenta." };
+  }
   const parsed = registerSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -123,6 +128,12 @@ export async function loginAction(
 
   const { email, password } = parsed.data;
 
+  const limitKey = `login:${email}`;
+
+  if (!take(limitKey, 10, 15 * 60 * 1000)) {
+    return { error: "Demasiados intentos. Esperá unos minutos." };
+  }
+
   const user = await prisma.user.findUnique({ where: { email } });
   const valid = user
     ? await verifyPassword(password, user.passwordHash)
@@ -135,6 +146,8 @@ export async function loginAction(
   if (user.status !== "active") {
     return { error: "Esta cuenta está suspendida." };
   }
+
+  clearLimit(limitKey);
 
   await createSession(user.id);
   redirect("/estudio");

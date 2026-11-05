@@ -86,6 +86,21 @@ export function RegisterForm({ firstUser }: { firstUser: boolean }) {
         Crear cuenta
       </SubmitButton>
 
+      {/* Honeypot: invisible para personas, tentador para bots. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden"
+      >
+        <label htmlFor="website">Sitio web</label>
+        <input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
       <p className="text-center text-sm text-muted">
         ¿Ya tienes cuenta?{" "}
         <Link href="/entrar" className="text-brand hover:underline">
