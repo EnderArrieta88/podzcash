@@ -177,8 +177,16 @@ jobs:
           fi
 
           # Si el destino FTP fuera el directorio publico, estos archivos
-          # estarian accesibles: se aborta el deploy con alerta.
-          code=$(curl -s --max-time 15 -o /dev/null -w '%{http_code}' https://podzcash.online/server.js)
+          # estarian accesibles: se aborta el deploy con alerta. Durante el
+          # reinicio de Passenger el sitio puede devolver 502/503: se reintenta.
+          code="000"
+          for attempt in $(seq 1 12); do
+            code=$(curl -s --max-time 15 -o /dev/null -w '%{http_code}' https://podzcash.online/server.js)
+            case "$code" in
+              404|200) break ;;
+            esac
+            sleep 10
+          done
           if [ "$code" != "404" ]; then
             echo "::error::Los archivos internos estan expuestos ($code). Revisa FTP_SERVER_DIR."
             exit 1
