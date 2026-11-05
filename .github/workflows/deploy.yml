@@ -173,16 +173,20 @@ jobs:
             exit 1
           fi
 
-          # Todos los assets referenciados por las páginas públicas deben existir.
-          for page in "/" "/explorar" "/c/zcash-es"; do
-            html=$(curl -fsS "https://podzcash.online$page")
-            for src in $(echo "$html" | grep -oE "/_next/static/[^\"' ]+\.(js|css)" | sort -u); do
-              status=$(curl -s -o /dev/null -w '%{http_code}' "https://podzcash.online$src")
-              if [ "$status" != "200" ]; then
-                echo "::error::Falta $src ($status) en $page"
-                exit 1
-              fi
-            done
-          done
+          # Cada archivo estático del build debe servirse por HTTP. Un chunk
+          # faltante deja la página sin hidratar.
+          missing=0
+          while IFS= read -r file; do
+            url="${file#deploy}"
+            status=$(curl -s -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
+            if [ "$status" != "200" ]; then
+              echo "::error::Falta $url ($status)"
+              missing=$((missing + 1))
+            fi
+          done < <(find deploy/.next/static -type f)
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::$missing archivos estáticos no se sirven. Passenger puede no haber reiniciado."
+            exit 1
+          fi
 
           echo "Sitio verificado ✓"
