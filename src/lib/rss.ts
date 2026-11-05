@@ -29,11 +29,29 @@ export function itunesDuration(seconds: number | null | undefined): string {
 
 /**
  * Base pública del sitio. Se puede fijar con SITE_URL; si no, se deriva de la
- * petición (detrás de Passenger el host es el del dominio público).
+ * petición. Detrás de Passenger el `request.url` puede apuntar al host interno
+ * (0.0.0.0:3000), así que se prefieren las cabeceras del proxy.
  */
 export function siteOrigin(request: Request): string {
   const configured = process.env.SITE_URL?.replace(/\/+$/, "");
   if (configured) return configured;
 
-  return new URL(request.url).origin;
+  const url = new URL(request.url);
+  const host =
+    request.headers.get("x-forwarded-host") ??
+    request.headers.get("host") ??
+    url.host;
+  const proto =
+    request.headers.get("x-forwarded-proto") ??
+    url.protocol.replace(":", "");
+
+  const isInternal =
+    !host ||
+    host.startsWith("0.0.0.0") ||
+    host.startsWith("127.0.0.1") ||
+    host.startsWith("localhost");
+
+  if (isInternal) return url.origin;
+
+  return `${proto === "http" ? "http" : "https"}://${host}`;
 }
