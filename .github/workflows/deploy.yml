@@ -43,10 +43,30 @@ jobs:
           cp -a .next/standalone/. deploy/
           cp -a .next/static deploy/.next/static
           if [ -d public ]; then cp -a public deploy/public; fi
+          # Fuera archivos del repo que no se usan en runtime y pueden
+          # colisionar con rutas del sitio.
+          rm -rf deploy/design deploy/AGENTS.md deploy/DESIGN.md deploy/README.md
           du -sh deploy
 
       - name: Instalar lftp
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      # Borra restos de versiones anteriores que no deben quedar en el doc root.
+      - name: Limpiar carpetas obsoletas
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          set +e
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          rm -rf "$REMOTE_DIR/design"
+          bye
+          EOF
+          true
 
       # Sube solo archivos nuevos o modificados. Nunca borra del servidor:
       # la base, los medios, el índice y el .env quedan intactos.
