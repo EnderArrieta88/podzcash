@@ -117,3 +117,12 @@ jobs:
         run: |
           sleep 5
           curl -fsS https://podzcash.online/api/health
+
+          # Si el destino FTP fuera el directorio público, estos archivos
+          # estarían accesibles: se aborta el deploy con alerta.
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://podzcash.online/server.js)
+          if [ "$code" != "404" ]; then
+            echo "::error::Los archivos internos están expuestos ($code). Revisá FTP_SERVER_DIR."
+            exit 1
+          fi
+          echo "Directorio público limpio ✓"
