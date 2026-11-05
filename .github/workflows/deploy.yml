@@ -162,43 +162,57 @@ jobs:
 
       - name: Verificar el sitio
         run: |
-          # Passenger y el sistema de archivos del hosting tardan en reflejar
-          # el build nuevo: se espera y se reintenta con paciencia.
-          for i in $(seq 1 30); do
-            if curl -fsS --max-time 15 https://podzcash.online/api/health > /dev/null 2>&1; then break; fi
-            sleep 3
+          # Passenger y el hosting tardan en reflejar el build nuevo.
+          healthy=0
+          for i in $(seq 1 40); do
+            if curl -fsS --max-time 15 https://podzcash.online/api/health > /dev/null 2>&1; then
+              healthy=1
+              break
+            fi
+            sleep 5
           done
-          sleep 30
+          if [ "$healthy" != "1" ]; then
+            echo "::error::La aplicacion no responde en /api/health."
+            exit 1
+          fi
+          sleep 45
 
-          curl -fsS --max-time 20 https://podzcash.online/api/health
-
-          # Si el destino FTP fuera el directorio público, estos archivos
-          # estarían accesibles: se aborta el deploy con alerta.
+          # Si el destino FTP fuera el directorio publico, estos archivos
+          # estarian accesibles: se aborta el deploy con alerta.
           code=$(curl -s --max-time 15 -o /dev/null -w '%{http_code}' https://podzcash.online/server.js)
           if [ "$code" != "404" ]; then
-            echo "::error::Los archivos internos están expuestos ($code). Revisá FTP_SERVER_DIR."
+            echo "::error::Los archivos internos estan expuestos ($code). Revisa FTP_SERVER_DIR."
             exit 1
           fi
 
-          # Cada archivo estático del build debe servirse por HTTP. Un chunk
-          # faltante deja la página sin hidratar.
-          missing=0
-          while IFS= read -r file; do
-            url="${file#deploy}"
-            status="000"
-            for attempt in $(seq 1 10); do
-              status=$(curl -s --max-time 15 -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
-              [ "$status" = "200" ] && break
-              sleep 10
+          # Se recorre el build completo, pero en pasadas: si el hosting todavia
+          # no propago algun archivo, se reintenta el conjunto en lugar de
+          # esperar 100 segundos por cada uno. Next 16 no publica los manifiestos
+          # internos, asi que quedan fuera.
+          files=$(find deploy/.next/static -type f | grep -vE '/(_buildManifest|_ssgManifest|_clientMiddlewareManifest)\.js$')
+          missing=1
+          for pass in $(seq 1 5); do
+            missing=0
+            for file in $files; do
+              url="${file#deploy}"
+              status=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
+              if [ "$status" != "200" ]; then
+                missing=$((missing + 1))
+                if [ "$missing" -le 5 ]; then
+                  printf 'ausente: %s (%s)\n' "$url" "$status"
+                fi
+              fi
             done
-            if [ "$status" != "200" ]; then
-              echo "::error::Falta $url ($status)"
-              missing=$((missing + 1))
+            if [ "$missing" -eq 0 ]; then
+              break
             fi
-          done < <(find deploy/.next/static -type f | grep -vE '/(_buildManifest|_ssgManifest|_clientMiddlewareManifest)\.js$')
+            echo "Pasada $pass: $missing archivos sin servir; reintentando en 30 s."
+            sleep 30
+          done
+
           if [ "$missing" -ne 0 ]; then
-            echo "::error::$missing archivos estáticos no se sirven."
+            echo "::error::$missing archivos estaticos no se sirven."
             exit 1
           fi
 
-          echo "Sitio verificado ✓"
+          echo "Sitio verificado"
