@@ -43,9 +43,10 @@ jobs:
           cp -a .next/standalone/. deploy/
           cp -a .next/static deploy/.next/static
           if [ -d public ]; then cp -a public deploy/public; fi
-          # Fuera archivos del repo que no se usan en runtime y pueden
-          # colisionar con rutas del sitio.
+          # Archivos del repo que no se usan en runtime y pueden colisionar
+          # con rutas del sitio.
           rm -rf deploy/design deploy/AGENTS.md deploy/DESIGN.md deploy/README.md
+          echo "archivos estáticos: $(find deploy/.next/static -type f | wc -l)"
           du -sh deploy
 
       - name: Instalar lftp
@@ -68,9 +69,8 @@ jobs:
           EOF
           true
 
-      # Sube solo archivos nuevos o modificados. Nunca borra del servidor:
-      # la base, los medios, el índice y el .env quedan intactos.
-      - name: Subir cambios
+      # Código y dependencias: solo lo que cambió. Nunca borra del servidor.
+      - name: Subir código
         env:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
           FTP_USER: ${{ secrets.FTP_USERNAME }}
@@ -80,8 +80,13 @@ jobs:
           lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
           set ssl:verify-certificate no
           set ftp:ssl-allow yes
-          set mirror:parallel-transfer-count 4
+          set net:max-retries 5
+          set net:timeout 30
+          set net:reconnect-interval-base 3
+          set mirror:parallel-transfer-count 2
           mirror -R --only-newer --no-perms --verbose \
+            --exclude-glob .next \
+            --exclude-glob .next/* \
             --exclude-glob .env \
             --exclude-glob .htaccess \
             --exclude-glob stderr.log \
@@ -96,6 +101,48 @@ jobs:
             ./deploy/ "$REMOTE_DIR"
           bye
           EOF
+
+      # El build se sube completo (sin --only-newer): un chunk olvidado deja
+      # la página sin hidratar. Son ~40 MB y garantiza consistencia.
+      - name: Subir build (.next)
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          set net:max-retries 5
+          set net:timeout 30
+          set net:reconnect-interval-base 3
+          set mirror:parallel-transfer-count 2
+          mirror -R --no-perms --verbose ./deploy/.next "$REMOTE_DIR/.next"
+          bye
+          EOF
+
+      # Compara la cantidad de archivos estáticos locales y remotos.
+      - name: Verificar integridad del build
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          local_count=$(find deploy/.next/static -type f | wc -l)
+          remote_count=$(lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF | wc -l
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          find "$REMOTE_DIR/.next/static"
+          bye
+          EOF
+          )
+          echo "estáticos locales: $local_count / remotos: $remote_count"
+          if [ "$remote_count" -lt "$local_count" ]; then
+            echo "::error::Faltan archivos estáticos en el servidor ($local_count locales vs $remote_count remotos)."
+            exit 1
+          fi
 
       # Passenger reinicia la app cuando cambia tmp/restart.txt.
       - name: Reiniciar la aplicación
@@ -113,9 +160,9 @@ jobs:
           bye
           EOF
 
-      - name: Verificar
+      - name: Verificar el sitio
         run: |
-          sleep 5
+          sleep 8
           curl -fsS https://podzcash.online/api/health
 
           # Si el destino FTP fuera el directorio público, estos archivos
@@ -125,4 +172,17 @@ jobs:
             echo "::error::Los archivos internos están expuestos ($code). Revisá FTP_SERVER_DIR."
             exit 1
           fi
-          echo "Directorio público limpio ✓"
+
+          # Todos los assets referenciados por las páginas públicas deben existir.
+          for page in "/" "/explorar" "/c/zcash-es"; do
+            html=$(curl -fsS "https://podzcash.online$page")
+            for src in $(echo "$html" | grep -oE "/_next/static/[^\"' ]+\.(js|css)" | sort -u); do
+              status=$(curl -s -o /dev/null -w '%{http_code}' "https://podzcash.online$src")
+              if [ "$status" != "200" ]; then
+                echo "::error::Falta $src ($status) en $page"
+                exit 1
+              fi
+            done
+          done
+
+          echo "Sitio verificado ✓"
