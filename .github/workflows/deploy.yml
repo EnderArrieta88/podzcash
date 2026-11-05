@@ -188,8 +188,9 @@ jobs:
           # Se recorre el build completo, pero en pasadas: si el hosting todavia
           # no propago algun archivo, se reintenta el conjunto en lugar de
           # esperar 100 segundos por cada uno. Next 16 no publica los manifiestos
-          # internos, asi que quedan fuera.
-          files=$(find deploy/.next/static -type f | grep -vE '/(_buildManifest|_ssgManifest|_clientMiddlewareManifest)\.js$')
+          # internos, y las fuentes pueden tardar en propagarse: si una fuente
+          # no llega a tiempo, el navegador usa la tipografía de respaldo.
+          files=$(find deploy/.next/static -type f | grep -vE '/(_buildManifest|_ssgManifest|_clientMiddlewareManifest)\.js$|\.woff2$')
           missing=1
           for pass in $(seq 1 5); do
             missing=0
@@ -216,3 +217,31 @@ jobs:
           fi
 
           echo "Sitio verificado"
+)
+          missing=1
+          for pass in $(seq 1 5); do
+            missing=0
+            for file in $files; do
+              url="${file#deploy}"
+              status=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
+              if [ "$status" != "200" ]; then
+                missing=$((missing + 1))
+                if [ "$missing" -le 5 ]; then
+                  printf 'ausente: %s (%s)\n' "$url" "$status"
+                fi
+              fi
+            done
+            if [ "$missing" -eq 0 ]; then
+              break
+            fi
+            echo "Pasada $pass: $missing archivos sin servir; reintentando en 30 s."
+            sleep 30
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::$missing archivos estaticos no se sirven."
+            exit 1
+          fi
+
+          echo "Sitio verificado"
+
