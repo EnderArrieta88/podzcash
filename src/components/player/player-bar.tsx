@@ -114,7 +114,7 @@ export function PlayerBar() {
   if (!track) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border-strong bg-surface-3/95 backdrop-blur-md lg:left-[var(--rail-width,0px)]">
+    <div className="player-bar fixed bottom-0 right-0 z-40 border-t border-border-strong bg-surface-3/95 backdrop-blur-md transition-[left] duration-200">
       <div className="mx-auto w-full max-w-6xl px-4 py-2.5">
         <div className="flex items-center gap-3">
           <div className="size-11 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">

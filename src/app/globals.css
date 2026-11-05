@@ -93,6 +93,18 @@
     background: var(--color-border-strong);
   }
 
+  .player-bar {
+    left: 0;
+  }
+
+  @media (min-width: 1024px) {
+    /* La barra del reproductor se alinea con el rail cuando existe. Si el
+       JavaScript todavía no definió la variable, usa el ancho expandido. */
+    body:has(aside[data-rail]) .player-bar {
+      left: var(--rail-width, 256px);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;

@@ -60,6 +60,7 @@ export function SideRail({
 
   return (
     <aside
+      data-rail
       className={cn(
         "fixed left-0 top-0 z-40 hidden h-dvh flex-col border-r border-border bg-surface transition-[width] duration-200 lg:flex",
         collapsed ? "w-20" : "w-64",
