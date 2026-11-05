@@ -27,14 +27,14 @@ export const handleSchema = z
   .string()
   .trim()
   .toLowerCase()
-  .min(3, "El handle necesita al menos 3 caracteres.")
-  .max(30, "El handle no puede pasar de 30 caracteres.")
+  .min(3, "El nombre de usuario necesita al menos 3 caracteres.")
+  .max(30, "El nombre de usuario no puede pasar de 30 caracteres.")
   .regex(
     /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])$/,
     "Solo minúsculas, números y guiones. No puede empezar ni terminar con guion.",
   )
   .refine((value) => !RESERVED_HANDLES.has(value), {
-    message: "Ese handle está reservado. Elige otro.",
+    message: "Ese nombre de usuario está reservado. Elige otro.",
   });
 
 export const registerSchema = z.object({

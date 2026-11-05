@@ -5,6 +5,7 @@ const navigation = [
   { label: "Explorar", href: "/explorar" },
   { label: "Cómo funciona", href: "/#como-funciona" },
   { label: "Para creadores", href: "/#creadores" },
+  { label: "Proyecto", href: "/proyecto" },
   { label: "Donaciones", href: "/#donaciones" },
 ];
 

@@ -1,409 +1,502 @@
-import { Mic, Radio, ShieldCheck, Upload, Users, Wallet } from "lucide-react";
+/* eslint-disable @next/next/no-img-element */
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ButtonLink } from "@/components/ui/button-link";
-import { DbStatus } from "@/components/db-status";
-import { EpisodeCard } from "@/components/content/episode-card";
-import { ChannelCard } from "@/components/content/channel-card";
-import { SearchField } from "@/components/content/search-field";
-import { getChannels, getLatestEpisodes } from "@/lib/catalog";
+import "./home.css";
 
-const waveform = [22, 38, 56, 34, 70, 48, 88, 62, 40, 74, 30, 54, 82, 44, 66, 28];
+export const metadata: Metadata = {
+  title: { absolute: "PodZcash — Podcasts y música del ecosistema Zcash" },
+  description:
+    "Publica tu audio, construye tu canal y recibe donaciones directas en ZEC. Sin intermediarios y sin custodia.",
+};
 
-const reasons = [
-  {
-    icon: Radio,
-    title: "Tu canal, tu casa",
-    body: "Un espacio propio con tu perfil, tu catálogo y tus enlaces. Sin depender del algoritmo de otra red social.",
-  },
-  {
-    icon: Wallet,
-    title: "Donaciones directas en ZEC",
-    body: "La comunidad te apoya con Zcash de persona a persona. El dinero llega a tu wallet, no a la plataforma.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Sin custodia",
-    body: "Tú mantienes el control de tus llaves en todo momento. Nosotros nunca tocamos tus fondos.",
-  },
-];
+const wave = [38, 62, 48, 80, 56, 92, 64, 44, 74, 52, 86, 40, 68, 50, 78, 58, 34, 70];
 
-const steps = [
-  {
-    icon: Users,
-    title: "Creas tu canal",
-    body: "Eliges tu handle, subes tu foto y describes de qué hablas o qué música haces.",
-  },
-  {
-    icon: Upload,
-    title: "Publicas tu audio",
-    body: "Subes podcasts o tracks con portada, descripción y etiquetas. Tu feed RSS sale solo.",
-  },
-  {
-    icon: Mic,
-    title: "Recibes apoyo",
-    body: "Compartes tu dirección Zcash y quien quiera te apoya con un QR, en segundos.",
-  },
-];
-
-export default async function Home() {
-  const [latestEpisodes, channels] = await Promise.all([
-    getLatestEpisodes(8),
-    getChannels(6),
-  ]);
-
+export default function Home() {
   return (
-    <>
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 grid-lines opacity-[0.35]" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] glow-brand" />
-
-        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-14 px-5 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:py-28">
+    <div className="pz-home">
+      {/* HERO */}
+      <section className="hero">
+        <div className="glow" />
+        <div className="hero-grid">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted">
-              <span className="size-1.5 rounded-full bg-brand" />
-              Hecho para el ecosistema Zcash
-            </span>
-
-            <h1 className="mt-6 font-display text-5xl font-normal leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-7xl">
-              El hogar de los{" "}
-              <span className="bg-gradient-to-r from-brand to-brand-strong bg-clip-text text-transparent">
-                podcasts y la música
-              </span>{" "}
-              de Zcash.
+            <div className="eyebrow">Hecho para el ecosistema Zcash</div>
+            <h1>
+              Escucha a quien está construyendo <em>Zcash</em>
             </h1>
-
-            <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted sm:text-lg">
-              Publica tu contenido, construye tu audiencia y recibe donaciones
-              directas en ZEC. Sin intermediarios, sin custodia y sin pedirle
-              permiso a nadie.
+            <p className="lead">
+              Podcasts y música de la comunidad, en un solo lugar. Publica tu
+              audio, construye tu canal y recibe donaciones directas en ZEC. Sin
+              intermediarios y sin custodia.
             </p>
-
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <ButtonLink href="#como-funciona">Ver cómo funciona</ButtonLink>
-              <ButtonLink href="#creadores" variant="secondary">
-                Para creadores
-              </ButtonLink>
+            <div className="cta-row">
+              <Link className="btn btn-gold" href="/explorar">
+                Explorar canales
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="m13 6 6 6-6 6" />
+                </svg>
+              </Link>
+              <Link className="btn btn-ghost" href="/estudio">
+                Publicar mi podcast
+              </Link>
             </div>
-
-            <p className="mt-5 text-xs text-muted">
-              Donaciones peer-to-peer · Tu wallet, tus llaves · Contenido en
-              español e inglés
-            </p>
+            <div className="trust">
+              <div className="avatars">
+                <img src="/landing/px9897984.jpg" alt="" />
+                <img src="/landing/px7600895.jpg" alt="" />
+                <img src="/landing/px16726135.jpg" alt="" />
+              </div>
+              <span>
+                <b>Comunidad Zcash</b> · beta por invitación
+              </span>
+            </div>
           </div>
 
-          <div className="relative">
-            <div className="absolute -inset-4 rounded-3xl bg-brand/5 blur-2xl" />
-            <div className="relative rounded-2xl border border-border bg-surface p-5 shadow-[0_0_80px_-30px_rgba(244,183,40,0.25)]">
-              <div className="flex items-start justify-between">
-                <span className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted">
-                  Podcast · Episodio 12
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-2.5 py-1 text-[11px] font-medium text-brand">
-                  <span className="flex size-3.5 items-center justify-center rounded-full bg-brand text-[9px] font-bold text-[#17130a]">
-                    Z
-                  </span>
-                  Acepta ZEC
-                </span>
-              </div>
-
-              <div className="mt-5 flex items-center gap-4">
-                <div className="size-16 shrink-0 rounded-xl bg-gradient-to-br from-brand via-amber-500 to-orange-700" />
-                <div className="min-w-0">
-                  <p className="truncate font-display text-xl">
-                    Privacidad por defecto
-                  </p>
-                  <p className="truncate text-xs text-muted">
-                    Zcash en Español · hace 2 días
-                  </p>
+          <div className="hero-photo">
+            <div className="frame">
+              <span className="photo-chip">
+                <span className="dot" />
+                Grabando ahora
+              </span>
+              <img
+                src="/landing/px7600895.jpg"
+                alt="Creadora grabando un podcast en un estudio con micrófono y auriculares"
+                fetchPriority="high"
+              />
+              <div className="photo-caption">
+                <div className="name">Custodia propia, ep. 12</div>
+                <div className="meta">Adam Curry · 42:10</div>
+                <div className="wave" aria-hidden="true">
+                  {wave.map((height, index) => (
+                    <span key={index} style={{ height: `${height}%` }} />
+                  ))}
                 </div>
-              </div>
-
-              <div className="mt-6 flex h-14 items-end gap-1">
-                {waveform.map((height, index) => (
-                  <span
-                    key={index}
-                    className={
-                      index < 9
-                        ? "flex-1 rounded-full bg-brand"
-                        : "flex-1 rounded-full bg-border"
-                    }
-                    style={{ height: `${height}%` }}
-                  />
-                ))}
-              </div>
-
-              <div className="mt-3 flex items-center justify-between font-mono text-[11px] tabular text-subtle">
-                <span>18:24</span>
-                <span>42:10</span>
-              </div>
-
-              <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
-                <button
-                  type="button"
-                  className="inline-flex size-11 items-center justify-center rounded-full bg-brand text-[#17130a]"
-                  aria-label="Reproducir (demostración)"
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M4.5 2.8v10.4c0 .6.7 1 1.2.7l8.1-5.2a.8.8 0 0 0 0-1.4L5.7 2.1a.8.8 0 0 0-1.2.7Z" />
-                  </svg>
-                </button>
-                <span className="text-xs text-muted">
-                  Interfaz de demostración
-                </span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-border/70">
-        <div className="mx-auto w-full max-w-6xl px-5 py-16">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <h2 className="font-heading text-3xl font-bold tracking-tight">
-                Recién publicado
-              </h2>
-              <p className="mt-2 text-sm text-muted">
-                Lo último que subió la comunidad.
+      {/* FRANJA */}
+      <div className="strip">
+        <div className="strip-in">
+          <div className="strip-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+              <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+              <path d="M12 18v4" />
+            </svg>
+            <span>Audio primero, sin distracciones</span>
+          </div>
+          <div className="strip-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+            </svg>
+            <span>ZEC directo a tu wallet</span>
+          </div>
+          <div className="strip-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M8 12h8" />
+            </svg>
+            <span>Sin custodia, sin comisiones</span>
+          </div>
+          <div className="strip-item" style={{ marginLeft: "auto" }}>
+            <span>
+              <strong>Beta</strong> · acceso por invitación
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* CÓMO FUNCIONA */}
+      <section className="pz-block" id="como-funciona">
+        <div className="wrap">
+          <div className="sec-head">
+            <div className="eyebrow">Cómo funciona</div>
+            <h2>Tres pasos, sin fricción</h2>
+            <p>
+              PodZcash está pensado para que el audio sea el protagonista. Sin
+              formularios eternos ni algoritmos que deciden por ti.
+            </p>
+          </div>
+          <div className="features">
+            <div className="feature">
+              <div className="ico">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                  <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+                  <path d="M12 18v4" />
+                </svg>
+              </div>
+              <h3>Creas tu canal</h3>
+              <p>
+                Eliges tu nombre de usuario, subes tu foto y cuentas de qué
+                hablas. En minutos tienes una página propia.
               </p>
             </div>
+            <div className="feature">
+              <div className="ico">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 3v12" />
+                  <path d="m17 8-5-5-5 5" />
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                </svg>
+              </div>
+              <h3>Publicas tu audio</h3>
+              <p>
+                Arrastras el archivo, pones portada y descripción. Tu feed RSS se
+                genera solo, listo para Apple y Spotify.
+              </p>
+            </div>
+            <div className="feature">
+              <div className="ico">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              </div>
+              <h3>Recibes apoyo</h3>
+              <p>
+                Compartes tu dirección Zcash. Quien quiera apoyarte escanea un QR
+                y el pago llega directo a tu wallet.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="w-full max-w-sm">
-              <SearchField />
+      {/* POR QUÉ */}
+      <section className="pz-block" id="porque" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="sec-head">
+            <div className="eyebrow">Por qué PodZcash</div>
+            <h2>El audio de Zcash necesita una casa propia</h2>
+            <p>
+              Hoy la conversación del ecosistema está dispersa entre YouTube, X y
+              Spotify. PodZcash la reúne, la hace fácil de encontrar y conecta a
+              los oyentes con los creadores de forma directa.
+            </p>
+          </div>
+
+          <div className="why-grid">
+            <div className="why-col">
+              <h3>Para quien crea</h3>
+              <ol>
+                <li>
+                  <span className="n">01</span>
+                  <div>
+                    <b>Tu canal, tu audiencia</b>
+                    <p>
+                      Una dirección propia y un catálogo que no depende del
+                      algoritmo de otra red social. Tus oyentes te encuentran a
+                      ti, no a un feed.
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className="n">02</span>
+                  <div>
+                    <b>Cobras directo, sin retención</b>
+                    <p>
+                      Las donaciones van de wallet a wallet. PodZcash nunca toca
+                      los fondos ni cobra comisión: tú controlas las llaves y el
+                      dinero.
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className="n">03</span>
+                  <div>
+                    <b>Distribución, no encierro</b>
+                    <p>
+                      Tu feed RSS te lleva a Apple Podcasts y Spotify, y el
+                      reproductor embebible te lleva a tu propia web. El contenido
+                      circula y no queda encerrado.
+                    </p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+
+            <div className="why-col accent">
+              <h3>Para el ecosistema</h3>
+              <ol>
+                <li>
+                  <span className="n">01</span>
+                  <div>
+                    <b>Da casa a la conversación</b>
+                    <p>
+                      Entrevistas, podcasts y música sobre Zcash dejan de estar
+                      dispersos y pasan a encontrarse en un mismo lugar.
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className="n">02</span>
+                  <div>
+                    <b>Uso real de ZEC</b>
+                    <p>
+                      Cada apoyo es una transacción cotidiana: wallets, QR y memos
+                      en uso. No una promesa, sino un pago que ocurre.
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className="n">03</span>
+                  <div>
+                    <b>Más creadores, más difusión</b>
+                    <p>
+                      Cada canal es una puerta de entrada a Zcash para gente que no
+                      lee documentación técnica: llega por una voz, se queda por la
+                      idea.
+                    </p>
+                  </div>
+                </li>
+              </ol>
             </div>
           </div>
 
-          {latestEpisodes.length > 0 ? (
-            <div className="mt-9 grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 lg:grid-cols-4">
-              {latestEpisodes.map((episode) => (
-                <EpisodeCard key={episode.id} episode={episode} />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-9 rounded-xl border border-dashed border-border bg-surface/50 px-6 py-14 text-center">
-              <p className="font-heading text-2xl font-bold">Todavía no hay episodios</p>
-              <p className="mx-auto mt-2 max-w-md text-sm text-muted">
-                PodZcash está empezando. Sé de los primeros en publicar tu
-                podcast o tu música.
-              </p>
-              <ButtonLink href="/registro" className="mt-6">
-                Crear mi canal
-              </ButtonLink>
-            </div>
-          )}
+          <div className="why-band">
+            <span>
+              <i />
+              Sin custodia
+            </span>
+            <span>
+              <i />
+              Sin comisiones
+            </span>
+            <span>
+              <i />
+              Sin depender de una sola plataforma
+            </span>
+            <span>
+              <i />
+              Hecho por y para el ecosistema
+            </span>
+          </div>
+        </div>
+      </section>
 
-          <div className="mt-8">
-            <Link
-              href="/explorar"
-              className="text-sm text-brand underline-offset-4 hover:underline"
-            >
-              Explorar todo →
+      {/* PROYECTO */}
+      <section className="pz-block" id="proyecto" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="project">
+            <div>
+              <div className="eyebrow">El proyecto</div>
+              <h2>Qué sigue y cómo se financia</h2>
+              <p>
+                PodZcash nació como idea a finales de 2023 y empezó a construirse
+                en febrero de 2025; hoy la beta corre en un hosting compartido. En
+                la página del proyecto contamos qué está listo, las 26 fases del
+                plan y qué financiamiento hace falta para el primer año.
+              </p>
+              <div className="cta-row">
+                <Link className="btn btn-gold" href="/proyecto">
+                  Leer sobre el proyecto
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14" />
+                    <path d="m13 6 6 6-6 6" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+            <div className="project-stats">
+              <div className="project-stat">
+                <span>Fases</span>
+                <b>8 / 26</b>
+              </div>
+              <div className="project-stat">
+                <span>Horizonte</span>
+                <b>1 — 3 años</b>
+              </div>
+              <div className="project-stat">
+                <span>Año 1</span>
+                <b>USD 30.000</b>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ESCENAS */}
+      <section className="pz-block" id="creadores" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="sec-head">
+            <div className="eyebrow">Hecho para audio</div>
+            <h2>Voces reales, en cualquier lugar</h2>
+            <p>
+              Desde un estudio casero hasta la calle. Si hay una historia, hay un
+              canal.
+            </p>
+          </div>
+          <div className="scenes">
+            <div className="scene tall">
+              <img
+                src="/landing/px9897984.jpg"
+                alt="Persona grabando un podcast en su estudio"
+                loading="lazy"
+              />
+              <div className="cap">
+                <b>Estudio casero</b>
+                <span>Podcast independiente</span>
+              </div>
+            </div>
+            <div className="scene wide">
+              <img
+                src="/landing/px2041381.jpg"
+                alt="Dos personas grabando una conversación con un micrófono"
+                loading="lazy"
+              />
+              <div className="cap">
+                <b>Conversación</b>
+                <span>Cadena Fría</span>
+              </div>
+            </div>
+            <div className="scene wide">
+              <img
+                src="/landing/px16726135.jpg"
+                alt="Persona escuchando con auriculares y teléfono en la calle"
+                loading="lazy"
+              />
+              <div className="cap">
+                <b>En la calle</b>
+                <span>Nodo Sur</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PRODUCTO */}
+      <section className="pz-block" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="product">
+            <div>
+              <div className="eyebrow">Tu canal</div>
+              <h2>Una página propia, no un perfil perdido</h2>
+              <p>
+                Tu catálogo, tu bio y tus enlaces en una dirección que puedes
+                compartir. El reproductor sigue sonando mientras la gente navega.
+              </p>
+              <div className="checks">
+                <div className="check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                    <path d="m5 13 4 4L19 7" />
+                  </svg>
+                  <span>
+                    Reproductor persistente con velocidad y “continuar
+                    escuchando”.
+                  </span>
+                </div>
+                <div className="check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                    <path d="m5 13 4 4L19 7" />
+                  </svg>
+                  <span>Feed RSS con etiquetas de Podcasting 2.0.</span>
+                </div>
+                <div className="check">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                    <path d="m5 13 4 4L19 7" />
+                  </svg>
+                  <span>Donaciones con QR y enlace ZIP-321, sin custodia.</span>
+                </div>
+              </div>
+            </div>
+            <div className="browser">
+              <div className="browser-bar">
+                <i />
+                <i />
+                <i />
+                <span className="url">podzcash.online/c/adam-curry</span>
+              </div>
+              <img
+                src="/landing/app.jpg"
+                alt="Captura real del canal de Adam Curry en PodZcash"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* DONACIONES */}
+      <section className="pz-block" id="donaciones" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="donate">
+            <div className="donate-copy">
+              <div className="eyebrow" style={{ color: "var(--pz-gold)" }}>
+                Apoyo directo
+              </div>
+              <h2>El dinero va del oyente a la wallet. Sin escalas.</h2>
+              <p>
+                PodZcash nunca retiene fondos. Escaneas un QR o abres el enlace en
+                tu wallet y el pago llega directo al creador. Ni comisiones ni
+                cuentas intermedias.
+              </p>
+              <div className="cta-row">
+                <Link className="btn btn-gold" href="/explorar">
+                  Ver cómo apoyar
+                </Link>
+                <Link className="btn btn-ghost" href="/proyecto">
+                  Conocer el proyecto
+                </Link>
+              </div>
+            </div>
+            <div className="donate-photo">
+              <img
+                src="/landing/px8412316.jpg"
+                alt="Creadora sonriendo frente al micrófono"
+                loading="lazy"
+              />
+              <div className="qr-note">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+                QR y enlace en cada canal
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CIERRE */}
+      <section className="final">
+        <div className="wrap">
+          <h2>Tu próximo episodio merece un lugar propio.</h2>
+          <p>
+            PodZcash está en beta cerrada. Publica, comparte tu canal y recibe
+            apoyo en ZEC desde el primer día.
+          </p>
+          <div className="cta-row">
+            <Link className="btn btn-gold" href="/registro">
+              Pedir invitación
+            </Link>
+            <Link className="btn btn-ghost" href="/explorar">
+              Explorar canales
             </Link>
           </div>
         </div>
       </section>
-
-      <section id="creadores" className="border-t border-border/70">
-        <div className="mx-auto w-full max-w-6xl px-5 py-20">
-          <h2 className="font-heading text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-            Lo que hace diferente a PodZcash
-          </h2>
-          <p className="mt-3 max-w-2xl text-muted">
-            No es otra red social con un botón de donar. Es una plataforma
-            pensada desde el inicio para que el creador cobre directo.
-          </p>
-
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            {reasons.map((reason) => (
-              <article
-                key={reason.title}
-                className="rounded-xl border border-border bg-surface p-6 transition-colors hover:border-brand/30"
-              >
-                <span className="inline-flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
-                  <reason.icon size={18} strokeWidth={1.75} />
-                </span>
-                <h3 className="mt-5 text-base font-medium">{reason.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {reason.body}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {channels.length > 0 && (
-        <section className="border-t border-border/70">
-          <div className="mx-auto w-full max-w-6xl px-5 py-20">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <h2 className="font-heading text-3xl font-bold tracking-tight">
-                  Canales
-                </h2>
-                <p className="mt-2 text-sm text-muted">
-                  Quiénes están publicando hoy.
-                </p>
-              </div>
-              <Link
-                href="/explorar"
-                className="text-sm text-brand underline-offset-4 hover:underline"
-              >
-                Ver todos →
-              </Link>
-            </div>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {channels.map((channel) => (
-                <ChannelCard key={channel.id} channel={channel} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      <section id="como-funciona" className="border-t border-border/70">
-        <div className="mx-auto w-full max-w-6xl px-5 py-20">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-                Cómo funciona
-              </h2>
-              <p className="mt-3 max-w-xl text-muted">
-                Tres pasos, sin fricción y sin formularios de KYC para quien
-                dona.
-              </p>
-            </div>
-            <span className="rounded-full border border-border px-3 py-1 text-xs text-muted">
-              MVP · audio primero
-            </span>
-          </div>
-
-          <ol className="mt-10 grid gap-4 sm:grid-cols-3">
-            {steps.map((step, index) => (
-              <li
-                key={step.title}
-                className="relative rounded-xl border border-border bg-surface p-6"
-              >
-                <span className="absolute right-5 top-5 text-xs font-mono text-brand-dim">
-                  0{index + 1}
-                </span>
-                <span className="inline-flex size-10 items-center justify-center rounded-xl bg-surface-2 text-brand">
-                  <step.icon size={18} strokeWidth={1.75} />
-                </span>
-                <h3 className="mt-5 text-base font-medium">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {step.body}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section id="donaciones" className="border-t border-border/70">
-        <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-20 lg:grid-cols-2">
-          <div>
-            <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-              Donaciones que no pasan por nosotros
-            </h2>
-            <p className="mt-4 text-muted">
-              Cada creador muestra su propia dirección de Zcash. Quien quiera
-              apoyar escanea un QR o abre su wallet con un enlace{" "}
-              <code className="rounded bg-surface-2 px-1.5 py-0.5 text-xs text-text">
-                zcash:
-              </code>{" "}
-              y el pago va directo a su wallet.
-            </p>
-            <ul className="mt-6 space-y-3 text-sm text-muted">
-              <li className="flex gap-3">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
-                Nadie necesita cuenta para donar.
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
-                Las transacciones protegidas permiten dejar un mensaje en el memo.
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
-                La plataforma nunca retiene ni mueve tus fondos.
-              </li>
-            </ul>
-          </div>
-
-          <div className="rounded-xl border border-border bg-surface p-6">
-            <p className="text-xs uppercase tracking-widest text-muted">
-              Estado del proyecto
-            </p>
-            <div className="mt-4">
-              <DbStatus />
-            </div>
-            <ul className="mt-6 space-y-3 text-sm">
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 text-brand">✓</span>
-                <span>
-                  Fase 0 — Fundaciones
-                  <span className="block text-xs text-muted">
-                    Proyecto, base de datos y diseño base
-                  </span>
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 text-brand">✓</span>
-                <span>
-                  Fase 1 — Cuentas y canales
-                  <span className="block text-xs text-muted">
-                    Registro por invitación, estudio y página pública
-                  </span>
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 text-brand">✓</span>
-                <span>
-                  Fase 2 — Subida de audio
-                  <span className="block text-xs text-muted">
-                    Streaming a disco, portadas, borradores y publicación
-                  </span>
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 text-brand">✓</span>
-                <span>
-                  Fase 3 — Reproductor persistente
-                  <span className="block text-xs text-muted">
-                    No se corta al navegar, velocidad y continuar escuchando
-                  </span>
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 text-brand">✓</span>
-                <span>
-                  Fase 4 — Descubrimiento
-                  <span className="block text-xs text-muted">
-                    Búsqueda full-text, filtros y exploración
-                  </span>
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-0.5 text-brand">✓</span>
-                <span>
-                  Fase 5 — Donaciones en ZEC
-                  <span className="block text-xs text-muted">
-                    QR, ZIP-321 y validación de direcciones
-                  </span>
-                </span>
-              </li>
-              <li className="flex items-start gap-3 text-muted">
-                <span className="mt-0.5 text-muted">○</span>
-                <span>
-                  Fase 6 — RSS y embeds
-                  <span className="block text-xs">Siguiente</span>
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </>
+    </div>
   );
 }
-
