@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ListMusic, Radio, Ticket } from "lucide-react";
+import {
+  LayoutDashboard,
+  ListMusic,
+  Radio,
+  Ticket,
+  UserRound,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -16,6 +22,7 @@ const baseItems: NavItem[] = [
   { href: "/estudio", label: "Resumen", icon: LayoutDashboard, exact: true },
   { href: "/estudio/episodios", label: "Episodios", icon: ListMusic },
   { href: "/estudio/canal", label: "Mi canal", icon: Radio },
+  { href: "/estudio/cuenta", label: "Cuenta", icon: UserRound },
 ];
 
 export function StudioNav({ isAdmin }: { isAdmin: boolean }) {

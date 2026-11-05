@@ -89,6 +89,20 @@ export const episodeSchema = z.object({
 
 export type EpisodeInput = z.infer<typeof episodeSchema>;
 
+export const passwordChangeSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Escribe tu contraseña actual."),
+    newPassword: z
+      .string()
+      .min(8, "La nueva contraseña necesita al menos 8 caracteres.")
+      .max(100, "La nueva contraseña es demasiado larga."),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Las contraseñas no coinciden.",
+    path: ["confirmPassword"],
+  });
+
 export type FieldErrors = Record<string, string>;
 
 export function toFieldErrors(error: z.ZodError): FieldErrors {

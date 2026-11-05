@@ -5,14 +5,15 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireAdmin, requireUser } from "@/lib/auth/guards";
-import { destroySession } from "@/lib/auth/session";
+import { hashPassword, verifyPassword } from "@/lib/auth/password";
+import { createSession, destroySession } from "@/lib/auth/session";
 import { generateInviteCode, linkListSchema } from "@/lib/links";
 import { slugify, uniqueSlug } from "@/lib/slug";
 import { IMAGE_MIME } from "@/lib/media-types";
 import { indexEpisode, reindexChannel, removeFromIndex } from "@/lib/search-index";
 import { storage } from "@/lib/storage";
 import { parseTags } from "@/lib/tags";
-import { channelSchema, episodeSchema, toFieldErrors } from "@/lib/validation";
+import { channelSchema, episodeSchema, passwordChangeSchema, toFieldErrors } from "@/lib/validation";
 import { validateZcashAddress } from "@/lib/zcash-address";
 import type { ActionState } from "@/lib/action-state";
 
@@ -358,4 +359,49 @@ export async function deleteEpisodeAction(formData: FormData): Promise<void> {
 
   revalidatePath("/estudio/episodios");
   revalidatePath(`/c/${channel.handle}`);
+}
+
+// ---------------------------------------------------------------------------
+// Cuenta
+// ---------------------------------------------------------------------------
+
+export async function changePasswordAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const user = await requireUser();
+
+  const parsed = passwordChangeSchema.safeParse({
+    currentPassword: formData.get("currentPassword"),
+    newPassword: formData.get("newPassword"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+
+  if (!parsed.success) {
+    return { fields: toFieldErrors(parsed.error) };
+  }
+
+  const { currentPassword, newPassword } = parsed.data;
+
+  const valid = await verifyPassword(currentPassword, user.passwordHash);
+
+  if (!valid) {
+    return {
+      fields: { currentPassword: "La contraseña actual no es correcta." },
+    };
+  }
+
+  if (currentPassword === newPassword) {
+    return { fields: { newPassword: "La nueva contraseña debe ser distinta." } };
+  }
+
+  const passwordHash = await hashPassword(newPassword);
+
+  await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+
+  // Cierra el resto de las sesiones y deja viva solo la actual.
+  await prisma.session.deleteMany({ where: { userId: user.id } });
+  await createSession(user.id);
+
+  return { ok: true };
 }

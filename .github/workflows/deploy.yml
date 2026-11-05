@@ -1,0 +1,99 @@
+name: Deploy a producción
+
+# Solo manual: se dispara desde la pestaña Actions → Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Escribí "deploy" para confirmar'
+        required: true
+        default: ""
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event.inputs.confirm == 'deploy'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar Prisma Client
+        run: npx prisma generate
+
+      - name: Compilar
+        run: npm run build
+        env:
+          DATABASE_URL: "file:./prisma/dev.db"
+
+      - name: Armar el bundle
+        run: |
+          mkdir -p deploy/.next
+          cp -a .next/standalone/. deploy/
+          cp -a .next/static deploy/.next/static
+          if [ -d public ]; then cp -a public deploy/public; fi
+          du -sh deploy
+
+      - name: Instalar lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      # Sube solo archivos nuevos o modificados. Nunca borra del servidor:
+      # la base, los medios, el índice y el .env quedan intactos.
+      - name: Subir cambios
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          set mirror:parallel-transfer-count 4
+          mirror -R --only-newer --no-perms --verbose \
+            --exclude-glob .env \
+            --exclude-glob .htaccess \
+            --exclude-glob stderr.log \
+            --exclude-glob prisma/dev.db \
+            --exclude-glob prisma/dev.db-* \
+            --exclude-glob .media \
+            --exclude-glob .media/* \
+            --exclude-glob .data \
+            --exclude-glob .data/* \
+            --exclude-glob tmp \
+            --exclude-glob tmp/* \
+            ./deploy/ "$REMOTE_DIR"
+          bye
+          EOF
+
+      # Passenger reinicia la app cuando cambia tmp/restart.txt.
+      - name: Reiniciar la aplicación
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          echo "restart $(date -u +%s)" > restart.txt
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          put restart.txt -o "$REMOTE_DIR/tmp/restart.txt"
+          bye
+          EOF
+
+      - name: Verificar
+        run: |
+          sleep 5
+          curl -fsS https://podzcash.online/api/health
