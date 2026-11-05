@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth/session";
 import { storage } from "@/lib/storage";
-import { SideRail, type RailUser } from "@/components/shell/side-rail";
-import { TopBar } from "@/components/shell/top-bar";
+import type { RailUser } from "@/components/shell/side-rail";
+import { ShellFrame } from "@/components/shell/shell-frame";
 
 export async function AppShell({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -22,16 +22,5 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       }
     : null;
 
-  return (
-    <div className="min-h-dvh bg-bg">
-      <SideRail user={railUser} />
-
-      <div className="lg:pl-64">
-        <TopBar user={railUser} />
-        <main className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+  return <ShellFrame user={railUser}>{children}</ShellFrame>;
 }
