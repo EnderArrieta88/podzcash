@@ -1,0 +1,93 @@
+name: Backup de producción
+
+on:
+  schedule:
+    # Diario, 03:17 UTC. GitHub puede retrasar tareas programadas.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: production-backup
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Instalar herramientas
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lftp sqlite3
+
+      - name: Comprobar configuración
+        id: config
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::BACKUP_PASSPHRASE no está configurado; se omite el backup."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Descargar base y medios
+        if: steps.config.outputs.configured == 'true'
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          set -euo pipefail
+          mkdir -p backup/prisma backup/media
+
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          set net:max-retries 5
+          set net:timeout 30
+          get "$REMOTE_DIR/prisma/dev.db" -o backup/prisma/dev.db
+          mirror -c --parallel=2 "$REMOTE_DIR/.media" backup/media
+          bye
+          EOF
+
+          test -s backup/prisma/dev.db
+          echo "base: $(du -h backup/prisma/dev.db | cut -f1)"
+          echo "media: $(du -sh backup/media | cut -f1)"
+
+      - name: Verificar la base
+        if: steps.config.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          result=$(sqlite3 backup/prisma/dev.db "PRAGMA integrity_check;")
+          echo "integrity_check: $result"
+          test "$result" = "ok"
+
+      - name: Empaquetar y cifrar
+        if: steps.config.outputs.configured == 'true'
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          tar -czf backup.tar.gz -C backup .
+          name="podzcash-backup-$(date -u +%Y%m%d-%H%M).tar.gz.gpg"
+          printf '%s' "$BACKUP_PASSPHRASE" | gpg \
+            --batch --yes --passphrase-fd 0 \
+            --symmetric --cipher-algo AES256 \
+            -o "$name" backup.tar.gz
+          rm backup.tar.gz
+          ls -lh "$name"
+
+      - name: Guardar backup cifrado
+        if: steps.config.outputs.configured == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: podzcash-backup-${{ github.run_id }}
+          path: podzcash-backup-*.tar.gz.gpg
+          retention-days: 7
