@@ -1,0 +1,142 @@
+name: Rotar AUTH_SECRET
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Escribe "rotate" para confirmar'
+        required: true
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  rotate:
+    if: github.event.inputs.confirm == 'rotate'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Instalar lftp
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lftp
+
+      - name: Rotar AUTH_SECRET y reiniciar
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          set -euo pipefail
+          mkdir -p work
+
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          set net:max-retries 3
+          get "$REMOTE_DIR/.env" -o work/env.txt
+          bye
+          EOF
+
+          secret=$(head -c 48 /dev/urandom | base64 | tr '+/' '-_' | tr -d '=\n')
+          echo "::add-mask::$secret"
+          if [ "${#secret}" -ne 64 ]; then
+            echo "::error::El secreto generado no tiene 64 caracteres."
+            exit 1
+          fi
+
+          SECRET_VALUE="$secret" python3 - <<'PY'
+          import os
+          import pathlib
+          import re
+
+          secret = os.environ["SECRET_VALUE"]
+          if len(secret) != 64:
+              raise SystemExit("longitud inesperada")
+
+          path = pathlib.Path("work/env.txt")
+          text = path.read_text(encoding="utf-8")
+
+          line = f'AUTH_SECRET="{secret}"'
+          if re.search(r"^AUTH_SECRET=.*$", text, flags=re.M):
+              text = re.sub(r"^AUTH_SECRET=.*$", line, text, count=1, flags=re.M)
+          else:
+              if not text.endswith("\n"):
+                  text += "\n"
+              text += line + "\n"
+
+          path.write_text(text, encoding="utf-8")
+
+          # Revalidar la estructura completa antes de subir.
+          keys = []
+          for raw in text.splitlines():
+              stripped = raw.strip()
+              if not stripped or stripped.startswith("#"):
+                  continue
+              if "=" not in stripped:
+                  raise SystemExit("linea invalida en .env")
+              key, value = stripped.split("=", 1)
+              keys.append(key.strip())
+              if key.strip() == "AUTH_SECRET":
+                  if len(value.strip()) != 66:
+                      raise SystemExit("AUTH_SECRET mal formado")
+
+          for required in ("DATABASE_URL", "MEDIA_ROOT", "SEARCH_DB_PATH", "SITE_URL",
+                           "AUTH_SECRET", "RESEND_API_KEY", "EMAIL_FROM"):
+              if required not in keys:
+                  raise SystemExit(f"falta {required}")
+
+          print("AUTH_SECRET actualizado. Claves:", len(keys))
+          PY
+
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          set net:max-retries 3
+          put work/env.txt -o "$REMOTE_DIR/.env.new"
+          mv "$REMOTE_DIR/.env.new" "$REMOTE_DIR/.env"
+          bye
+          EOF
+
+          # Comprobar que el archivo subido conserva la estructura.
+          rm -rf work/check && mkdir -p work/check
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          get "$REMOTE_DIR/.env" -o work/check/env.txt
+          bye
+          EOF
+
+          python3 - <<'PY'
+          import pathlib
+
+          text = pathlib.Path("work/check/env.txt").read_text(encoding="utf-8")
+          lines = [l for l in text.splitlines() if l.strip() and not l.strip().startswith("#")]
+          values = dict(l.split("=", 1) for l in lines)
+          secret = values["AUTH_SECRET"].strip()
+          assert secret.startswith('"') and secret.endswith('"')
+          assert len(secret) == 66, len(secret)
+          print("Verificado en el servidor: AUTH_SECRET de 64 caracteres,", len(values), "claves")
+          PY
+
+          rm -rf work
+          echo "restart $(date -u +%s)" > restart.txt
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          set net:max-retries 3
+          put restart.txt -o "$REMOTE_DIR/tmp/restart.txt"
+          bye
+          EOF
+
+          for attempt in $(seq 1 30); do
+            sleep 10
+            code=$(curl -s --max-time 12 -o /dev/null -w '%{http_code}' https://podzcash.online/api/health || true)
+            echo "intento $attempt: /api/health -> $code"
+            [ "$code" = "200" ] && exit 0
+          done
+          echo "::error::La aplicación no responde tras rotar AUTH_SECRET."
+          exit 1
