@@ -34,14 +34,19 @@ function Check() {
 
 function PhaseGrid({
   phases,
+  doneLabel,
 }: {
-  phases: { n: string; title: string; body: string }[];
+  phases: { n: string; title: string; body: string; done?: boolean }[];
+  doneLabel: string;
 }) {
   return (
     <div className="phase-grid">
       {phases.map((phase) => (
-        <div className="phase" key={phase.n}>
-          <div className="n">{phase.n}</div>
+        <div className={`phase${phase.done ? " done" : ""}`} key={phase.n}>
+          <div className="phase-head">
+            <div className="n">{phase.n}</div>
+            {phase.done && <span className="phase-badge">{doneLabel}</span>}
+          </div>
           <b>{phase.title}</b>
           <p>{phase.body}</p>
         </div>
@@ -311,7 +316,10 @@ export default async function ProjectPage() {
                 <span className="range">{year.range}</span>
                 <span className="note">{year.note}</span>
               </div>
-              <PhaseGrid phases={year.phases} />
+              <PhaseGrid
+                phases={year.phases}
+                doneLabel={content.plan.done.badge}
+              />
             </div>
           ))}
 

@@ -684,6 +684,29 @@
 .pz-project .phase:hover {
   border-color: #3a4150;
 }
+.pz-project .phase.done {
+  border-color: rgba(244, 183, 40, 0.45);
+  background: rgba(244, 183, 40, 0.06);
+}
+.pz-project .phase-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.pz-project .phase-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  font-family: var(--font-mono-face), monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
 .pz-project .phase .n {
   font-family: var(--font-mono-face), monospace;
   font-size: 9px;

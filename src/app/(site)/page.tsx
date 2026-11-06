@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { homeContent } from "@/lib/i18n/home";
 import { getLocale } from "@/lib/i18n/locale";
+import { prisma } from "@/lib/db";
+import { formatDuration } from "@/lib/format";
 import "./home.css";
 
 const wave = [38, 62, 48, 80, 56, 92, 64, 44, 74, 52, 86, 40, 68, 50, 78, 58, 34, 70];
@@ -68,6 +70,16 @@ export default async function Home() {
   const locale = await getLocale();
   const content = homeContent[locale];
 
+  const latest = await prisma.episode.findFirst({
+    where: { status: "published" },
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+    select: {
+      title: true,
+      durationSec: true,
+      channel: { select: { displayName: true } },
+    },
+  });
+
   return (
     <div className="pz-home" lang={locale}>
       {/* HERO */}
@@ -97,16 +109,11 @@ export default async function Home() {
                   <path d="m13 6 6 6-6 6" />
                 </svg>
               </Link>
-              <Link className="btn btn-ghost" href="/estudio">
+              <Link className="btn btn-ghost" href="/lista-de-espera">
                 {content.hero.publish}
               </Link>
             </div>
             <div className="trust">
-              <div className="avatars">
-                <img src="/landing/px9897984.jpg" alt="" />
-                <img src="/landing/px7600895.jpg" alt="" />
-                <img src="/landing/px16726135.jpg" alt="" />
-              </div>
               <span>
                 <b>{content.hero.trustBold}</b>
                 {content.hero.trustRest}
@@ -117,8 +124,8 @@ export default async function Home() {
           <div className="hero-photo">
             <div className="frame">
               <span className="photo-chip">
-                <span className="dot" />
-                {content.hero.live}
+                <span className="dot latest" />
+                {content.hero.latest}
               </span>
               <img
                 src="/landing/px7600895.jpg"
@@ -126,13 +133,25 @@ export default async function Home() {
                 fetchPriority="high"
               />
               <div className="photo-caption">
-                <div className="name">{content.hero.episode}</div>
-                <div className="meta">{content.hero.episodeMeta}</div>
-                <div className="wave" aria-hidden="true">
-                  {wave.map((height, index) => (
-                    <span key={index} style={{ height: `${height}%` }} />
-                  ))}
-                </div>
+                {latest ? (
+                  <>
+                    <div className="name">{latest.title}</div>
+                    <div className="meta">
+                      {latest.channel.displayName} ·{" "}
+                      {formatDuration(latest.durationSec)}
+                    </div>
+                    <div className="wave" aria-hidden="true">
+                      {wave.map((height, index) => (
+                        <span key={index} style={{ height: `${height}%` }} />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="name">{content.hero.emptyTitle}</div>
+                    <div className="meta">{content.hero.emptyMeta}</div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -388,12 +407,9 @@ export default async function Home() {
           <h2>{content.final.title}</h2>
           <p>{content.final.body}</p>
           <div className="cta-row">
-            <a
-              className="btn btn-gold"
-              href="mailto:hola@podzcash.online?subject=PodZcash%20invite"
-            >
+            <Link className="btn btn-gold" href="/lista-de-espera">
               {content.final.primary}
-            </a>
+            </Link>
             <Link className="btn btn-ghost" href="/explorar">
               {content.final.secondary}
             </Link>

@@ -44,6 +44,16 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    // security.txt se sirve desde una ruta: el hosting no publica
+    // directorios ocultos como /.well-known.
+    return [
+      {
+        source: "/.well-known/security.txt",
+        destination: "/security.txt",
+      },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": {

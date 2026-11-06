@@ -8,7 +8,7 @@ const es = {
   feedTitle: "Feed RSS",
   feedHint: "Es público y se actualiza solo cuando publicas un episodio.",
   howTo:
-    "En Apple y Spotify eliges “añadir podcast por RSS” y pegas esta URL. La verificación puede tardar unas horas. Tu portada debe ser cuadrada y de al menos 1400 × 1400 px.",
+    "En Apple y Spotify eliges “añadir podcast por RSS” y pegas esta URL. La verificación puede tardar unas horas. Sube el audio en MP3 o M4A y usa una portada cuadrada de al menos 1400 × 1400 px.",
   embedTitle: "Reproductor embebible",
   embedHint:
     "Pega este código en tu web para que cualquiera escuche sin salir de ella.",
@@ -32,7 +32,7 @@ const en: StudioDistributionContent = {
   feedTitle: "RSS feed",
   feedHint: "It is public and updates automatically when you publish an episode.",
   howTo:
-    "In Apple and Spotify choose “add podcast by RSS” and paste this URL. Verification can take a few hours. Your cover must be square and at least 1400 × 1400 px.",
+    "In Apple and Spotify choose “add podcast by RSS” and paste this URL. Verification can take a few hours. Upload your audio as MP3 or M4A and use a square cover of at least 1400 × 1400 px.",
   embedTitle: "Embeddable player",
   embedHint:
     "Paste this code on your site so anyone can listen without leaving it.",
