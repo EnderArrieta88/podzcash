@@ -138,6 +138,15 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
 `FTP_PASSWORD`, `FTP_SERVER_DIR`). El deploy excluye `prisma/dev.db`, `.media`,
 `.data`, `.env` y `.htaccess`; los datos de producción no se versionan.
 
+## Operación
+
+- **Backups:** diarios, cifrados y con verificación de SQLite. Ver
+  [docs/backups.md](docs/backups.md). Requiere configurar el secreto
+  `BACKUP_PASSPHRASE`.
+- **Monitorización:** healthcheck cada 15 minutos. Ver
+  [docs/monitoring.md](docs/monitoring.md).
+- **Staging:** pendiente de un segundo hosting/base de datos.
+
 ## Seguridad
 
 - Reportes privados: ver [SECURITY.md](SECURITY.md).
@@ -145,7 +154,9 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
 - Dependencias de producción sin vulnerabilidades conocidas en `npm audit`
   al momento de esta revisión; el tooling de desarrollo puede mostrar avisos.
 - Tests unitarios para rutas, ZIP-321, RSS, validación y utilidades.
-- Pendientes: auditoría externa, backups verificados y monitorización.
+- Backups diarios cifrados y monitor de disponibilidad cada 15 minutos.
+- Pendientes: auditoría externa, configurar `BACKUP_PASSPHRASE` y probar una
+  restauración completa.
 
 ## Estructura
 
