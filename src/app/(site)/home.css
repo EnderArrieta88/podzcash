@@ -149,6 +149,7 @@
   position: relative;
 }
 .pz-home .hero-photo .frame {
+  display: block;
   position: relative;
   border-radius: 20px;
   overflow: hidden;
@@ -194,6 +195,10 @@
   border-radius: 50%;
   background: #ef4444;
   animation: pz-pulse 1.8s infinite;
+}
+.pz-home .dot.latest {
+  background: var(--pz-gold);
+  animation: none;
 }
 @keyframes pz-pulse {
   50% {

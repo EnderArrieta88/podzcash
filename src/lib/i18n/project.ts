@@ -27,7 +27,7 @@ const es = {
       "Creador grabando un podcast en su estudio con micrófono y auriculares",
   },
   stats: [
-    { label: "Fases del plan", value: "8", suffix: "/ 26", sub: "18 por delante" },
+    { label: "Fases del plan", value: "9", suffix: "/ 26", sub: "17 por delante" },
     {
       label: "Funcionalidades",
       value: "8",
@@ -82,7 +82,7 @@ const es = {
       },
       {
         title: "Distribución abierta",
-        body: "Feed RSS para Apple y Spotify, reproductor embebible y planes de API. El contenido no queda encerrado en una sola aplicación.",
+        body: "Feed RSS compatible con Apple Podcasts y Spotify (audio en MP3 o M4A), reproductor embebible y planes de API. El contenido no queda encerrado en una sola aplicación.",
       },
       {
         title: "Hecho para Zcash",
@@ -165,11 +165,11 @@ const es = {
     eyebrow: "03 — Plan de desarrollo",
     title: "26 fases, no una promesa",
     intro:
-      "Ocho fases ya están en producción. Las otras dieciocho están ordenadas por dependencia: cada una se construye sobre la anterior. El ritmo depende del financiamiento y del crecimiento real de la comunidad.",
+      "Nueve fases ya están en producción. Las otras diecisiete están ordenadas por dependencia: cada una se construye sobre la anterior. El ritmo depende del financiamiento y del crecimiento real de la comunidad.",
     done: {
       badge: "Completado",
-      title: "Fases 01 — 08 · MVP en producción",
-      body: "Un creador ya puede registrarse por invitación, crear su canal, subir audio, publicarlo con RSS y recibir ZEC directo a su wallet. Con moderación y administración funcionando.",
+      title: "Fases 01 — 08 + 11 · MVP en producción",
+      body: "Un creador ya puede registrarse por invitación, crear su canal, subir audio, publicarlo con RSS y recibir ZEC directo a su wallet. Con moderación, administración y backups verificados.",
       chips: [
         { n: "01", label: "Fundaciones" },
         { n: "02", label: "Cuentas e invitaciones" },
@@ -179,6 +179,7 @@ const es = {
         { n: "06", label: "Búsqueda" },
         { n: "07", label: "Donaciones ZEC y RSS" },
         { n: "08", label: "Moderación y admin" },
+        { n: "11", label: "Backups y monitoreo" },
       ],
     },
     years: [
@@ -189,7 +190,7 @@ const es = {
         phases: [
           { n: "Fase 09", title: "Base de datos escalable", body: "Migración a Postgres con índices de búsqueda y consultas preparadas para miles de episodios." },
           { n: "Fase 10", title: "Almacenamiento y CDN", body: "Audio en almacenamiento de objetos con caché en el borde, para que el streaming no dependa del servidor." },
-          { n: "Fase 11", title: "Backups y monitoreo", body: "Copias automáticas, alertas de caída y recuperación probada. Lo que hoy es manual pasa a ser rutina." },
+          { n: "Fase 11", title: "Backups y monitoreo", body: "Copias automáticas, alertas de caída y recuperación probada. Implementado y verificado.", done: true },
           { n: "Fase 12", title: "Analíticas de escucha", body: "Reproducciones, retención por episodio y origen del tráfico, visibles para cada creador." },
           { n: "Fase 13", title: "App móvil de escucha", body: "iOS y Android: reproducción en segundo plano, cola, velocidad y continuar donde quedó." },
           { n: "Fase 14", title: "Offline y notificaciones", body: "Descarga de episodios y avisos de nuevos lanzamientos de los canales que sigues." },
@@ -382,7 +383,7 @@ const en: ProjectContent = {
       "Creator recording a podcast in a studio with a microphone and headphones",
   },
   stats: [
-    { label: "Plan phases", value: "8", suffix: "/ 26", sub: "18 ahead" },
+    { label: "Plan phases", value: "9", suffix: "/ 26", sub: "17 ahead" },
     {
       label: "Features",
       value: "8",
@@ -437,7 +438,7 @@ const en: ProjectContent = {
       },
       {
         title: "Open distribution",
-        body: "RSS feed for Apple and Spotify, embeddable player and API plans. Content is not locked into a single app.",
+        body: "RSS feed compatible with Apple Podcasts and Spotify (MP3 or M4A audio), embeddable player and API plans. Content is not locked into a single app.",
       },
       {
         title: "Built for Zcash",
@@ -520,11 +521,11 @@ const en: ProjectContent = {
     eyebrow: "03 — Development plan",
     title: "26 phases, not a promise",
     intro:
-      "Eight phases are already in production. The other eighteen are ordered by dependency: each builds on the previous one. Pace depends on funding and on the community's real growth.",
+      "Nine phases are already in production. The other seventeen are ordered by dependency: each builds on the previous one. Pace depends on funding and on the community's real growth.",
     done: {
       badge: "Completed",
-      title: "Phases 01 — 08 · MVP in production",
-      body: "A creator can already register by invite, create their channel, upload audio, publish it with RSS and receive ZEC straight to their wallet. With moderation and administration running.",
+      title: "Phases 01 — 08 + 11 · MVP in production",
+      body: "A creator can already register by invite, create their channel, upload audio, publish it with RSS and receive ZEC straight to their wallet. With moderation, administration and verified backups.",
       chips: [
         { n: "01", label: "Foundations" },
         { n: "02", label: "Accounts and invites" },
@@ -534,6 +535,7 @@ const en: ProjectContent = {
         { n: "06", label: "Search" },
         { n: "07", label: "ZEC donations and RSS" },
         { n: "08", label: "Moderation and admin" },
+        { n: "11", label: "Backups and monitoring" },
       ],
     },
     years: [
@@ -544,7 +546,7 @@ const en: ProjectContent = {
         phases: [
           { n: "Phase 09", title: "Scalable database", body: "Postgres migration with search indexes and queries ready for thousands of episodes." },
           { n: "Phase 10", title: "Storage and CDN", body: "Audio on object storage with edge caching, so streaming does not depend on the server." },
-          { n: "Phase 11", title: "Backups and monitoring", body: "Automatic copies, downtime alerts and tested recovery. What is manual today becomes routine." },
+          { n: "Phase 11", title: "Backups and monitoring", body: "Automatic copies, downtime alerts and tested recovery. Implemented and verified.", done: true },
           { n: "Phase 12", title: "Listening analytics", body: "Plays, per-episode retention and traffic sources, visible to every creator." },
           { n: "Phase 13", title: "Mobile listening app", body: "iOS and Android: background playback, queue, speed and resume where you left off." },
           { n: "Phase 14", title: "Offline and notifications", body: "Episode downloads and alerts for new releases from channels you follow." },

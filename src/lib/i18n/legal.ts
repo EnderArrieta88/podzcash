@@ -90,7 +90,7 @@ const es: SiteLegalContent = {
     ],
     teamTitle: "Quién lo construye",
     teamBody:
-      "PodZcash es un proyecto independiente liderado por su fundador, con apoyo puntual de diseñadores, auditores y creadores cuando hace falta.",
+      "PodZcash es un proyecto independiente liderado por su fundador, con apoyo puntual de diseñadores y creadores cuando hace falta.",
     teamName: "Ender Arrieta",
     teamRole: "Fundador y desarrollador",
     statusTitle: "Estado actual",
@@ -357,7 +357,7 @@ const en: SiteLegalContent = {
     ],
     teamTitle: "Who builds it",
     teamBody:
-      "PodZcash is an independent project led by its founder, with occasional support from designers, auditors and creators when needed.",
+      "PodZcash is an independent project led by its founder, with occasional support from designers and creators when needed.",
     teamName: "Ender Arrieta",
     teamRole: "Founder and developer",
     statusTitle: "Current status",

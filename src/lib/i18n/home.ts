@@ -15,12 +15,11 @@ const es = {
     publish: "Publicar mi podcast",
     trustBold: "Comunidad Zcash",
     trustRest: " · beta por invitación",
-    live: "Grabando ahora",
-    episode: "Custodia propia, ep. 12",
-    episodeMeta: "Nora Vela · 42:10",
-    photoAlt:
-      "Creadora grabando un podcast en un estudio con micrófono y auriculares",
-  },
+    latest: "Último episodio",
+    emptyTitle: "Tu primer episodio, acá",
+    emptyMeta: "Publica tu audio y compártelo",
+    coverAlt: (title: string) => `Portada de ${title}`,
+    channelAlt: (name: string) => `Foto de ${name}`,  },
   strip: {
     audioFirst: "Audio primero, sin distracciones",
     zecDirect: "ZEC directo a tu wallet",
@@ -40,7 +39,7 @@ const es = {
       },
       {
         title: "Publicas tu audio",
-        body: "Arrastras el archivo, pones portada y descripción. Tu feed RSS se genera solo, listo para Apple y Spotify.",
+        body: "Arrastras el archivo, pones portada y descripción. Tu feed RSS se genera solo; con audio en MP3 o M4A podés llevarlo a Apple Podcasts y Spotify.",
       },
       {
         title: "Recibes apoyo",
@@ -66,7 +65,7 @@ const es = {
       },
       {
         title: "Distribución, no encierro",
-        body: "Tu feed RSS te lleva a Apple Podcasts y Spotify, y el reproductor embebible te lleva a tu propia web. El contenido circula y no queda encerrado.",
+        body: "Tu feed RSS, en MP3 o M4A, te lleva a Apple Podcasts y Spotify; el reproductor embebible te lleva a tu propia web. El contenido circula y no queda encerrado.",
       },
     ],
     ecosystem: [
@@ -96,7 +95,7 @@ const es = {
     body: "PodZcash nació como idea a finales de 2023 y empezó a construirse en febrero de 2025; hoy la beta corre en un hosting compartido. En la página del proyecto contamos qué está listo, las 26 fases del plan y qué financiamiento hace falta para el primer año.",
     cta: "Leer sobre el proyecto",
     stats: [
-      { label: "Fases", value: "8 / 26" },
+      { label: "Fases", value: "9 / 26" },
       { label: "Horizonte", value: "1 — 3 años" },
       { label: "Estado", value: "Beta cerrada" },
     ],
@@ -132,8 +131,8 @@ const es = {
       "Feed RSS con etiquetas de Podcasting 2.0.",
       "Donaciones con QR y enlace ZIP-321, sin custodia.",
     ],
-    browserUrl: "podzcash.online/canal/@nora-vela",
-    alt: "Captura real del canal de Nora Vela en PodZcash",
+    browserUrl: "podzcash.online/canal/@ender-arrieta",
+    alt: "Vista del canal de Ender Arrieta en PodZcash",
   },
   donate: {
     eyebrow: "Apoyo directo",
@@ -169,10 +168,11 @@ const en: HomeContent = {
     publish: "Publish my podcast",
     trustBold: "Zcash community",
     trustRest: " · invite-only beta",
-    live: "Recording now",
-    episode: "Self-custody, ep. 12",
-    episodeMeta: "Nora Vela · 42:10",
-    photoAlt: "Creator recording a podcast in a studio with a microphone and headphones",
+    latest: "Latest episode",
+    emptyTitle: "Your first episode, right here",
+    emptyMeta: "Publish your audio and share it",
+    coverAlt: (title: string) => `Cover art for ${title}`,
+    channelAlt: (name: string) => `Photo of ${name}`,
   },
   strip: {
     audioFirst: "Audio first, no distractions",
@@ -193,7 +193,7 @@ const en: HomeContent = {
       },
       {
         title: "Publish your audio",
-        body: "Drag the file, add cover art and a description. Your RSS feed is generated automatically, ready for Apple and Spotify.",
+        body: "Drag the file, add cover art and a description. Your RSS feed is generated automatically; with MP3 or M4A audio you can take it to Apple Podcasts and Spotify.",
       },
       {
         title: "Get support",
@@ -219,7 +219,7 @@ const en: HomeContent = {
       },
       {
         title: "Distribution, not lock-in",
-        body: "Your RSS feed takes you to Apple Podcasts and Spotify, and the embeddable player takes you to your own site. Content circulates and is not locked in.",
+        body: "Your RSS feed, in MP3 or M4A, takes you to Apple Podcasts and Spotify; the embeddable player brings your audio to your own site. Content circulates and stays unlocked.",
       },
     ],
     ecosystem: [
@@ -249,7 +249,7 @@ const en: HomeContent = {
     body: "PodZcash started as an idea in late 2023 and began to take shape in February 2025; today the beta runs on shared hosting. The project page covers what is ready, the 26 phases of the plan and the funding needed for year one.",
     cta: "Read about the project",
     stats: [
-      { label: "Phases", value: "8 / 26" },
+      { label: "Phases", value: "9 / 26" },
       { label: "Horizon", value: "1 — 3 years" },
       { label: "Status", value: "Closed beta" },
     ],
@@ -285,8 +285,8 @@ const en: HomeContent = {
       "RSS feed with Podcasting 2.0 tags.",
       "Donations with QR and ZIP-321 links, non-custodial.",
     ],
-    browserUrl: "podzcash.online/canal/@nora-vela",
-    alt: "Real screenshot of Nora Vela's channel on PodZcash",
+    browserUrl: "podzcash.online/canal/@ender-arrieta",
+    alt: "View of Ender Arrieta's channel on PodZcash",
   },
   donate: {
     eyebrow: "Direct support",

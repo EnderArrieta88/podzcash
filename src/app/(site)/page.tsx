@@ -3,6 +3,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { homeContent } from "@/lib/i18n/home";
 import { getLocale } from "@/lib/i18n/locale";
+import { prisma } from "@/lib/db";
+import { storage } from "@/lib/storage";
+import { episodePath } from "@/lib/routes";
+import { formatDuration } from "@/lib/format";
 import "./home.css";
 
 const wave = [38, 62, 48, 80, 56, 92, 64, 44, 74, 52, 86, 40, 68, 50, 78, 58, 34, 70];
@@ -68,6 +72,34 @@ export default async function Home() {
   const locale = await getLocale();
   const content = homeContent[locale];
 
+  const latest = await prisma.episode.findFirst({
+    where: { status: "published" },
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+    select: {
+      title: true,
+      slug: true,
+      durationSec: true,
+      coverKey: true,
+      channel: {
+        select: { handle: true, displayName: true, avatarKey: true },
+      },
+    },
+  });
+
+  const heroImage = latest
+    ? latest.channel.avatarKey
+      ? storage.url(latest.channel.avatarKey)
+      : latest.coverKey
+        ? storage.url(latest.coverKey)
+        : null
+    : null;
+
+  const heroAlt = latest
+    ? latest.channel.avatarKey
+      ? content.hero.channelAlt(latest.channel.displayName)
+      : content.hero.coverAlt(latest.title)
+    : "";
+
   return (
     <div className="pz-home" lang={locale}>
       {/* HERO */}
@@ -97,16 +129,11 @@ export default async function Home() {
                   <path d="m13 6 6 6-6 6" />
                 </svg>
               </Link>
-              <Link className="btn btn-ghost" href="/estudio">
+              <Link className="btn btn-ghost" href="/lista-de-espera">
                 {content.hero.publish}
               </Link>
             </div>
             <div className="trust">
-              <div className="avatars">
-                <img src="/landing/px9897984.jpg" alt="" />
-                <img src="/landing/px7600895.jpg" alt="" />
-                <img src="/landing/px16726135.jpg" alt="" />
-              </div>
               <span>
                 <b>{content.hero.trustBold}</b>
                 {content.hero.trustRest}
@@ -115,26 +142,47 @@ export default async function Home() {
           </div>
 
           <div className="hero-photo">
-            <div className="frame">
-              <span className="photo-chip">
-                <span className="dot" />
-                {content.hero.live}
-              </span>
-              <img
-                src="/landing/px7600895.jpg"
-                alt={content.hero.photoAlt}
-                fetchPriority="high"
-              />
-              <div className="photo-caption">
-                <div className="name">{content.hero.episode}</div>
-                <div className="meta">{content.hero.episodeMeta}</div>
-                <div className="wave" aria-hidden="true">
-                  {wave.map((height, index) => (
-                    <span key={index} style={{ height: `${height}%` }} />
-                  ))}
+            {latest ? (
+              <Link
+                className="frame"
+                href={episodePath(latest.channel.handle, latest.slug)}
+              >
+                <span className="photo-chip">
+                  <span className="dot latest" />
+                  {content.hero.latest}
+                </span>
+                {heroImage ? (
+                  <img
+                    src={heroImage}
+                    alt={heroAlt}
+                    fetchPriority="high"
+                  />
+                ) : null}
+                <div className="photo-caption">
+                  <div className="name">{latest.title}</div>
+                  <div className="meta">
+                    {latest.channel.displayName} ·{" "}
+                    {formatDuration(latest.durationSec)}
+                  </div>
+                  <div className="wave" aria-hidden="true">
+                    {wave.map((height, index) => (
+                      <span key={index} style={{ height: `${height}%` }} />
+                    ))}
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <div className="frame">
+                <span className="photo-chip">
+                  <span className="dot latest" />
+                  {content.hero.latest}
+                </span>
+                <div className="photo-caption">
+                  <div className="name">{content.hero.emptyTitle}</div>
+                  <div className="meta">{content.hero.emptyMeta}</div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -388,12 +436,9 @@ export default async function Home() {
           <h2>{content.final.title}</h2>
           <p>{content.final.body}</p>
           <div className="cta-row">
-            <a
-              className="btn btn-gold"
-              href="mailto:hola@podzcash.online?subject=PodZcash%20invite"
-            >
+            <Link className="btn btn-gold" href="/lista-de-espera">
               {content.final.primary}
-            </a>
+            </Link>
             <Link className="btn btn-ghost" href="/explorar">
               {content.final.secondary}
             </Link>
