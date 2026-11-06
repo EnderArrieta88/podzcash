@@ -19,24 +19,36 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-type SearchParams = Promise<{ q?: string; tipo?: string; tag?: string }>;
+type QueryValue = string | string[] | undefined;
+
+type SearchParams = Promise<{
+  q?: QueryValue;
+  tipo?: QueryValue;
+  tag?: QueryValue;
+}>;
+
+function firstValue(value: QueryValue): string {
+  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+}
 
 function buildHref(
-  current: { q?: string; tipo?: string; tag?: string },
+  current: { q?: QueryValue; tipo?: QueryValue; tag?: QueryValue },
   patch: { tipo?: string | null; tag?: string | null },
 ) {
   const params = new URLSearchParams();
+  const query = firstValue(current.q).trim();
 
-  if (current.q?.trim()) params.set("q", current.q.trim());
+  if (query) params.set("q", query);
 
-  const tipo = patch.tipo === undefined ? current.tipo : patch.tipo;
-  const tag = patch.tag === undefined ? current.tag : patch.tag;
+  const tipo =
+    patch.tipo === undefined ? firstValue(current.tipo) : patch.tipo;
+  const tag = patch.tag === undefined ? firstValue(current.tag) : patch.tag;
 
   if (tipo) params.set("tipo", tipo);
   if (tag) params.set("tag", tag);
 
-  const query = params.toString();
-  return query ? `/explorar?${query}` : "/explorar";
+  const queryString = params.toString();
+  return queryString ? `/explorar?${queryString}` : "/explorar";
 }
 
 function Chip({
@@ -93,10 +105,11 @@ export default async function ExplorePage({
   const params = await searchParams;
   const locale = await getLocale();
   const content = exploreContent[locale];
-  const query = (params.q ?? "").trim();
+  const query = firstValue(params.q).trim();
+  const tipoRaw = firstValue(params.tipo);
   const tipo =
-    params.tipo === "podcast" || params.tipo === "musica" ? params.tipo : undefined;
-  const tag = params.tag?.trim() || undefined;
+    tipoRaw === "podcast" || tipoRaw === "musica" ? tipoRaw : undefined;
+  const tag = firstValue(params.tag).trim() || undefined;
   const kind = tipo === "musica" ? "music" : tipo === "podcast" ? "podcast" : undefined;
 
   const [results, tags, channels] = await Promise.all([
