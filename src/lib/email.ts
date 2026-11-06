@@ -1,5 +1,9 @@
 import { Resend } from "resend";
-import { emailContent } from "@/lib/i18n/email";
+import {
+  resetEmailContent,
+  verificationEmailContent,
+  type EmailCopy,
+} from "@/lib/i18n/email";
 import type { Locale } from "@/lib/i18n/config";
 
 const FROM = process.env.EMAIL_FROM ?? "PodZcash <hola@podzcash.online>";
@@ -50,26 +54,15 @@ async function sendEmail(input: SendEmailInput): Promise<boolean> {
   }
 }
 
-export async function sendPasswordResetEmail({
-  to,
+function renderLinkEmail({
+  content,
   url,
   locale,
 }: {
-  to: string;
+  content: EmailCopy;
   url: string;
   locale: Locale;
-}): Promise<boolean> {
-  const content = emailContent[locale];
-
-  if (!isEmailConfigured()) {
-    if (process.env.NODE_ENV !== "production") {
-      console.info(`[email:dev] Enlace de recuperación: ${url}`);
-    } else {
-      console.warn("[email] RESEND_API_KEY no está configurado.");
-    }
-    return false;
-  }
-
+}): { text: string; html: string } {
   const text = `${content.intro}\n\n${url}\n\n${content.ignore}\n\n${content.footer}`;
   const html = `<!doctype html>
 <html lang="${locale}">
@@ -85,10 +78,73 @@ export async function sendPasswordResetEmail({
   </body>
 </html>`;
 
+  return { text, html };
+}
+
+async function sendLinkEmail({
+  to,
+  url,
+  locale,
+  content,
+  devLabel,
+}: {
+  to: string;
+  url: string;
+  locale: Locale;
+  content: EmailCopy;
+  devLabel: string;
+}): Promise<boolean> {
+  if (!isEmailConfigured()) {
+    if (process.env.NODE_ENV !== "production") {
+      console.info(`[email:dev] ${devLabel}: ${url}`);
+    } else {
+      console.warn("[email] RESEND_API_KEY no está configurado.");
+    }
+    return false;
+  }
+
+  const { text, html } = renderLinkEmail({ content, url, locale });
+
   return sendEmail({
     to,
     subject: content.subject,
     text,
     html,
+  });
+}
+
+export async function sendPasswordResetEmail({
+  to,
+  url,
+  locale,
+}: {
+  to: string;
+  url: string;
+  locale: Locale;
+}): Promise<boolean> {
+  return sendLinkEmail({
+    to,
+    url,
+    locale,
+    content: resetEmailContent[locale],
+    devLabel: "Enlace de recuperación",
+  });
+}
+
+export async function sendVerificationEmail({
+  to,
+  url,
+  locale,
+}: {
+  to: string;
+  url: string;
+  locale: Locale;
+}): Promise<boolean> {
+  return sendLinkEmail({
+    to,
+    url,
+    locale,
+    content: verificationEmailContent[locale],
+    devLabel: "Enlace de verificación",
   });
 }

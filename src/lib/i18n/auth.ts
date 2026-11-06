@@ -13,10 +13,13 @@ const es = {
     forgotPassword: "¿Olvidaste tu contraseña?",
     invitePrompt: "¿Tienes un código de invitación?",
     createAccount: "Crear cuenta",
+    resendVerification: "Reenviar el correo de verificación",
     errors: {
       tooMany: "Demasiados intentos. Espera unos minutos.",
       invalid: "Email o contraseña incorrectos.",
       suspended: "Esta cuenta está suspendida.",
+      unverified:
+        "Tu cuenta todavía no está verificada. Revisá tu correo para activarla.",
     },
   },
   register: {
@@ -93,12 +96,38 @@ const es = {
       generic: "No se pudo cambiar la contraseña. Inténtalo otra vez.",
     },
   },
+  verify: {
+    metaTitle: "Verificar cuenta",
+    title: "Verifica tu cuenta",
+    intro: "Te enviamos un enlace para confirmar tu email.",
+    confirmTitle: "Confirma tu cuenta",
+    confirmBody: "Pulsa el botón para activar tu cuenta y empezar a publicar.",
+    confirm: "Confirmar cuenta",
+    confirming: "Confirmando…",
+    successTitle: "Cuenta verificada",
+    successBody: "Ya podés entrar con tu email y contraseña.",
+    invalidTitle: "El enlace no es válido",
+    invalidBody:
+      "Puede que haya caducado o ya se haya usado. Pedí uno nuevo abajo.",
+    resendTitle: "Reenviar el enlace",
+    resendIntro:
+      "Escribe el email de tu cuenta y te enviamos un enlace nuevo.",
+    email: "Email",
+    emailPlaceholder: "tu@email.com",
+    submit: "Reenviar enlace",
+    pending: "Enviando…",
+    sentTitle: "Revisa tu correo",
+    sentBody:
+      "Si hay una cuenta pendiente con ese email, enviamos un enlace. Caduca en 48 horas.",
+    backToLogin: "Entrar",
+  },
 };
 
 export type LoginLabels = typeof es.login;
 export type RegisterLabels = typeof es.register;
 export type ResetRequestLabels = typeof es.resetRequest;
 export type ResetLabels = typeof es.reset;
+export type VerifyLabels = typeof es.verify;
 
 type AuthContent = typeof es;
 
@@ -115,10 +144,13 @@ const en: AuthContent = {
     forgotPassword: "Forgot your password?",
     invitePrompt: "Have an invite code?",
     createAccount: "Create account",
+    resendVerification: "Resend the verification email",
     errors: {
       tooMany: "Too many attempts. Wait a few minutes.",
       invalid: "Email or password is incorrect.",
       suspended: "This account is suspended.",
+      unverified:
+        "Your account is not verified yet. Check your email to activate it.",
     },
   },
   register: {
@@ -193,6 +225,30 @@ const en: AuthContent = {
       invalidToken: "The link is invalid or expired. Request a new one.",
       generic: "Could not change the password. Try again.",
     },
+  },
+  verify: {
+    metaTitle: "Verify account",
+    title: "Verify your account",
+    intro: "We sent you a link to confirm your email.",
+    confirmTitle: "Confirm your account",
+    confirmBody: "Press the button to activate your account and start publishing.",
+    confirm: "Confirm account",
+    confirming: "Confirming…",
+    successTitle: "Account verified",
+    successBody: "You can now sign in with your email and password.",
+    invalidTitle: "This link is not valid",
+    invalidBody:
+      "It may have expired or already been used. Request a new one below.",
+    resendTitle: "Resend the link",
+    resendIntro: "Enter your account email and we will send a new link.",
+    email: "Email",
+    emailPlaceholder: "you@email.com",
+    submit: "Resend link",
+    pending: "Sending…",
+    sentTitle: "Check your email",
+    sentBody:
+      "If there is a pending account with that email, we sent a link. It expires in 48 hours.",
+    backToLogin: "Sign in",
   },
 };
 

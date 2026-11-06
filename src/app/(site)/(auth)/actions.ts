@@ -23,7 +23,17 @@ import {
   passwordFingerprint,
   verifyResetToken,
 } from "@/lib/auth/reset-token";
-import { sendPasswordResetEmail } from "@/lib/email";
+import {
+  createEmailToken,
+  emailFingerprint,
+  isEmailTokenConfigured,
+  verifyEmailToken,
+} from "@/lib/auth/email-token";
+import {
+  isEmailConfigured,
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+} from "@/lib/email";
 import { getSiteOrigin } from "@/lib/origin";
 
 class InviteTakenError extends Error {}
@@ -88,8 +98,14 @@ export async function registerAction(
   }
 
   const passwordHash = await hashPassword(password);
+  // La verificación por email solo se exige si el entorno puede enviarla.
+  // La primera cuenta (administrador) se activa directamente para no dejar
+  // el proyecto sin acceso en una instalación nueva.
+  const requiresVerification =
+    !isFirstUser && isEmailConfigured() && isEmailTokenConfigured();
 
   let userId: string;
+  let createdEmail = email;
 
   try {
     const user = await prisma.$transaction(async (tx) => {
@@ -99,7 +115,7 @@ export async function registerAction(
           email,
           passwordHash,
           role: isFirstUser ? "admin" : "creator",
-          status: "active",
+          status: requiresVerification ? "unverified" : "active",
         },
       });
 
@@ -116,6 +132,7 @@ export async function registerAction(
     });
 
     userId = user.id;
+    createdEmail = user.email;
   } catch (error) {
     if (error instanceof InviteTakenError) {
       return {
@@ -127,6 +144,20 @@ export async function registerAction(
 
     console.error("No se pudo crear la cuenta:", error);
     return { error: content.errors.retry };
+  }
+
+  if (requiresVerification) {
+    try {
+      const token = createEmailToken({ id: userId, email: createdEmail });
+      const origin = await getSiteOrigin();
+      const url = `${origin}/verificar?token=${encodeURIComponent(token)}`;
+
+      await sendVerificationEmail({ to: createdEmail, url, locale });
+    } catch (error) {
+      console.error("[auth] No se pudo enviar la verificación:", error);
+    }
+
+    redirect(`/verificar?sent=1&email=${encodeURIComponent(createdEmail)}`);
   }
 
   await createSession(userId);
@@ -164,6 +195,10 @@ export async function loginAction(
 
   if (!user || !valid) {
     return { error: content.errors.invalid };
+  }
+
+  if (user.status === "unverified") {
+    return { code: "unverified", error: content.errors.unverified };
   }
 
   if (user.status !== "active") {
@@ -265,6 +300,83 @@ export async function resetPasswordAction(
   await prisma.session.deleteMany({ where: { userId: user.id } });
   await createSession(user.id);
   redirect("/estudio");
+}
+
+export async function confirmEmailAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const locale = await getLocale();
+  const content = authContent[locale].verify;
+  const token = String(formData.get("token") ?? "").trim();
+
+  const payload = verifyEmailToken(token);
+  if (!payload) {
+    return { error: content.invalidBody };
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+
+  if (!user || emailFingerprint(user.email) !== payload.emailFingerprint) {
+    return { error: content.invalidBody };
+  }
+
+  if (user.status === "active") {
+    redirect("/verificar?ok=1");
+  }
+
+  if (user.status !== "unverified") {
+    return { error: content.invalidBody };
+  }
+
+  const updated = await prisma.user.updateMany({
+    where: { id: user.id, status: "unverified" },
+    data: { status: "active" },
+  });
+
+  if (updated.count !== 1) {
+    return { error: content.invalidBody };
+  }
+
+  redirect("/verificar?ok=1");
+}
+
+export async function resendVerificationAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const locale = await getLocale();
+
+  const parsed = resetRequestSchema.safeParse({
+    email: formData.get("email"),
+  });
+
+  if (!parsed.success) {
+    return { fields: toFieldErrors(parsed.error, locale) };
+  }
+
+  const email = parsed.data.email;
+
+  // Respuesta genérica: no revelamos si la cuenta existe.
+  if (!take(`verify:${email}`, 3, 15 * 60 * 1000)) {
+    return { ok: true };
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (user && user.status === "unverified" && isEmailTokenConfigured()) {
+    try {
+      const token = createEmailToken(user);
+      const origin = await getSiteOrigin();
+      const url = `${origin}/verificar?token=${encodeURIComponent(token)}`;
+
+      await sendVerificationEmail({ to: user.email, url, locale });
+    } catch (error) {
+      console.error("[auth] No se pudo reenviar la verificación:", error);
+    }
+  }
+
+  return { ok: true };
 }
 
 export async function logoutAction(): Promise<void> {
