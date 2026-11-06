@@ -43,9 +43,11 @@ function PhaseGrid({
     <div className="phase-grid">
       {phases.map((phase) => (
         <div className={`phase${phase.done ? " done" : ""}`} key={phase.n}>
-          <div className="n">{phase.n}</div>
+          <div className="phase-head">
+            <div className="n">{phase.n}</div>
+            {phase.done && <span className="phase-badge">{doneLabel}</span>}
+          </div>
           <b>{phase.title}</b>
-          {phase.done && <span className="phase-badge">{doneLabel}</span>}
           <p>{phase.body}</p>
         </div>
       ))}
