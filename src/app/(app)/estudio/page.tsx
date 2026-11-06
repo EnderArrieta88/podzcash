@@ -49,9 +49,14 @@ export default async function StudioPage() {
   }
 
   const channel = user.channel;
-  const episodes = await prisma.episode.count({
-    where: { channelId: channel.id },
-  });
+  const [episodes, playSum] = await Promise.all([
+    prisma.episode.count({ where: { channelId: channel.id } }),
+    prisma.episode.aggregate({
+      where: { channelId: channel.id },
+      _sum: { playCount: true },
+    }),
+  ]);
+  const plays = playSum._sum.playCount ?? 0;
   const links = parseLinks(channel.links);
 
   return (
@@ -120,10 +125,9 @@ export default async function StudioPage() {
         </div>
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-            {content.donations}
+            {content.plays}
           </p>
-          <p className="mt-2 font-display text-3xl">-</p>
-          <p className="mt-1 text-xs text-subtle">{content.donationsSoon}</p>
+          <p className="mt-2 font-display text-3xl">{plays}</p>
         </div>
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">

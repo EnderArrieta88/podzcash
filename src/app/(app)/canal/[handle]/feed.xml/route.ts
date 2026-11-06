@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { contentTypeFor } from "@/lib/media-types";
 import { cdata, escapeXml, itunesDuration, rfc822, siteOrigin } from "@/lib/rss";
-import { channelPath, feedPath, normalizeHandleParam } from "@/lib/routes";
+import { channelPath, donatePath, feedPath, normalizeHandleParam } from "@/lib/routes";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +31,9 @@ export async function GET(request: Request, context: RouteContext) {
   const origin = siteOrigin(request);
   const channelUrl = `${origin}${channelPath(channel.handle)}`;
   const feedUrl = `${origin}${feedPath(channel.handle)}`;
+  const fundingUrl = channel.zcashAddress
+    ? `${origin}${donatePath(channel.handle)}`
+    : null;
   const description =
     channel.bio ?? `Podcasts y música de ${channel.displayName} en PodZcash.`;
 
@@ -99,7 +102,7 @@ ${cover ? `      <itunes:image href="${escapeXml(cover)}"/>\n` : ""}${categories
     <itunes:category text="Technology"/>
 ${imageUrl ? `    <itunes:image href="${escapeXml(imageUrl)}"/>\n    <image><url>${escapeXml(imageUrl)}</url><title>${escapeXml(channel.displayName)}</title><link>${escapeXml(channelUrl)}</link></image>\n` : ""}    <podcast:locked>no</podcast:locked>
     <podcast:guid>${escapeXml(channel.id)}</podcast:guid>
-${items}
+${fundingUrl ? `    <podcast:funding url="${escapeXml(fundingUrl)}">Apoyar con ZEC</podcast:funding>\n` : ""}${items}
   </channel>
 </rss>
 `;

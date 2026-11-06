@@ -123,6 +123,30 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     snapshot.current = { track, time, rate };
   }, [track, time, rate]);
 
+  const counted = useRef<Set<string>>(new Set());
+
+  const recordPlay = useCallback((id: string) => {
+    if (counted.current.has(id)) return;
+    counted.current.add(id);
+
+    try {
+      const key = `podzcash:played:${id}`;
+      if (window.sessionStorage.getItem(key)) return;
+      window.sessionStorage.setItem(key, "1");
+    } catch {
+      // Modo privado: el set en memoria ya evita duplicados en esta sesión.
+    }
+
+    void fetch("/api/plays", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+      keepalive: true,
+    }).catch(() => {
+      // El contador es best-effort: no debe interrumpir la reproducción.
+    });
+  }, []);
+
   // Guarda cada 2 s y al cerrar la página. No se puede usar un debounce por
   // `time`: mientras suena, el tiempo cambia más rápido que el debounce y el
   // temporizador nunca llegaría a dispararse.
@@ -156,11 +180,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     if (!audio || !track) return;
 
     if (audio.paused) {
+      recordPlay(track.id);
       void audio.play().catch(() => setPlaying(false));
     } else {
       audio.pause();
     }
-  }, [track]);
+  }, [track, recordPlay]);
 
   const play = useCallback(
     (next: PlayerTrack) => {
@@ -169,12 +194,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      recordPlay(next.id);
       shouldAutoplay.current = true;
       pendingSeek.current = 0;
       setTime(0);
       setTrack(next);
     },
-    [track, toggle],
+    [track, toggle, recordPlay],
   );
 
   const seek = useCallback((seconds: number) => {
@@ -259,6 +285,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     });
 
     navigator.mediaSession.setActionHandler("play", () => {
+      if (track) recordPlay(track.id);
       void audioRef.current?.play();
     });
     navigator.mediaSession.setActionHandler("pause", () => {
@@ -266,7 +293,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     });
     navigator.mediaSession.setActionHandler("seekbackward", () => skip(-15));
     navigator.mediaSession.setActionHandler("seekforward", () => skip(15));
-  }, [track, skip]);
+  }, [track, skip, recordPlay]);
 
   const value = useMemo<PlayerState>(
     () => ({

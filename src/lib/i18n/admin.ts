@@ -34,6 +34,9 @@ const es = {
   },
   episodes: {
     title: "Episodios recientes",
+    plays: "reproducciones",
+    playOne: "reproducción",
+    playMany: "reproducciones",
     hide: "Ocultar",
     publish: "Publicar",
   },
@@ -88,6 +91,9 @@ const en: AdminContent = {
   },
   episodes: {
     title: "Recent episodes",
+    plays: "plays",
+    playOne: "play",
+    playMany: "plays",
     hide: "Hide",
     publish: "Publish",
   },
