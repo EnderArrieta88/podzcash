@@ -27,20 +27,20 @@ jobs:
           set -uo pipefail
           mkdir -p diag
 
-          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -c "
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF 2>&1 | tee -a diag/lftp.log
           set ssl:verify-certificate no
           set ftp:ssl-allow yes
-          get '$REMOTE_DIR/.env' -o diag/env.txt
-          " || echo "No se pudo descargar .env"
-
-          for file in stderr.log next-development.log tmp/restart.txt; do
-            name=$(echo "$file" | tr '/' '_')
-            lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -c "
-            set ssl:verify-certificate no
-            set ftp:ssl-allow yes
-            get '$REMOTE_DIR/$file' -o 'diag/$name'
-            " || true
-          done
+          set net:max-retries 2
+          set net:timeout 20
+          get "$REMOTE_DIR/.env" -o diag/env.txt
+          get "$REMOTE_DIR/stderr.log" -o diag/stderr.log
+          get "$REMOTE_DIR/tmp/restart.txt" -o diag/restart.txt
+          cls -l "$REMOTE_DIR" > diag/listing-root.txt
+          cls -l "$REMOTE_DIR/tmp" > diag/listing-tmp.txt
+          cls -l "$REMOTE_DIR/.next" > diag/listing-next.txt
+          cls -l "$REMOTE_DIR/prisma" > diag/listing-prisma.txt
+          bye
+          EOF
 
           ls -lah diag
 
