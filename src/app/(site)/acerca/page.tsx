@@ -21,7 +21,7 @@ export default async function AboutPage() {
   const content = siteLegalContent[locale].about;
 
   return (
-    <article className="mx-auto w-full max-w-3xl py-10">
+    <article className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-6">
       <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-subtle">
         {content.eyebrow}
       </p>

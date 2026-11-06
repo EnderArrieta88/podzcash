@@ -138,7 +138,7 @@ export default async function ProjectPage() {
       </div>
 
       {/* QUÉ ES */}
-      <section className="block" id="que-es">
+      <section className="pz-block" id="que-es">
         <div className="wrap">
           <div className="sec-head">
             <div className="eyebrow">{content.about.eyebrow}</div>
@@ -235,7 +235,7 @@ export default async function ProjectPage() {
       </section>
 
       {/* ESTADO */}
-      <section className="block" id="estado" style={{ paddingTop: 0 }}>
+      <section className="pz-block" id="estado" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="sec-head">
             <div className="eyebrow">{content.state.eyebrow}</div>
@@ -276,7 +276,7 @@ export default async function ProjectPage() {
       </section>
 
       {/* PLAN */}
-      <section className="block" id="roadmap" style={{ paddingTop: 0 }}>
+      <section className="pz-block" id="roadmap" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="sec-head">
             <div className="eyebrow">{content.plan.eyebrow}</div>
@@ -329,7 +329,7 @@ export default async function ProjectPage() {
       </section>
 
       {/* FINANCIAMIENTO */}
-      <section className="block" id="financiamiento" style={{ paddingTop: 0 }}>
+      <section className="pz-block" id="financiamiento" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="sec-head">
             <div className="eyebrow">{content.funding.eyebrow}</div>
