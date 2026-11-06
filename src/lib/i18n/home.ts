@@ -18,8 +18,8 @@ const es = {
     latest: "Último episodio",
     emptyTitle: "Tu primer episodio, acá",
     emptyMeta: "Publica tu audio y compártelo",
-    coverAlt: (title: string) => `Portada de ${title}`,
-    channelAlt: (name: string) => `Foto de ${name}`,  },
+    photoAlt:
+      "Creadora grabando un podcast en un estudio con micrófono y auriculares",  },
   strip: {
     audioFirst: "Audio primero, sin distracciones",
     zecDirect: "ZEC directo a tu wallet",
@@ -171,8 +171,8 @@ const en: HomeContent = {
     latest: "Latest episode",
     emptyTitle: "Your first episode, right here",
     emptyMeta: "Publish your audio and share it",
-    coverAlt: (title: string) => `Cover art for ${title}`,
-    channelAlt: (name: string) => `Photo of ${name}`,
+    photoAlt:
+      "Creator recording a podcast in a studio with a microphone and headphones",
   },
   strip: {
     audioFirst: "Audio first, no distractions",
