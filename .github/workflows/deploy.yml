@@ -48,6 +48,7 @@ jobs:
 
       - name: Armar el bundle
         run: |
+          set -euo pipefail
           mkdir -p deploy/.next
           cp -a .next/standalone/. deploy/
           cp -a .next/static deploy/.next/static
@@ -56,7 +57,15 @@ jobs:
           # con rutas del sitio.
           rm -rf deploy/design deploy/AGENTS.md deploy/DESIGN.md deploy/README.md
           echo "archivos estáticos: $(find deploy/.next/static -type f | wc -l)"
+          echo "archivos de servidor: $(find deploy/.next/server -type f | wc -l)"
           du -sh deploy
+
+          # No se toca el servidor si el bundle local está incompleto.
+          test -f deploy/server.js
+          test -f deploy/.next/BUILD_ID
+          test -d deploy/.next/server
+          test -d deploy/node_modules/next
+          test -f deploy/node_modules/next/dist/server/next-server.js
 
       - name: Instalar lftp
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
@@ -78,7 +87,9 @@ jobs:
           EOF
           true
 
-      # Código y dependencias: solo lo que cambió. Nunca borra del servidor.
+      # Código y dependencias: se sube completo para que el servidor tenga
+      # exactamente las mismas versiones que el build. Nunca borra del servidor
+      # (las exclusiones protegen datos y configuración).
       - name: Subir código
         env:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
@@ -93,7 +104,7 @@ jobs:
           set net:timeout 30
           set net:reconnect-interval-base 3
           set mirror:parallel-transfer-count 2
-          mirror -R --only-newer --no-perms --verbose \
+          mirror -R --no-perms --verbose \
             --exclude-glob .next \
             --exclude-glob .next/* \
             --exclude-glob .env \
@@ -111,9 +122,10 @@ jobs:
           bye
           EOF
 
-      # El build se sube completo (sin --only-newer): un chunk olvidado deja
-      # la página sin hidratar. Son ~40 MB y garantiza consistencia.
-      - name: Subir build (.next)
+      # El build se reemplaza entero. Mezclar chunks de dos builds deja
+      # manifiestos y módulos inconsistentes: la app arranca, falla al cargar
+      # un módulo y entra en un bucle de reinicios.
+      - name: Reemplazar build (.next)
         env:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
           FTP_USER: ${{ secrets.FTP_USERNAME }}
@@ -127,11 +139,13 @@ jobs:
           set net:timeout 30
           set net:reconnect-interval-base 3
           set mirror:parallel-transfer-count 2
+          rm -rf "$REMOTE_DIR/.next"
           mirror -R --no-perms --verbose ./deploy/.next "$REMOTE_DIR/.next"
           bye
           EOF
 
-      # Compara la cantidad de archivos estáticos locales y remotos.
+      # Comprueba que el build remoto es exactamente el que se compiló:
+      # mismo BUILD_ID, mismos archivos de servidor y misma versión de Next.
       - name: Verificar integridad del build
         env:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
@@ -139,17 +153,62 @@ jobs:
           FTP_PASS: ${{ secrets.FTP_PASSWORD }}
           REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
         run: |
-          local_count=$(find deploy/.next/static -type f | wc -l)
-          remote_count=$(lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF | wc -l
+          set -euo pipefail
+
+          local_build=$(tr -d '\r\n' < deploy/.next/BUILD_ID)
+          local_static=$(find deploy/.next/static -type f | wc -l)
+          local_server=$(find deploy/.next/server -type f | wc -l)
+          local_next=$(node -p "require('./deploy/node_modules/next/package.json').version")
+
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          get "$REMOTE_DIR/.next/BUILD_ID" -o remote-build-id.txt
+          get "$REMOTE_DIR/node_modules/next/package.json" -o remote-next-package.json
+          bye
+          EOF
+
+          remote_build=$(tr -d '\r\n' < remote-build-id.txt)
+          remote_next=$(node -p "require('./remote-next-package.json').version")
+
+          remote_static=$(lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF | wc -l
           set ssl:verify-certificate no
           set ftp:ssl-allow yes
           find "$REMOTE_DIR/.next/static"
           bye
           EOF
           )
-          echo "estáticos locales: $local_count / remotos: $remote_count"
-          if [ "$remote_count" -lt "$local_count" ]; then
-            echo "::error::Faltan archivos estáticos en el servidor ($local_count locales vs $remote_count remotos)."
+
+          remote_server=$(lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF | wc -l
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          find "$REMOTE_DIR/.next/server"
+          bye
+          EOF
+          )
+
+          echo "BUILD_ID local: $local_build / remoto: $remote_build"
+          echo "Next local: $local_next / remoto: $remote_next"
+          echo "estáticos locales: $local_static / remotos: $remote_static"
+          echo "archivos de servidor locales: $local_server / remotos: $remote_server"
+
+          if [ "$remote_build" != "$local_build" ]; then
+            echo "::error::El BUILD_ID remoto no coincide: el build subió incompleto o mezclado."
+            exit 1
+          fi
+
+          if [ "$remote_next" != "$local_next" ]; then
+            echo "::error::La versión de Next en el servidor ($remote_next) no coincide con la compilada ($local_next)."
+            exit 1
+          fi
+
+          if [ "$remote_static" -lt "$local_static" ]; then
+            echo "::error::Faltan archivos estáticos en el servidor ($local_static locales vs $remote_static remotos)."
+            exit 1
+          fi
+
+          if [ "$remote_server" -lt "$local_server" ]; then
+            echo "::error::Faltan archivos de servidor en el servidor ($local_server locales vs $remote_server remotos)."
             exit 1
           fi
 
