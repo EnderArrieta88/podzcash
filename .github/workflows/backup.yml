@@ -84,6 +84,20 @@ jobs:
           rm backup.tar.gz
           ls -lh "$name"
 
+      - name: Verificar el backup cifrado
+        if: steps.config.outputs.configured == 'true'
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          file=$(ls podzcash-backup-*.tar.gz.gpg)
+          printf '%s' "$BACKUP_PASSPHRASE" | gpg \
+            --batch --yes --passphrase-fd 0 \
+            --decrypt "$file" > verify.tar.gz
+          tar -tzf verify.tar.gz > /dev/null
+          rm verify.tar.gz
+          echo "backup descifrado y verificado: $file"
+
       - name: Guardar backup cifrado
         if: steps.config.outputs.configured == 'true'
         uses: actions/upload-artifact@v4
