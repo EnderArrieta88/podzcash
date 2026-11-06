@@ -24,6 +24,12 @@ export async function SiteFooter() {
             <Link href="/acerca" className="transition-colors hover:text-text">
               {content.footer.about}
             </Link>
+            <Link
+              href="/lista-de-espera"
+              className="transition-colors hover:text-text"
+            >
+              {content.footer.waitlist}
+            </Link>
             <Link href="/proyecto" className="transition-colors hover:text-text">
               {content.nav.project}
             </Link>

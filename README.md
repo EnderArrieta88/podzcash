@@ -17,6 +17,7 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 
 - Registro por invitación y sesiones con cookie httpOnly.
 - Verificación de email por enlace firmado antes de activar la cuenta.
+- Lista de espera para creadores que todavía no tienen invitación.
 - Recuperación de contraseña por email con enlaces firmados y caducidad.
 - Canales con nombre de usuario, bio, avatar, enlaces y dirección Zcash.
 - Subida de audio en streaming, portadas, borradores y publicación.
@@ -165,7 +166,7 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
 - Monitor de disponibilidad cada 15 minutos.
 - Recuperación de contraseña con enlaces firmados y Resend.
 - Verificación de email para activar cuentas nuevas.
-- Pendientes: auditoría externa, lista de espera de creadores y portada de canal.
+- Pendientes: auditoría externa y staging (cuando el hosting lo permita).
 
 ## Estructura
 
@@ -185,6 +186,10 @@ src/
 .media/                Audio y portadas locales (no se versiona)
 .data/                 Índice de búsqueda local (no se versiona)
 ```
+
+La tabla `WaitlistEntry` se crea sola en la primera solicitud. La migración
+equivalente usa `CREATE TABLE IF NOT EXISTS`, así que también funciona en
+instalaciones nuevas.
 
 ## Contribuir
 

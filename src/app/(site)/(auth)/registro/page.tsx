@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -32,6 +33,15 @@ export default async function RegisterPage() {
       <div className="mt-8 rounded-2xl border border-border bg-surface p-6">
         <RegisterForm firstUser={firstUser} labels={content} />
       </div>
+
+      {!firstUser && (
+        <p className="mt-4 text-center text-sm text-muted">
+          {content.waitlistPrompt}{" "}
+          <Link href="/lista-de-espera" className="text-brand hover:underline">
+            {content.waitlistLink}
+          </Link>
+        </p>
+      )}
     </div>
   );
 }
