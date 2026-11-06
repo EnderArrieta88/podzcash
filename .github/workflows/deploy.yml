@@ -53,6 +53,16 @@ jobs:
           cp -a .next/standalone/. deploy/
           cp -a .next/static deploy/.next/static
           if [ -d public ]; then cp -a public deploy/public; fi
+          # Next crea alias de paquetes externos como enlaces simbólicos
+          # dentro de .next/node_modules. FTP no puede subirlos, así que los
+          # materializamos como carpetas reales antes de transferir.
+          if [ -d deploy/.next/node_modules ]; then
+            aliases_dir=$(mktemp -d)
+            cp -aL deploy/.next/node_modules/. "$aliases_dir/"
+            rm -rf deploy/.next/node_modules
+            mv "$aliases_dir" deploy/.next/node_modules
+            echo "alias materializados: $(find deploy/.next/node_modules -mindepth 1 -maxdepth 2 -type d | wc -l)"
+          fi
           # Archivos del repo que no se usan en runtime y pueden colisionar
           # con rutas del sitio.
           rm -rf deploy/design deploy/AGENTS.md deploy/DESIGN.md deploy/README.md
@@ -60,12 +70,20 @@ jobs:
           echo "archivos de servidor: $(find deploy/.next/server -type f | wc -l)"
           du -sh deploy
 
-          # No se toca el servidor si el bundle local está incompleto.
+          # No se toca el servidor si el bundle local está incompleto o
+          # conserva enlaces simbólicos que el FTP no puede transferir.
           test -f deploy/server.js
           test -f deploy/.next/BUILD_ID
           test -d deploy/.next/server
           test -d deploy/node_modules/next
           test -f deploy/node_modules/next/dist/server/next-server.js
+
+          symlinks=$(find deploy -type l | wc -l)
+          if [ "$symlinks" -ne 0 ]; then
+            echo "::error::Quedan $symlinks enlaces simbólicos en el bundle."
+            find deploy -type l | head -n 20
+            exit 1
+          fi
 
       - name: Instalar lftp
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
@@ -187,10 +205,20 @@ jobs:
           EOF
           )
 
+          local_aliases=$(find deploy/.next/node_modules -mindepth 1 -maxdepth 2 -type d 2>/dev/null | wc -l)
+          remote_aliases=$(lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF | wc -l || true
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          find "$REMOTE_DIR/.next/node_modules"
+          bye
+          EOF
+          )
+
           echo "BUILD_ID local: $local_build / remoto: $remote_build"
           echo "Next local: $local_next / remoto: $remote_next"
           echo "estáticos locales: $local_static / remotos: $remote_static"
           echo "archivos de servidor locales: $local_server / remotos: $remote_server"
+          echo "alias de paquetes locales: $local_aliases / remotos: $remote_aliases"
 
           if [ "$remote_build" != "$local_build" ]; then
             echo "::error::El BUILD_ID remoto no coincide: el build subió incompleto o mezclado."
@@ -209,6 +237,11 @@ jobs:
 
           if [ "$remote_server" -lt "$local_server" ]; then
             echo "::error::Faltan archivos de servidor en el servidor ($local_server locales vs $remote_server remotos)."
+            exit 1
+          fi
+
+          if [ "$local_aliases" -gt 0 ] && [ "$remote_aliases" -lt "$local_aliases" ]; then
+            echo "::error::Faltan los alias de paquetes externos ($local_aliases locales vs $remote_aliases remotos)."
             exit 1
           fi
 
