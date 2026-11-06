@@ -53,6 +53,8 @@ No aplica.
 - [ ] Probado en inglés (si toca textos).
 - [ ] Probado en móvil (si toca interfaz).
 - [ ] No hay secretos, credenciales ni datos personales en el diff.
+- [ ] No incluye nombres, imágenes o contenido de personas reales sin permiso.
+- [ ] Si cambia el nombre o la marca, revisé `TRADEMARK.md`.
 - [ ] Enlaces, redirecciones y RSS comprobados (si aplica).
 - [ ] Producción no se modifica desde este PR; el deploy sigue siendo manual.
 

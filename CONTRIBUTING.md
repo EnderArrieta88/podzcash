@@ -17,7 +17,7 @@ main  ──●────────────●────────�
 
 ## Repositorio público: quién puede hacer qué
 
-El repositorio será público y de código abierto. Eso no significa que cualquiera
+El repositorio es público y de código abierto. Eso no significa que cualquiera
 pueda fusionar o desplegar.
 
 | Persona | Puede | No puede |
@@ -35,6 +35,23 @@ Reglas prácticas:
 - Solo el mantenedor tiene permisos de escritura y administración.
 - El archivo `.github/CODEOWNERS` marca al mantenedor como revisor obligatorio
   de todo el repositorio.
+
+## Estándares del proyecto
+
+- **Licencia:** MIT. Todo el código nuevo debe ser compatible con esa licencia.
+- **Conducta:** se aplica [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+- **Seguridad:** no publiques vulnerabilidades en issues. Usa
+  [SECURITY.md](SECURITY.md).
+- **Marca:** revisa [TRADEMARK.md](TRADEMARK.md) antes de usar el nombre o el
+  logo en materiales públicos.
+- **Estilo:** commits atómicos, PRs pequeños, mensajes claros y documentación
+  actualizada. Seguimos los principios de revisión de `librustzcash` adaptados a
+  TypeScript: revisión antes de fusionar, CI obligatorio, historial legible y
+  ningún secreto en el repositorio.
+- **Pruebas:** cuando existan tests, deben pasar en CI. Hoy el check automático
+  cubre lint, tipos y build.
+- **Datos:** no subas bases de datos, audios, portadas, `.env` ni datos de
+  producción.
 
 ## 1. Preparar la rama
 
