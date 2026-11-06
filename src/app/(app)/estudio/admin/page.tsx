@@ -11,8 +11,10 @@ import { reportContent } from "@/lib/i18n/report";
 import { waitlistContent } from "@/lib/i18n/waitlist";
 import { countWaitlist, listWaitlist } from "@/lib/waitlist";
 import { episodePath } from "@/lib/routes";
+import { DeleteWaitlistButton } from "@/components/studio/delete-waitlist-button";
 import {
   cleanOrphansAction,
+  inviteWaitlistAction,
   resolveReportAction,
   setEpisodeStatusAction,
   setUserStatusAction,
@@ -27,7 +29,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ cleaned?: string }>;
+  searchParams: Promise<{
+    cleaned?: string;
+    invited?: string;
+    inviteError?: string;
+    deleted?: string;
+  }>;
 }) {
   const [, query, locale] = await Promise.all([
     requireAdmin(),
@@ -114,6 +121,24 @@ export default async function AdminPage({
         <p className="mt-2 text-sm text-muted">{content.intro}</p>
       </div>
 
+      {query.invited && (
+        <p className="rounded-[10px] border border-success/30 bg-success/10 px-3.5 py-2.5 text-sm text-success">
+          {content.waitlist.invited}
+        </p>
+      )}
+
+      {query.inviteError && (
+        <p className="rounded-[10px] border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-sm text-danger">
+          {content.waitlist.inviteError}
+        </p>
+      )}
+
+      {query.deleted && (
+        <p className="rounded-[10px] border border-success/30 bg-success/10 px-3.5 py-2.5 text-sm text-success">
+          {content.waitlist.deleted}
+        </p>
+      )}
+
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {stats.map((stat) => (
           <div
@@ -160,6 +185,24 @@ export default async function AdminPage({
                 {entry.note && (
                   <p className="mt-1 text-sm text-muted">{entry.note}</p>
                 )}
+
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <form action={inviteWaitlistAction}>
+                    <input type="hidden" name="id" value={entry.id} />
+                    <button
+                      type="submit"
+                      className="inline-flex h-8 items-center rounded-lg border border-brand/40 bg-brand-soft px-3 text-xs font-medium text-brand transition-colors hover:bg-brand/20"
+                    >
+                      {content.waitlist.invite}
+                    </button>
+                  </form>
+
+                  <DeleteWaitlistButton
+                    id={entry.id}
+                    label={content.waitlist.delete}
+                    confirmLabel={content.waitlist.confirmDelete}
+                  />
+                </div>
               </li>
             ))}
           </ul>

@@ -71,6 +71,7 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `AUTH_SECRET` | Firma los enlaces de verificación y recuperación |
 | `RESEND_API_KEY` | API key de Resend para emails transaccionales |
 | `EMAIL_FROM` | Remitente verificado en Resend |
+| `WAITLIST_NOTIFY_EMAIL` | Destino de los avisos de la lista de espera |
 
 ## Comandos
 

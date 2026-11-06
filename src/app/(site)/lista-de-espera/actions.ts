@@ -6,6 +6,7 @@ import { toFieldErrors, waitlistSchema } from "@/lib/validation";
 import { addWaitlistEntry } from "@/lib/waitlist";
 import { getLocale } from "@/lib/i18n/locale";
 import { waitlistContent } from "@/lib/i18n/waitlist";
+import { sendWaitlistNotificationEmail } from "@/lib/email";
 
 export async function joinWaitlistAction(
   _previous: ActionState,
@@ -41,8 +42,19 @@ export async function joinWaitlistAction(
   }
 
   try {
-    await addWaitlistEntry({ name, email, role, note });
+    const result = await addWaitlistEntry({ name, email, role, note });
     clearLimit(limitKey);
+
+    if (result === "created") {
+      const to =
+        process.env.WAITLIST_NOTIFY_EMAIL?.trim() ||
+        "invitaciones@podzcash.online";
+
+      await sendWaitlistNotificationEmail({
+        to,
+        entry: { name, email, role, note },
+      });
+    }
   } catch (error) {
     console.error("[waitlist] No se pudo guardar la solicitud:", error);
     return { error: content.errors.retry };

@@ -14,6 +14,7 @@ SITE_URL="https://podzcash.online"
 AUTH_SECRET="una-cadena-larga-y-aleatoria"
 RESEND_API_KEY="re_..."
 EMAIL_FROM="PodZcash <hola@podzcash.online>"
+WAITLIST_NOTIFY_EMAIL="invitaciones@podzcash.online"
 ```
 
 - `AUTH_SECRET` firma los enlaces de verificación y recuperación. Genera al
@@ -21,6 +22,8 @@ EMAIL_FROM="PodZcash <hola@podzcash.online>"
   **Un secreto corto permite falsificar enlaces**: usa 64 caracteres.
 - `RESEND_API_KEY` se crea en el panel de Resend.
 - `EMAIL_FROM` debe usar un dominio verificado en Resend.
+- `WAITLIST_NOTIFY_EMAIL` recibe un aviso por cada solicitud de la lista de
+  espera. Por defecto: `invitaciones@podzcash.online`.
 - El deploy **no sube `.env`**: hay que editar el archivo en el hosting y
   reiniciar la aplicación.
 
@@ -54,6 +57,22 @@ confirmarlo, la cuenta pasa a `active`.
 
 No requiere migración: se reutiliza el campo `User.status`, que ya admitía
 `active` y `suspended`.
+
+## Lista de espera
+
+Cuando alguien se anota en `/lista-de-espera`:
+
+- Se guarda la solicitud en la base, visible en `/estudio/admin`.
+- Se envía un aviso a `WAITLIST_NOTIFY_EMAIL` (por defecto
+  `invitaciones@podzcash.online`).
+- El aviso no se envía si el email ya estaba anotado.
+
+Desde la sección **Lista de espera** de `/estudio/admin` se puede:
+
+- **Invitar por email**: crea una invitación (o reutiliza una pendiente para
+  ese email) y la envía con Resend. El correo incluye el código y un enlace a
+  `/registro?invite=...`.
+- **Borrar**: elimina la solicitud.
 
 ## Recuperación de contraseña
 

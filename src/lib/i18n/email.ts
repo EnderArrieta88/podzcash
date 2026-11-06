@@ -48,6 +48,26 @@ const verifyEn: EmailCopy = {
   footer: "PodZcash · Audio for Zcash",
 };
 
+const inviteEs: EmailCopy = {
+  subject: "Tu invitación a PodZcash",
+  intro:
+    "Te invitaron a crear tu canal en PodZcash. Usá el código o el enlace para registrarte.",
+  button: "Crear mi cuenta",
+  ignore:
+    "Si no esperabas esta invitación, ignora este correo. El código es personal: no lo compartas.",
+  footer: "PodZcash · Audio para Zcash",
+};
+
+const inviteEn: EmailCopy = {
+  subject: "Your PodZcash invite",
+  intro:
+    "You have been invited to create your channel on PodZcash. Use the code or the link to sign up.",
+  button: "Create my account",
+  ignore:
+    "If you were not expecting this invite, ignore this email. The code is personal: do not share it.",
+  footer: "PodZcash · Audio for Zcash",
+};
+
 export const resetEmailContent: Record<Locale, EmailCopy> = {
   es: resetEs,
   en: resetEn,
@@ -56,4 +76,9 @@ export const resetEmailContent: Record<Locale, EmailCopy> = {
 export const verificationEmailContent: Record<Locale, EmailCopy> = {
   es: verifyEs,
   en: verifyEn,
+};
+
+export const inviteEmailContent: Record<Locale, EmailCopy> = {
+  es: inviteEs,
+  en: inviteEn,
 };
