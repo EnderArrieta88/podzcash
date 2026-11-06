@@ -10,6 +10,7 @@ const es = {
     password: "Contraseña",
     submit: "Entrar",
     pending: "Entrando…",
+    forgotPassword: "¿Olvidaste tu contraseña?",
     invitePrompt: "¿Tienes un código de invitación?",
     createAccount: "Crear cuenta",
     errors: {
@@ -55,10 +56,46 @@ const es = {
         "Debes aceptar los términos y la política de privacidad.",
     },
   },
+  resetRequest: {
+    metaTitle: "Recuperar contraseña",
+    title: "Recupera tu cuenta",
+    intro:
+      "Escribe el email de tu cuenta y te enviaremos un enlace para crear una contraseña nueva.",
+    email: "Email",
+    emailPlaceholder: "tu@email.com",
+    submit: "Enviar enlace",
+    pending: "Enviando…",
+    sentTitle: "Revisa tu correo",
+    sentBody:
+      "Si existe una cuenta con ese email, enviamos un enlace. Caduca en una hora.",
+    backToLogin: "Volver a entrar",
+    errors: {
+      emailInvalid: "Escribe un email válido.",
+    },
+  },
+  reset: {
+    metaTitle: "Nueva contraseña",
+    title: "Crea una contraseña nueva",
+    intro: "Elige una contraseña de al menos 8 caracteres.",
+    newPassword: "Nueva contraseña",
+    confirmPassword: "Repetir la nueva contraseña",
+    submit: "Guardar contraseña",
+    pending: "Guardando…",
+    invalidTitle: "El enlace no es válido",
+    invalidBody:
+      "Puede que haya caducado o ya se haya usado. Solicita uno nuevo.",
+    requestNew: "Solicitar otro enlace",
+    errors: {
+      invalidToken: "El enlace no es válido o caducó. Solicita uno nuevo.",
+      generic: "No se pudo cambiar la contraseña. Inténtalo otra vez.",
+    },
+  },
 };
 
 export type LoginLabels = typeof es.login;
 export type RegisterLabels = typeof es.register;
+export type ResetRequestLabels = typeof es.resetRequest;
+export type ResetLabels = typeof es.reset;
 
 type AuthContent = typeof es;
 
@@ -72,6 +109,7 @@ const en: AuthContent = {
     password: "Password",
     submit: "Sign in",
     pending: "Signing in…",
+    forgotPassword: "Forgot your password?",
     invitePrompt: "Have an invite code?",
     createAccount: "Create account",
     errors: {
@@ -114,6 +152,40 @@ const en: AuthContent = {
       inviteTaken: "Someone just used that code. Ask for another one.",
       retry: "Could not create the account. Try again.",
       termsRequired: "You must accept the terms and the privacy policy.",
+    },
+  },
+  resetRequest: {
+    metaTitle: "Reset password",
+    title: "Recover your account",
+    intro:
+      "Enter your account email and we will send you a link to create a new password.",
+    email: "Email",
+    emailPlaceholder: "you@email.com",
+    submit: "Send link",
+    pending: "Sending…",
+    sentTitle: "Check your email",
+    sentBody:
+      "If an account exists with that email, we sent a link. It expires in one hour.",
+    backToLogin: "Back to sign in",
+    errors: {
+      emailInvalid: "Enter a valid email.",
+    },
+  },
+  reset: {
+    metaTitle: "New password",
+    title: "Create a new password",
+    intro: "Choose a password with at least 8 characters.",
+    newPassword: "New password",
+    confirmPassword: "Repeat the new password",
+    submit: "Save password",
+    pending: "Saving…",
+    invalidTitle: "This link is not valid",
+    invalidBody:
+      "It may have expired or already been used. Request a new one.",
+    requestNew: "Request another link",
+    errors: {
+      invalidToken: "The link is invalid or expired. Request a new one.",
+      generic: "Could not change the password. Try again.",
     },
   },
 };
