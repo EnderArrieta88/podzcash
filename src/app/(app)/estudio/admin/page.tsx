@@ -58,6 +58,7 @@ export default async function AdminPage({
           id: true,
           title: true,
           status: true,
+          playCount: true,
           createdAt: true,
           channel: { select: { handle: true, displayName: true } },
         },
@@ -314,7 +315,11 @@ export default async function AdminPage({
                 <p className="truncate text-sm font-medium">{episode.title}</p>
                 <p className="mt-0.5 font-mono text-[11px] text-subtle">
                   @{episode.channel.handle} ·{" "}
-                  {content.episodeStatus[episode.status] ?? episode.status}
+                  {content.episodeStatus[episode.status] ?? episode.status} ·{" "}
+                  {episode.playCount}{" "}
+                  {episode.playCount === 1
+                    ? content.episodes.playOne
+                    : content.episodes.playMany}
                 </p>
               </div>
 

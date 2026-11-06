@@ -101,7 +101,9 @@ export default async function EpisodesPage() {
                     </p>
                     <p className="mt-0.5 font-mono text-xs tabular text-subtle">
                       {formatDuration(episode.durationSec)} ·{" "}
-                      {formatDate(episode.publishedAt ?? episode.createdAt, locale)}
+                      {formatDate(episode.publishedAt ?? episode.createdAt, locale)} ·{" "}
+                      {episode.playCount}{" "}
+                      {episode.playCount === 1 ? labels.playOne : labels.playMany}
                     </p>
                     {episode.tags.length > 0 && (
                       <div className="mt-1.5 flex flex-wrap gap-1.5">
