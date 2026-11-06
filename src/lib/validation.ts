@@ -62,6 +62,25 @@ export const loginSchema = z.object({
   password: z.string().min(1, "loginPasswordRequired"),
 });
 
+export const resetRequestSchema = z.object({
+  email: z
+    .email("emailInvalid")
+    .transform((value) => value.trim().toLowerCase()),
+});
+
+export const passwordResetSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, "newPasswordMin")
+      .max(100, "newPasswordMax"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "passwordsMismatch",
+    path: ["confirmPassword"],
+  });
+
 export const channelSchema = z.object({
   displayName: z
     .string()

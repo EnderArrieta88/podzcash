@@ -16,6 +16,7 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 ## Qué incluye
 
 - Registro por invitación y sesiones con cookie httpOnly.
+- Recuperación de contraseña por email con enlaces firmados y caducidad.
 - Canales con nombre de usuario, bio, avatar, enlaces y dirección Zcash.
 - Subida de audio en streaming, portadas, borradores y publicación.
 - Reproductor persistente, búsqueda full-text y reproductor embebible.
@@ -61,10 +62,13 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | Variable | Uso |
 |---|---|
 | `DATABASE_URL` | Ruta de SQLite, por ejemplo `file:./prisma/dev.db` |
-| `SITE_URL` | Origen público para RSS, embeds y enlaces |
+| `SITE_URL` | Origen público para RSS, embeds y enlaces de email |
 | `FEED_OWNER_EMAIL` | Email de propietario en el feed RSS |
 | `MEDIA_ROOT` | Carpeta de audio y portadas |
 | `SEARCH_DB_PATH` | Ruta del índice FTS5 |
+| `AUTH_SECRET` | Firma los enlaces de recuperación de contraseña |
+| `RESEND_API_KEY` | API key de Resend para emails transaccionales |
+| `EMAIL_FROM` | Remitente verificado en Resend |
 
 ## Comandos
 
@@ -145,6 +149,8 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
   `BACKUP_PASSPHRASE`.
 - **Monitorización:** healthcheck cada 15 minutos. Ver
   [docs/monitoring.md](docs/monitoring.md).
+- **Email:** recuperación de contraseña con Resend. Ver
+  [docs/email.md](docs/email.md).
 - **Staging:** pendiente de un segundo hosting/base de datos.
 
 ## Seguridad
@@ -154,9 +160,10 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
 - Dependencias de producción sin vulnerabilidades conocidas en `npm audit`
   al momento de esta revisión; el tooling de desarrollo puede mostrar avisos.
 - Tests unitarios para rutas, ZIP-321, RSS, validación y utilidades.
-- Backups diarios cifrados y monitor de disponibilidad cada 15 minutos.
-- Pendientes: auditoría externa, configurar `BACKUP_PASSPHRASE` y probar una
-  restauración completa.
+- Backups diarios cifrados con restauración verificada.
+- Monitor de disponibilidad cada 15 minutos.
+- Recuperación de contraseña con enlaces firmados y Resend.
+- Pendientes: auditoría externa, verificación de email y staging.
 
 ## Estructura
 

@@ -7,7 +7,9 @@ import { createSession, destroySession } from "@/lib/auth/session";
 import { normalizeInviteCode } from "@/lib/links";
 import {
   loginSchema,
+  passwordResetSchema,
   registerSchema,
+  resetRequestSchema,
   toFieldErrors,
   type FieldErrors,
 } from "@/lib/validation";
@@ -15,6 +17,14 @@ import type { ActionState } from "@/lib/action-state";
 import { clearLimit, take } from "@/lib/rate-limit";
 import { getLocale } from "@/lib/i18n/locale";
 import { authContent } from "@/lib/i18n/auth";
+import {
+  createResetToken,
+  isResetTokenConfigured,
+  passwordFingerprint,
+  verifyResetToken,
+} from "@/lib/auth/reset-token";
+import { sendPasswordResetEmail } from "@/lib/email";
+import { getSiteOrigin } from "@/lib/origin";
 
 class InviteTakenError extends Error {}
 
@@ -162,6 +172,97 @@ export async function loginAction(
 
   clearLimit(limitKey);
 
+  await createSession(user.id);
+  redirect("/estudio");
+}
+
+export async function requestPasswordResetAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const locale = await getLocale();
+
+  const parsed = resetRequestSchema.safeParse({
+    email: formData.get("email"),
+  });
+
+  if (!parsed.success) {
+    return { fields: toFieldErrors(parsed.error, locale) };
+  }
+
+  const email = parsed.data.email;
+
+  // Límite silencioso: no revelamos si el email existe o si se alcanzó el límite.
+  if (!take(`reset:${email}`, 3, 15 * 60 * 1000)) {
+    return { ok: true };
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (user && user.status === "active") {
+    if (!isResetTokenConfigured()) {
+      console.warn("[auth] AUTH_SECRET no está configurado; no se envía el enlace.");
+      return { ok: true };
+    }
+
+    try {
+      const token = createResetToken(user);
+      const origin = await getSiteOrigin();
+      const url = `${origin}/restablecer?token=${encodeURIComponent(token)}`;
+
+      await sendPasswordResetEmail({ to: user.email, url, locale });
+    } catch (error) {
+      console.error("[auth] No se pudo preparar el email de recuperación:", error);
+    }
+  }
+
+  return { ok: true };
+}
+
+export async function resetPasswordAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const locale = await getLocale();
+  const content = authContent[locale].reset;
+  const token = String(formData.get("token") ?? "").trim();
+
+  const payload = verifyResetToken(token);
+  if (!payload) {
+    return { error: content.errors.invalidToken };
+  }
+
+  const parsed = passwordResetSchema.safeParse({
+    newPassword: formData.get("newPassword"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+
+  if (!parsed.success) {
+    return { fields: toFieldErrors(parsed.error, locale) };
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+
+  if (
+    !user ||
+    user.status !== "active" ||
+    passwordFingerprint(user.passwordHash) !== payload.passwordFingerprint
+  ) {
+    return { error: content.errors.invalidToken };
+  }
+
+  const passwordHash = await hashPassword(parsed.data.newPassword);
+
+  const updated = await prisma.user.updateMany({
+    where: { id: user.id, passwordHash: user.passwordHash },
+    data: { passwordHash },
+  });
+
+  if (updated.count !== 1) {
+    return { error: content.errors.invalidToken };
+  }
+
+  await prisma.session.deleteMany({ where: { userId: user.id } });
   await createSession(user.id);
   redirect("/estudio");
 }

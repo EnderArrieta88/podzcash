@@ -44,6 +44,15 @@ export function LoginForm({ labels }: { labels: LoginLabels }) {
         <FieldError>{state?.fields?.password}</FieldError>
       </div>
 
+      <div className="text-right">
+        <Link
+          href="/recuperar"
+          className="text-xs text-muted hover:text-text"
+        >
+          {labels.forgotPassword}
+        </Link>
+      </div>
+
       <SubmitButton className="w-full" pendingLabel={labels.pending}>
         {labels.submit}
       </SubmitButton>
