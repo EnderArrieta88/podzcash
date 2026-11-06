@@ -1,0 +1,3 @@
+# Mantenedor del repositorio: solo él puede aprobar y fusionar cambios.
+# Se activa con la regla "Require review from Code Owners" en la rama main.
+* @EnderArrieta88
