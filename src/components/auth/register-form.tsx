@@ -85,6 +85,29 @@ export function RegisterForm({
         </div>
       )}
 
+      <div>
+        <label className="flex items-start gap-2 text-xs leading-relaxed text-muted">
+          <input
+            type="checkbox"
+            name="terms"
+            required
+            className="mt-0.5 size-3.5 shrink-0 accent-[var(--color-brand)]"
+          />
+          <span>
+            {labels.termsPrefix}{" "}
+            <Link href="/terminos" className="text-brand hover:underline">
+              {labels.termsLabel}
+            </Link>{" "}
+            {labels.termsJoin}{" "}
+            <Link href="/privacidad" className="text-brand hover:underline">
+              {labels.privacyLabel}
+            </Link>
+            .
+          </span>
+        </label>
+        <FieldError>{state?.fields?.terms}</FieldError>
+      </div>
+
       <SubmitButton className="w-full" pendingLabel={labels.pending}>
         {labels.submit}
       </SubmitButton>

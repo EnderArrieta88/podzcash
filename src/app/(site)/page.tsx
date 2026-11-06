@@ -388,9 +388,12 @@ export default async function Home() {
           <h2>{content.final.title}</h2>
           <p>{content.final.body}</p>
           <div className="cta-row">
-            <Link className="btn btn-gold" href="/registro">
+            <a
+              className="btn btn-gold"
+              href="mailto:hola@podzcash.online?subject=PodZcash%20invite"
+            >
               {content.final.primary}
-            </Link>
+            </a>
             <Link className="btn btn-ghost" href="/explorar">
               {content.final.secondary}
             </Link>
