@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { RegisterForm } from "@/components/auth/register-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { authContent } from "@/lib/i18n/auth";
+import { formatInviteCode, normalizeInviteCode } from "@/lib/links";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -13,9 +14,22 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: authContent[locale].register.metaTitle };
 }
 
-export default async function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ invite?: string | string[] }>;
+}) {
   const user = await getCurrentUser();
   if (user) redirect("/estudio");
+
+  const params = await searchParams;
+  const rawInvite = Array.isArray(params.invite)
+    ? params.invite[0]
+    : params.invite;
+  const defaultInvite =
+    rawInvite && normalizeInviteCode(rawInvite)
+      ? formatInviteCode(rawInvite)
+      : "";
 
   const firstUser = (await prisma.user.count()) === 0;
   const locale = await getLocale();
@@ -31,7 +45,11 @@ export default async function RegisterPage() {
       </p>
 
       <div className="mt-8 rounded-2xl border border-border bg-surface p-6">
-        <RegisterForm firstUser={firstUser} labels={content} />
+        <RegisterForm
+          firstUser={firstUser}
+          labels={content}
+          defaultInvite={defaultInvite}
+        />
       </div>
 
       {!firstUser && (

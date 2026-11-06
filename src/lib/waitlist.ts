@@ -91,3 +91,18 @@ export async function countWaitlist(): Promise<number> {
 
   return prisma.waitlistEntry.count();
 }
+
+export async function getWaitlistEntry(id: string) {
+  await ensureWaitlistTable();
+
+  return prisma.waitlistEntry.findUnique({
+    where: { id },
+    select: { id: true, email: true, name: true, role: true, note: true },
+  });
+}
+
+export async function deleteWaitlistEntry(id: string): Promise<void> {
+  await ensureWaitlistTable();
+
+  await prisma.waitlistEntry.deleteMany({ where: { id } });
+}

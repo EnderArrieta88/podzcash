@@ -10,9 +10,11 @@ import type { RegisterLabels } from "@/lib/i18n/auth";
 export function RegisterForm({
   firstUser,
   labels,
+  defaultInvite = "",
 }: {
   firstUser: boolean;
   labels: RegisterLabels;
+  defaultInvite?: string;
 }) {
   const [state, action] = useActionState(registerAction, null);
 
@@ -77,6 +79,7 @@ export function RegisterForm({
             name="inviteCode"
             required
             autoComplete="off"
+            defaultValue={defaultInvite || undefined}
             placeholder="XXXXX-XXXXX"
             className="font-mono tracking-wider uppercase"
           />

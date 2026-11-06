@@ -14,6 +14,13 @@ const es = {
   waitlist: {
     title: "Lista de espera",
     empty: "Todavía no hay solicitudes.",
+    invite: "Invitar por email",
+    delete: "Borrar",
+    confirmDelete: "¿Borrar esta solicitud de la lista de espera?",
+    invited: "Invitación enviada por email.",
+    inviteError:
+      "No se pudo enviar la invitación. Revisa Resend e inténtalo otra vez.",
+    deleted: "Solicitud borrada.",
   },
   reports: {
     title: "Reportes abiertos",
@@ -77,6 +84,12 @@ const en: AdminContent = {
   waitlist: {
     title: "Waitlist",
     empty: "No requests yet.",
+    invite: "Invite by email",
+    delete: "Delete",
+    confirmDelete: "Delete this waitlist request?",
+    invited: "Invite sent by email.",
+    inviteError: "Could not send the invite. Check Resend and try again.",
+    deleted: "Request deleted.",
   },
   reports: {
     title: "Open reports",
