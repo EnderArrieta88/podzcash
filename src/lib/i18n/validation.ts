@@ -26,6 +26,7 @@ const es = {
   inviteCodeMax: "El código de invitación es demasiado largo.",
   zcashAddressMax: "La dirección de Zcash es demasiado larga.",
   tagsMax: "Las etiquetas son demasiado largas.",
+  noteMax: "La nota no puede pasar de 400 caracteres.",
 };
 
 export type ValidationMessages = typeof es;
@@ -56,6 +57,7 @@ const en: ValidationMessages = {
   inviteCodeMax: "The invite code is too long.",
   zcashAddressMax: "The Zcash address is too long.",
   tagsMax: "The tags are too long.",
+  noteMax: "The note cannot exceed 400 characters.",
 };
 
 export const validationMessages: Record<Locale, ValidationMessages> = { es, en };

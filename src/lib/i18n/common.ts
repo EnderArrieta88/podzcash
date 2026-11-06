@@ -26,6 +26,7 @@ const es = {
     tagline: "podcasts y música del ecosistema Zcash.",
     note: "Proyecto en desarrollo · Donaciones directas en ZEC, sin custodia.",
     about: "Acerca",
+    waitlist: "Lista de espera",
     privacy: "Privacidad",
     terms: "Términos",
     disclaimer:
@@ -61,6 +62,7 @@ const en: CommonContent = {
     tagline: "podcasts and music from the Zcash ecosystem.",
     note: "Work in progress · Direct ZEC donations, non-custodial.",
     about: "About",
+    waitlist: "Waitlist",
     privacy: "Privacy",
     terms: "Terms",
     disclaimer:

@@ -149,3 +149,16 @@ model Report {
   @@index([status, createdAt])
   @@index([targetType, targetId])
 }
+
+// Solicitudes de creadores que todavía no tienen invitación.
+// La tabla se crea sola en la primera escritura para no requerir una
+// migración en producción.
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  // "podcast" | "music" | "other"
+  role      String   @default("podcast")
+  note      String?
+  createdAt DateTime @default(now())
+}

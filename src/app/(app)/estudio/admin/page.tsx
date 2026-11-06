@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, Flag, HardDrive, ShieldAlert } from "lucide-react";
+import { AlertTriangle, Flag, HardDrive, ShieldAlert, UserPlus } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
 import { findOrphans } from "@/lib/media-cleanup";
@@ -8,6 +8,8 @@ import { formatBytes, formatDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
 import { adminContent } from "@/lib/i18n/admin";
 import { reportContent } from "@/lib/i18n/report";
+import { waitlistContent } from "@/lib/i18n/waitlist";
+import { countWaitlist, listWaitlist } from "@/lib/waitlist";
 import { episodePath } from "@/lib/routes";
 import {
   cleanOrphansAction,
@@ -36,8 +38,10 @@ export default async function AdminPage({
   const reasonLabels = new Map(
     reportContent[locale].reasons.map((reason) => [reason.value, reason.label]),
   );
+  const waitlistRoleLabels: Record<string, string> =
+    waitlistContent[locale].roles;
 
-  const [users, episodes, reports, channels, orphans, publishedCount] =
+  const [users, episodes, reports, channels, orphans, publishedCount, waiting, waitlist] =
     await Promise.all([
       prisma.user.findMany({
         orderBy: { createdAt: "asc" },
@@ -71,6 +75,8 @@ export default async function AdminPage({
       prisma.channel.count(),
       findOrphans(),
       prisma.episode.count({ where: { status: "published" } }),
+      countWaitlist(),
+      listWaitlist(20),
     ]);
 
   const episodeIds = reports
@@ -96,6 +102,7 @@ export default async function AdminPage({
     { label: content.stats.channels, value: channels },
     { label: content.stats.published, value: publishedCount },
     { label: content.stats.openReports, value: reports.length },
+    { label: content.stats.waitlist, value: waiting },
   ];
 
   return (
@@ -120,6 +127,44 @@ export default async function AdminPage({
           </div>
         ))}
       </div>
+
+      <section className="rounded-xl border border-border bg-surface">
+        <div className="flex items-center gap-2 border-b border-border px-5 py-4">
+          <UserPlus size={15} className="text-brand" />
+          <h2 className="font-heading text-sm font-semibold">
+            {content.waitlist.title}
+          </h2>
+          <span className="ml-auto font-mono text-[11px] text-subtle">
+            {waiting}
+          </span>
+        </div>
+
+        {waitlist.length === 0 ? (
+          <p className="px-5 py-6 text-sm text-muted">
+            {content.waitlist.empty}
+          </p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {waitlist.map((entry) => (
+              <li key={entry.id} className="px-5 py-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <p className="text-sm font-medium">{entry.name}</p>
+                  <p className="font-mono text-[11px] text-subtle">
+                    {formatDate(entry.createdAt, locale)}
+                  </p>
+                </div>
+                <p className="mt-0.5 text-xs text-muted">
+                  {entry.email} ·{" "}
+                  {waitlistRoleLabels[entry.role] ?? entry.role}
+                </p>
+                {entry.note && (
+                  <p className="mt-1 text-sm text-muted">{entry.note}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section className="rounded-xl border border-border bg-surface">
         <div className="flex items-center gap-2 border-b border-border px-5 py-4">

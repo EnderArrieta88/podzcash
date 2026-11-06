@@ -9,6 +9,11 @@ const es = {
     channels: "Canales",
     published: "Episodios publicados",
     openReports: "Reportes abiertos",
+    waitlist: "En espera",
+  },
+  waitlist: {
+    title: "Lista de espera",
+    empty: "Todavía no hay solicitudes.",
   },
   reports: {
     title: "Reportes abiertos",
@@ -67,6 +72,11 @@ const en: AdminContent = {
     channels: "Channels",
     published: "Published episodes",
     openReports: "Open reports",
+    waitlist: "Waiting",
+  },
+  waitlist: {
+    title: "Waitlist",
+    empty: "No requests yet.",
   },
   reports: {
     title: "Open reports",

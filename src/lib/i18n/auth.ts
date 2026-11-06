@@ -40,6 +40,8 @@ const es = {
     inviteCode: "Código de invitación",
     inviteHint:
       "Te lo entrega un administrador de PodZcash. Sin código no se puede crear cuenta.",
+    waitlistPrompt: "¿Todavía no tienes código?",
+    waitlistLink: "Entra a la lista de espera",
     submit: "Crear cuenta",
     pending: "Creando cuenta…",
     loginPrompt: "¿Ya tienes cuenta?",
@@ -171,6 +173,8 @@ const en: AuthContent = {
     inviteCode: "Invite code",
     inviteHint:
       "An administrator gives it to you. Without a code you cannot create an account.",
+    waitlistPrompt: "No code yet?",
+    waitlistLink: "Join the waitlist",
     submit: "Create account",
     pending: "Creating account…",
     loginPrompt: "Already have an account?",
