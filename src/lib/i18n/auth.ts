@@ -68,6 +68,9 @@ const es = {
     sentTitle: "Revisa tu correo",
     sentBody:
       "Si existe una cuenta con ese email, enviamos un enlace. Caduca en una hora.",
+    unavailableTitle: "Recuperación no disponible",
+    unavailableBody:
+      "La recuperación por email todavía no está configurada en este entorno. Inténtalo más tarde o contacta con el administrador.",
     backToLogin: "Volver a entrar",
     errors: {
       emailInvalid: "Escribe un email válido.",
@@ -166,6 +169,9 @@ const en: AuthContent = {
     sentTitle: "Check your email",
     sentBody:
       "If an account exists with that email, we sent a link. It expires in one hour.",
+    unavailableTitle: "Recovery unavailable",
+    unavailableBody:
+      "Email recovery is not configured in this environment yet. Try again later or contact the administrator.",
     backToLogin: "Back to sign in",
     errors: {
       emailInvalid: "Enter a valid email.",
