@@ -5,6 +5,10 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
 import { findOrphans } from "@/lib/media-cleanup";
 import { formatBytes, formatDate } from "@/lib/format";
+import { getLocale } from "@/lib/i18n/locale";
+import { adminContent } from "@/lib/i18n/admin";
+import { reportContent } from "@/lib/i18n/report";
+import { episodePath } from "@/lib/routes";
 import {
   cleanOrphansAction,
   resolveReportAction,
@@ -12,15 +16,26 @@ import {
   setUserStatusAction,
 } from "./actions";
 
-export const metadata: Metadata = { title: "Administración" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+
+  return { title: adminContent[locale].metaTitle };
+}
 
 export default async function AdminPage({
   searchParams,
 }: {
   searchParams: Promise<{ cleaned?: string }>;
 }) {
-  await requireAdmin();
-  const query = await searchParams;
+  const [, query, locale] = await Promise.all([
+    requireAdmin(),
+    searchParams,
+    getLocale(),
+  ]);
+  const content = adminContent[locale];
+  const reasonLabels = new Map(
+    reportContent[locale].reasons.map((reason) => [reason.value, reason.label]),
+  );
 
   const [users, episodes, reports, channels, orphans, publishedCount] =
     await Promise.all([
@@ -65,27 +80,30 @@ export default async function AdminPage({
     (
       await prisma.episode.findMany({
         where: { id: { in: episodeIds } },
-        select: { id: true, title: true, slug: true, channel: { select: { handle: true } } },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          channel: { select: { handle: true } },
+        },
       })
     ).map((episode) => [episode.id, episode]),
   );
 
   const stats = [
-    { label: "Usuarios", value: users.length },
-    { label: "Canales", value: channels },
-    { label: "Episodios publicados", value: publishedCount },
-    { label: "Reportes abiertos", value: reports.length },
+    { label: content.stats.users, value: users.length },
+    { label: content.stats.channels, value: channels },
+    { label: content.stats.published, value: publishedCount },
+    { label: content.stats.openReports, value: reports.length },
   ];
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-2xl font-bold tracking-tight">
-          Administración
+          {content.title}
         </h1>
-        <p className="mt-2 text-sm text-muted">
-          Moderación, cuentas y limpieza de archivos.
-        </p>
+        <p className="mt-2 text-sm text-muted">{content.intro}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -106,13 +124,13 @@ export default async function AdminPage({
         <div className="flex items-center gap-2 border-b border-border px-5 py-4">
           <Flag size={15} className="text-brand" />
           <h2 className="font-heading text-sm font-semibold">
-            Reportes abiertos
+            {content.reports.title}
           </h2>
         </div>
 
         {reports.length === 0 ? (
           <p className="px-5 py-6 text-sm text-muted">
-            No hay reportes pendientes.
+            {content.reports.empty}
           </p>
         ) : (
           <ul className="divide-y divide-border">
@@ -127,10 +145,13 @@ export default async function AdminPage({
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-sm font-medium">
-                        {episode ? episode.title : "Contenido no disponible"}
+                        {episode
+                          ? episode.title
+                          : content.reports.unavailable}
                       </p>
                       <p className="mt-0.5 font-mono text-[11px] text-subtle">
-                        {report.reason} · {formatDate(report.createdAt)}
+                        {reasonLabels.get(report.reason) ?? report.reason} ·{" "}
+                        {formatDate(report.createdAt, locale)}
                       </p>
                       {report.details && (
                         <p className="mt-2 max-w-xl text-sm text-muted">
@@ -139,10 +160,13 @@ export default async function AdminPage({
                       )}
                       {episode && (
                         <Link
-                          href={`/c/${episode.channel.handle}/${episode.slug}`}
+                          href={episodePath(
+                            episode.channel.handle,
+                            episode.slug,
+                          )}
                           className="mt-1 inline-block text-xs text-brand hover:underline"
                         >
-                          Ver episodio
+                          {content.reports.view}
                         </Link>
                       )}
                     </div>
@@ -156,7 +180,7 @@ export default async function AdminPage({
                             type="submit"
                             className="inline-flex h-8 items-center rounded-lg border border-danger/40 bg-danger/10 px-3 text-xs text-danger transition-colors hover:bg-danger/20"
                           >
-                            Ocultar episodio
+                            {content.reports.hide}
                           </button>
                         </form>
                       )}
@@ -167,7 +191,7 @@ export default async function AdminPage({
                           type="submit"
                           className="inline-flex h-8 items-center rounded-lg border border-border bg-surface-2 px-3 text-xs text-muted transition-colors hover:text-text"
                         >
-                          Descartar
+                          {content.reports.dismiss}
                         </button>
                       </form>
                     </div>
@@ -185,12 +209,15 @@ export default async function AdminPage({
             <HardDrive size={16} className="mt-0.5 text-muted" />
             <div>
               <h2 className="font-heading text-sm font-semibold">
-                Medios huérfanos
+                {content.orphans.title}
               </h2>
               <p className="mt-1 text-xs text-muted">
                 {orphans.files.length === 0
-                  ? "No hay archivos sin usar."
-                  : `${orphans.files.length} archivo(s) sin referencia · ${formatBytes(orphans.bytes)}`}
+                  ? content.orphans.empty
+                  : content.orphans.count(
+                      orphans.files.length,
+                      formatBytes(orphans.bytes),
+                    )}
               </p>
             </div>
           </div>
@@ -201,7 +228,7 @@ export default async function AdminPage({
                 type="submit"
                 className="inline-flex h-9 items-center rounded-xl border border-danger/40 bg-danger/10 px-4 text-sm text-danger transition-colors hover:bg-danger/20"
               >
-                Eliminar huérfanos
+                {content.orphans.clean}
               </button>
             </form>
           )}
@@ -209,7 +236,7 @@ export default async function AdminPage({
 
         {query.cleaned && (
           <p className="mt-3 text-xs text-jade-bright">
-            Se eliminaron {query.cleaned} archivo(s).
+            {content.orphans.cleaned(query.cleaned)}
           </p>
         )}
       </section>
@@ -217,7 +244,9 @@ export default async function AdminPage({
       <section className="rounded-xl border border-border bg-surface">
         <div className="flex items-center gap-2 border-b border-border px-5 py-4">
           <ShieldAlert size={15} className="text-muted" />
-          <h2 className="font-heading text-sm font-semibold">Usuarios</h2>
+          <h2 className="font-heading text-sm font-semibold">
+            {content.users.title}
+          </h2>
         </div>
 
         <ul className="divide-y divide-border">
@@ -234,8 +263,11 @@ export default async function AdminPage({
                   </span>
                 </p>
                 <p className="mt-0.5 font-mono text-[11px] text-subtle">
-                  {user.role} · {user.status} ·{" "}
-                  {user.channel ? `@${user.channel.handle}` : "sin canal"}
+                  {content.roles[user.role] ?? user.role} ·{" "}
+                  {content.userStatus[user.status] ?? user.status} ·{" "}
+                  {user.channel
+                    ? `@${user.channel.handle}`
+                    : content.users.noChannel}
                 </p>
               </div>
 
@@ -254,7 +286,9 @@ export default async function AdminPage({
                       : "inline-flex h-8 items-center rounded-lg border border-jade/30 bg-jade-soft px-3 text-xs text-jade-bright"
                   }
                 >
-                  {user.status === "active" ? "Suspender" : "Reactivar"}
+                  {user.status === "active"
+                    ? content.users.suspend
+                    : content.users.reactivate}
                 </button>
               </form>
             </li>
@@ -266,7 +300,7 @@ export default async function AdminPage({
         <div className="flex items-center gap-2 border-b border-border px-5 py-4">
           <AlertTriangle size={15} className="text-muted" />
           <h2 className="font-heading text-sm font-semibold">
-            Episodios recientes
+            {content.episodes.title}
           </h2>
         </div>
 
@@ -279,7 +313,8 @@ export default async function AdminPage({
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{episode.title}</p>
                 <p className="mt-0.5 font-mono text-[11px] text-subtle">
-                  @{episode.channel.handle} · {episode.status}
+                  @{episode.channel.handle} ·{" "}
+                  {content.episodeStatus[episode.status] ?? episode.status}
                 </p>
               </div>
 
@@ -294,7 +329,9 @@ export default async function AdminPage({
                   type="submit"
                   className="inline-flex h-8 items-center rounded-lg border border-border bg-surface-2 px-3 text-xs text-muted transition-colors hover:text-text"
                 >
-                  {episode.status === "published" ? "Ocultar" : "Publicar"}
+                  {episode.status === "published"
+                    ? content.episodes.hide
+                    : content.episodes.publish}
                 </button>
               </form>
             </li>

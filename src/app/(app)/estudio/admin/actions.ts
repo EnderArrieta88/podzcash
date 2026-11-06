@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
 import { indexEpisode } from "@/lib/search-index";
 import { deleteOrphans } from "@/lib/media-cleanup";
+import { channelPath, episodePath } from "@/lib/routes";
 
 export async function setUserStatusAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
@@ -44,8 +45,8 @@ export async function setEpisodeStatusAction(formData: FormData): Promise<void> 
   await indexEpisode(episode.id);
 
   revalidatePath("/estudio/admin");
-  revalidatePath(`/c/${episode.channel.handle}`);
-  revalidatePath(`/c/${episode.channel.handle}/${episode.slug}`);
+  revalidatePath(channelPath(episode.channel.handle));
+  revalidatePath(episodePath(episode.channel.handle, episode.slug));
 }
 
 export async function resolveReportAction(formData: FormData): Promise<void> {
@@ -68,8 +69,8 @@ export async function resolveReportAction(formData: FormData): Promise<void> {
 
     if (episode) {
       await indexEpisode(episode.id);
-      revalidatePath(`/c/${episode.channel.handle}`);
-      revalidatePath(`/c/${episode.channel.handle}/${episode.slug}`);
+      revalidatePath(channelPath(episode.channel.handle));
+      revalidatePath(episodePath(episode.channel.handle, episode.slug));
     }
   }
 

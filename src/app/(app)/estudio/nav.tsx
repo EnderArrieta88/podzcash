@@ -11,6 +11,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { StudioShellContent } from "@/lib/i18n/studio-shell";
 
 type NavItem = {
   href: string;
@@ -19,21 +20,27 @@ type NavItem = {
   exact?: boolean;
 };
 
-const baseItems: NavItem[] = [
-  { href: "/estudio", label: "Resumen", icon: LayoutDashboard, exact: true },
-  { href: "/estudio/episodios", label: "Episodios", icon: ListMusic },
-  { href: "/estudio/canal", label: "Mi canal", icon: Radio },
-  { href: "/estudio/distribucion", label: "Distribución", icon: Rss },
-  { href: "/estudio/cuenta", label: "Cuenta", icon: UserRound },
-];
-
-export function StudioNav({ isAdmin }: { isAdmin: boolean }) {
+export function StudioNav({
+  isAdmin,
+  labels,
+}: {
+  isAdmin: boolean;
+  labels: StudioShellContent["nav"];
+}) {
   const pathname = usePathname();
+
+  const baseItems: NavItem[] = [
+    { href: "/estudio", label: labels.overview, icon: LayoutDashboard, exact: true },
+    { href: "/estudio/episodios", label: labels.episodes, icon: ListMusic },
+    { href: "/estudio/canal", label: labels.channel, icon: Radio },
+    { href: "/estudio/distribucion", label: labels.distribution, icon: Rss },
+    { href: "/estudio/cuenta", label: labels.account, icon: UserRound },
+  ];
 
   const links: NavItem[] = isAdmin
     ? [
         ...baseItems,
-        { href: "/estudio/invitaciones", label: "Invitaciones", icon: Ticket },
+        { href: "/estudio/invitaciones", label: labels.invites, icon: Ticket },
       ]
     : baseItems;
 

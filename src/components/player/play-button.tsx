@@ -6,9 +6,12 @@ import {
   type PlayerTrack,
 } from "@/components/player/player-context";
 import { cn } from "@/lib/utils";
+import type { Locale } from "@/lib/i18n/config";
+import { sharedLabels } from "@/lib/i18n/shared";
 
 type PlayButtonProps = {
   track: PlayerTrack;
+  locale: Locale;
   size?: "sm" | "lg";
   label?: boolean;
   className?: string;
@@ -16,6 +19,7 @@ type PlayButtonProps = {
 
 export function PlayButton({
   track,
+  locale,
   size = "sm",
   label = false,
   className,
@@ -23,6 +27,7 @@ export function PlayButton({
   const { track: current, playing, play, toggle } = usePlayer();
   const isCurrent = current?.id === track.id;
   const isPlaying = isCurrent && playing;
+  const text = sharedLabels[locale];
 
   const iconSize = size === "lg" ? 22 : 16;
 
@@ -36,7 +41,9 @@ export function PlayButton({
         if (isCurrent) toggle();
         else play(track);
       }}
-      aria-label={isPlaying ? `Pausar ${track.title}` : `Reproducir ${track.title}`}
+      aria-label={
+        isPlaying ? text.pauseAria(track.title) : text.playAria(track.title)
+      }
       className={cn(
         "inline-flex items-center justify-center gap-2 bg-brand text-[#17130a] transition-colors hover:bg-brand-strong",
         size === "lg" ? "h-12 rounded-full px-6 text-sm font-medium" : "size-10 rounded-full",
@@ -53,7 +60,7 @@ export function PlayButton({
           className={size === "lg" ? "ml-0.5" : "ml-0.5"}
         />
       )}
-      {label && (isPlaying ? "Pausar" : "Reproducir")}
+      {label && (isPlaying ? text.pause : text.play)}
     </button>
   );
 }

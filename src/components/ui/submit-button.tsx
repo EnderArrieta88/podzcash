@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 type SubmitButtonProps = {
   children: React.ReactNode;
-  pendingLabel?: string;
+  pendingLabel: string;
   className?: string;
   variant?: "primary" | "secondary";
   name?: string;
@@ -16,7 +16,7 @@ type SubmitButtonProps = {
 
 export function SubmitButton({
   children,
-  pendingLabel = "Guardando…",
+  pendingLabel,
   className,
   variant = "primary",
   name,

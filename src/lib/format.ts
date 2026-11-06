@@ -24,22 +24,38 @@ export function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
 }
 
-const dateFormatter = new Intl.DateTimeFormat("es", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
+import type { Locale } from "@/lib/i18n/config";
 
-export function formatDate(date: Date): string {
-  return dateFormatter.format(date);
+const dateFormatters: Record<Locale, Intl.DateTimeFormat> = {
+  es: new Intl.DateTimeFormat("es", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }),
+  en: new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }),
+};
+
+export function formatDate(date: Date, locale: Locale = "es"): string {
+  return dateFormatters[locale].format(date);
 }
 
-export function relativeDate(date: Date): string {
+export function relativeDate(date: Date, locale: Locale = "es"): string {
   const days = Math.floor((Date.now() - date.getTime()) / 86_400_000);
+
+  if (locale === "en") {
+    if (days <= 0) return "today";
+    if (days === 1) return "yesterday";
+    if (days < 30) return `${days} days ago`;
+    return formatDate(date, locale);
+  }
 
   if (days <= 0) return "hoy";
   if (days === 1) return "ayer";
   if (days < 30) return `hace ${days} días`;
 
-  return formatDate(date);
+  return formatDate(date, locale);
 }

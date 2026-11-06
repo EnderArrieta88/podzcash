@@ -7,15 +7,22 @@ import {
   EpisodeForm,
   type EpisodeFormValues,
 } from "@/components/studio/episode-form";
+import { getLocale } from "@/lib/i18n/locale";
+import { studioEpisodesContent } from "@/lib/i18n/studio-episodes";
 
-export const metadata: Metadata = { title: "Editar episodio" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+
+  return { title: studioEpisodesContent[locale].meta.edit };
+}
 
 export default async function EditEpisodePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const user = await requireUser();
+  const [user, locale] = await Promise.all([requireUser(), getLocale()]);
+  const content = studioEpisodesContent[locale];
 
   if (!user.channel) redirect("/estudio/canal");
 
@@ -38,7 +45,7 @@ export default async function EditEpisodePage({
       key: episode.audioPath,
       size: episode.fileSize,
       mimeType: episode.mimeType,
-      name: "Audio actual",
+      name: content.editPage.currentAudio,
       durationSec: episode.durationSec,
     },
     coverKey: episode.coverKey,
@@ -49,16 +56,13 @@ export default async function EditEpisodePage({
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl tracking-tight">
-          Editar episodio
+          {content.editPage.title}
         </h1>
-        <p className="mt-2 text-sm text-muted">
-          Si cambias el audio o la portada, el archivo anterior se elimina al
-          guardar.
-        </p>
+        <p className="mt-2 text-sm text-muted">{content.editPage.intro}</p>
       </div>
 
       <div className="rounded-xl border border-border bg-surface p-6">
-        <EpisodeForm episode={values} />
+        <EpisodeForm episode={values} labels={content.form} />
       </div>
     </div>
   );

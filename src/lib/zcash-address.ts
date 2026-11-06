@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import type { Locale } from "@/lib/i18n/config";
+import { addressMessages } from "@/lib/i18n/address";
 
 export type AddressKind = "transparent" | "sapling" | "unified";
 
@@ -117,19 +119,23 @@ function hasValidBech32Checksum(address: string, expectedHrp: string): boolean {
  * - zs1: Bech32 (Sapling).
  * - u1: Bech32m (Unified Address).
  */
-export function validateZcashAddress(raw: string): AddressValidation {
+export function validateZcashAddress(
+  raw: string,
+  locale: Locale = "es",
+): AddressValidation {
   const address = raw.trim();
+  const m = addressMessages[locale];
 
   if (!address) {
-    return { ok: false, error: "Escribe tu dirección de Zcash." };
+    return { ok: false, error: m.required };
   }
 
   if (/\s/.test(address)) {
-    return { ok: false, error: "La dirección no puede tener espacios." };
+    return { ok: false, error: m.spaces };
   }
 
   if (address.length > 200) {
-    return { ok: false, error: "Esa dirección es demasiado larga." };
+    return { ok: false, error: m.tooLong };
   }
 
   const lower = address.toLowerCase();
@@ -142,15 +148,14 @@ export function validateZcashAddress(raw: string): AddressValidation {
   ) {
     return {
       ok: false,
-      error: "Esa dirección es de testnet. Usa una de mainnet.",
+      error: m.testnet,
     };
   }
 
   if (lower.startsWith("zc")) {
     return {
       ok: false,
-      error:
-        "Las direcciones Sprout (zc…) están obsoletas. Usa una unificada (u1…) o Sapling (zs1…).",
+      error: m.sprout,
     };
   }
 
@@ -158,7 +163,7 @@ export function validateZcashAddress(raw: string): AddressValidation {
     if (address.length !== 35 || !hasValidBase58Check(address)) {
       return {
         ok: false,
-        error: "La dirección transparente no es válida (checksum incorrecto).",
+        error: m.transparent,
       };
     }
 
@@ -169,7 +174,7 @@ export function validateZcashAddress(raw: string): AddressValidation {
     if (!hasValidBech32Checksum(lower, "zs")) {
       return {
         ok: false,
-        error: "La dirección Sapling no es válida (checksum incorrecto).",
+        error: m.sapling,
       };
     }
 
@@ -180,7 +185,7 @@ export function validateZcashAddress(raw: string): AddressValidation {
     if (!hasValidBech32Checksum(lower, "u")) {
       return {
         ok: false,
-        error: "La dirección unificada no es válida (checksum incorrecto).",
+        error: m.unified,
       };
     }
 
@@ -189,7 +194,7 @@ export function validateZcashAddress(raw: string): AddressValidation {
 
   return {
     ok: false,
-    error: "No reconozco el formato. Debe empezar con u1, zs1, t1 o t3.",
+    error: m.format,
   };
 }
 

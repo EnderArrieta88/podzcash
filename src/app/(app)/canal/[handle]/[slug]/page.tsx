@@ -7,12 +7,16 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { formatDate, formatDuration } from "@/lib/format";
 import { storage } from "@/lib/storage";
 import { PlayButton } from "@/components/player/play-button";
+import { getLocale } from "@/lib/i18n/locale";
+import { episodeContent } from "@/lib/i18n/episode";
+import { sharedLabels } from "@/lib/i18n/shared";
+import { channelPath, donatePath, normalizeHandleParam } from "@/lib/routes";
 
 type PageProps = { params: Promise<{ handle: string; slug: string }> };
 
 async function load(handle: string, slug: string) {
   const channel = await prisma.channel.findUnique({
-    where: { handle: handle.toLowerCase() },
+    where: { handle: normalizeHandleParam(handle) },
     select: {
       id: true,
       handle: true,
@@ -38,9 +42,11 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { handle, slug } = await params;
+  const locale = await getLocale();
+  const content = episodeContent[locale];
   const data = await load(handle, slug);
 
-  if (!data) return { title: "Episodio no encontrado" };
+  if (!data) return { title: content.notFound };
 
   return {
     title: `${data.episode.title} · ${data.channel.displayName}`,
@@ -50,6 +56,9 @@ export async function generateMetadata({
 
 export default async function EpisodePage({ params }: PageProps) {
   const { handle, slug } = await params;
+  const locale = await getLocale();
+  const content = episodeContent[locale];
+  const kind = sharedLabels[locale];
   const data = await load(handle, slug);
 
   if (!data) notFound();
@@ -67,7 +76,7 @@ export default async function EpisodePage({ params }: PageProps) {
   return (
     <div className="mx-auto w-full max-w-4xl">
       <Link
-        href={`/c/${channel.handle}`}
+        href={channelPath(channel.handle)}
         className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-text"
       >
         <ArrowLeft size={15} />
@@ -76,7 +85,7 @@ export default async function EpisodePage({ params }: PageProps) {
 
       {episode.status !== "published" && (
         <p className="mt-5 rounded-xl border border-brand/30 bg-brand-soft px-4 py-2.5 text-sm text-brand">
-          Este episodio es un borrador: solo tú puedes verlo.
+          {content.draft}
         </p>
       )}
 
@@ -96,13 +105,13 @@ export default async function EpisodePage({ params }: PageProps) {
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted">
               <Radio size={13} />
-              {episode.kind === "music" ? "Música" : "Podcast"}
+              {episode.kind === "music" ? kind.musicTitle : kind.podcastTitle}
             </span>
             <span className="font-mono text-xs tabular text-subtle">
               {formatDuration(episode.durationSec)}
             </span>
             <span className="font-mono text-xs text-subtle">
-              {formatDate(episode.publishedAt ?? episode.createdAt)}
+              {formatDate(episode.publishedAt ?? episode.createdAt, locale)}
             </span>
           </div>
 
@@ -116,6 +125,7 @@ export default async function EpisodePage({ params }: PageProps) {
             <PlayButton
               size="lg"
               label
+              locale={locale}
               track={{
                 id: episode.id,
                 title: episode.title,
@@ -133,7 +143,7 @@ export default async function EpisodePage({ params }: PageProps) {
       {episode.description && (
         <div className="mt-10 rounded-xl border border-border bg-surface p-6">
           <h2 className="font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">
-            Descripción
+            {content.description}
           </h2>
           <p className="mt-3 whitespace-pre-line text-pretty leading-relaxed text-muted">
             {episode.description}
@@ -159,7 +169,7 @@ export default async function EpisodePage({ params }: PageProps) {
         className="mt-6 inline-flex items-center gap-1.5 text-xs text-subtle transition-colors hover:text-text"
       >
         <Flag size={12} />
-        Reportar este episodio
+        {content.report}
       </Link>
 
       {channel.zcashAddress && (
@@ -167,19 +177,19 @@ export default async function EpisodePage({ params }: PageProps) {
             <ShieldCheck size={18} className="mt-0.5 text-jade-bright" />
             <div>
               <p className="font-heading text-sm font-semibold text-jade-bright">
-                ¿Te sirvió este episodio?
+                {content.helpTitle}
               </p>
               <p className="mt-1 text-xs text-jade-bright/70">
-                Apoyá a {channel.displayName} directo en ZEC, sin intermediarios.
+                {content.helpBody(channel.displayName)}
               </p>
             </div>
           </div>
 
           <Link
-            href={`/c/${channel.handle}/donar`}
+            href={donatePath(channel.handle)}
             className="inline-flex h-10 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
           >
-            Apoyar con ZEC
+            {content.support}
           </Link>
         </div>
       )}

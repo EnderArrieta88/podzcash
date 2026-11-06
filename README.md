@@ -56,10 +56,10 @@ en **/estudio/invitaciones**.
 | `/estudio/invitaciones` | Generar códigos (solo admin) |
 | `/explorar` | Búsqueda y filtros (`?q=`, `?tipo=`, `?tag=`) |
 | `/design` | Laboratorio local del sistema de diseño |
-| `/c/[handle]` | Página pública del canal |
-| `/c/[handle]/donar` | Donación con QR y ZIP-321 |
-| `/c/[handle]/[slug]` | Episodio público |
-| `/c/[handle]/feed.xml` | Feed RSS 2.0 + Podcasting 2.0 |
+| `/canal/@[handle]` | Página pública del canal |
+| `/canal/@[handle]/donar` | Donación con QR y ZIP-321 |
+| `/canal/@[handle]/[slug]` | Episodio público |
+| `/canal/@[handle]/feed.xml` | Feed RSS 2.0 + Podcasting 2.0 |
 | `/embed/[id]` | Reproductor embebible |
 | `/estudio/distribucion` | Feed, instrucciones y código de embed |
 | `/estudio/admin` | Moderación, cuentas y limpieza (solo admin) |

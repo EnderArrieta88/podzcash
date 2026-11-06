@@ -5,41 +5,44 @@ import { requireUser } from "@/lib/auth/guards";
 import { parseLinks } from "@/lib/links";
 import { storage } from "@/lib/storage";
 import { ButtonLink } from "@/components/ui/button-link";
+import { getLocale } from "@/lib/i18n/locale";
+import { studioShellContent } from "@/lib/i18n/studio-shell";
+import { channelPath } from "@/lib/routes";
 
 export default async function StudioPage() {
-  const user = await requireUser();
+  const [user, locale] = await Promise.all([requireUser(), getLocale()]);
+  const content = studioShellContent[locale].dashboard;
 
   if (!user.channel) {
     return (
       <div className="rounded-xl border border-border bg-surface p-8">
         <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-          Paso 1 de 2
+          {content.step}
         </p>
         <h1 className="mt-2 font-display text-3xl tracking-tight">
-          Crea tu canal
+          {content.createTitle}
         </h1>
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted">
-          Tu canal es tu casa dentro de PodZcash: la página donde la comunidad
-          encuentra tu contenido, tu historia y tu forma de recibir apoyo.
+          {content.createBody}
         </p>
 
         <ul className="mt-6 space-y-2 text-sm text-muted">
-          <li className="flex gap-2.5">
-            <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
-            Eliges un handle único: <code className="text-text">/c/tu-nombre</code>
-          </li>
-          <li className="flex gap-2.5">
-            <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
-            Subes avatar, bio y enlaces
-          </li>
-          <li className="flex gap-2.5">
-            <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
-            En la siguiente fase podrás publicar audio
-          </li>
+          {content.bullets.map((bullet, index) => (
+            <li className="flex gap-2.5" key={bullet}>
+              <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
+              {index === 0 ? (
+                <span>
+                  {bullet} <code className="text-text">{content.bulletCode}</code>
+                </span>
+              ) : (
+                bullet
+              )}
+            </li>
+          ))}
         </ul>
 
         <ButtonLink href="/estudio/canal" className="mt-7">
-          Crear mi canal
+          {content.createCta}
         </ButtonLink>
       </div>
     );
@@ -73,10 +76,10 @@ export default async function StudioPage() {
               {channel.displayName}
             </h1>
             <p className="mt-1 font-mono text-sm text-subtle">
-              /c/{channel.handle}
+              {channelPath(channel.handle)}
             </p>
             <p className="mt-3 max-w-xl text-sm text-muted">
-              {channel.bio ?? "Todavía no escribiste una bio."}
+              {channel.bio ?? content.noBio}
             </p>
 
             {links.length > 0 && (
@@ -98,11 +101,11 @@ export default async function StudioPage() {
           </div>
 
           <Link
-            href={`/c/${channel.handle}`}
+            href={channelPath(channel.handle)}
             target="_blank"
             className="inline-flex h-9 items-center gap-2 rounded-full border border-border bg-surface-2 px-4 text-sm transition-colors hover:bg-border"
           >
-            Ver público
+            {content.viewPublic}
             <ArrowUpRight size={14} />
           </Link>
         </div>
@@ -111,24 +114,24 @@ export default async function StudioPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-            Episodios
+            {content.episodes}
           </p>
           <p className="mt-2 font-display text-3xl">{episodes}</p>
         </div>
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-            Donaciones
+            {content.donations}
           </p>
-          <p className="mt-2 font-display text-3xl">—</p>
-          <p className="mt-1 text-xs text-subtle">Disponible en la fase 5</p>
+          <p className="mt-2 font-display text-3xl">-</p>
+          <p className="mt-1 text-xs text-subtle">{content.donationsSoon}</p>
         </div>
         <div className="rounded-xl border border-border bg-surface p-5">
           <p className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-            Estado
+            {content.status}
           </p>
           <p className="mt-2 inline-flex items-center gap-2 text-sm">
             <span className="size-2 rounded-full bg-success" />
-            Canal activo
+            {content.active}
           </p>
         </div>
       </div>
@@ -139,11 +142,8 @@ export default async function StudioPage() {
             <Mic2 size={17} />
           </span>
           <div>
-            <p className="text-sm font-medium">Siguiente: subir tu primer audio</p>
-            <p className="mt-1 text-sm text-muted">
-              La publicación de episodios llega en la Fase 2. Tu canal ya está
-              listo para recibirlo.
-            </p>
+            <p className="text-sm font-medium">{content.nextTitle}</p>
+            <p className="mt-1 text-sm text-muted">{content.nextBody}</p>
           </div>
         </div>
         <Link
@@ -151,7 +151,7 @@ export default async function StudioPage() {
           className="inline-flex h-9 items-center gap-2 rounded-full border border-border bg-surface px-4 text-sm transition-colors hover:bg-surface-2"
         >
           <Radio size={14} />
-          Editar canal
+          {content.edit}
         </Link>
       </div>
     </div>

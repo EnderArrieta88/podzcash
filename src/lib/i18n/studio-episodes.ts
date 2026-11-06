@@ -1,0 +1,169 @@
+import type { Locale } from "./config";
+
+const es = {
+  meta: {
+    list: "Episodios",
+    new: "Subir episodio",
+    edit: "Editar episodio",
+  },
+  list: {
+    title: "Episodios",
+    emptyIntro: "Tu catálogo está vacío.",
+    countPrefix: "en total ·",
+    publishedSuffix: "publicados",
+    upload: "Subir episodio",
+    emptyTitle: "Todavía no subiste nada",
+    emptyBody:
+      "Sube tu primer episodio o tema. Puedes dejarlo en borrador y publicarlo cuando estés listo.",
+    published: "Publicado",
+    draft: "Borrador",
+    viewAria: "Ver episodio",
+    editAria: "Editar episodio",
+  },
+  newPage: {
+    title: "Subir episodio",
+    intro:
+      "El audio se sube mientras completas los datos. Puedes guardarlo como borrador y publicarlo después.",
+  },
+  editPage: {
+    title: "Editar episodio",
+    intro:
+      "Si cambias el audio o la portada, el archivo anterior se elimina al guardar.",
+    currentAudio: "Audio actual",
+  },
+  form: {
+    audio: "Audio",
+    removeAudio: "Quitar audio",
+    uploading: "Subiendo…",
+    dropHint: "Arrastra tu audio o haz clic para elegirlo",
+    audioFormats: "MP3, M4A, WAV, FLAC, OGG o AAC · máximo 300 MB",
+    cover: "Portada",
+    optional: "(opcional)",
+    chooseCover: "Elegir portada",
+    coverHint: "Cuadrada, mínimo 1400×1400 px.",
+    coverFormats: "JPG, PNG, WebP o GIF · máximo 4 MB",
+    title: "Título",
+    titlePlaceholder: "El título del episodio o la canción",
+    kind: "Tipo",
+    podcast: "Podcast",
+    music: "Música",
+    description: "Descripción",
+    descriptionPlaceholder:
+      "De qué trata, quién participa, enlaces mencionados…",
+    tags: "Etiquetas",
+    tagsPlaceholder: "privacidad, zcash, entrevistas",
+    tagsHint: "Sepáralas con comas. Máximo 8.",
+    publishing: "Publicando…",
+    saving: "Guardando…",
+    publish: "Publicar",
+    saveDraft: "Guardar borrador",
+    needAudio: "Sube un audio para poder guardar.",
+    errors: {
+      notAudio: "Ese archivo no parece ser audio.",
+      audioTooLarge: "El audio no puede pasar de 300 MB.",
+      notImage: "La portada tiene que ser una imagen.",
+      coverTooLarge: "La portada no puede pasar de 4 MB.",
+      uploadFailed: "No se pudo subir el archivo.",
+      badResponse: "Respuesta inesperada del servidor.",
+      network: "Error de red al subir el archivo.",
+      unauthorized: "Tu sesión expiró. Vuelve a iniciar sesión.",
+      invalidType: "Tipo de subida inválido.",
+      unsupportedFormat: "Formato no soportado.",
+      tooLarge: "El archivo supera el máximo permitido.",
+      noFile: "No se recibió el archivo.",
+      empty: "El archivo está vacío.",
+      saveFailed: "No se pudo guardar el archivo.",
+    },
+  },
+  delete: {
+    confirm: "¿Borrar este episodio? Se elimina el audio y no se puede deshacer.",
+    label: "Borrar",
+  },
+};
+
+export type StudioEpisodesContent = typeof es;
+
+const en: StudioEpisodesContent = {
+  meta: {
+    list: "Episodes",
+    new: "Upload episode",
+    edit: "Edit episode",
+  },
+  list: {
+    title: "Episodes",
+    emptyIntro: "Your catalog is empty.",
+    countPrefix: "total ·",
+    publishedSuffix: "published",
+    upload: "Upload episode",
+    emptyTitle: "You have not uploaded anything yet",
+    emptyBody:
+      "Upload your first episode or track. You can keep it as a draft and publish when ready.",
+    published: "Published",
+    draft: "Draft",
+    viewAria: "View episode",
+    editAria: "Edit episode",
+  },
+  newPage: {
+    title: "Upload episode",
+    intro:
+      "Audio uploads while you fill in the details. You can save it as a draft and publish later.",
+  },
+  editPage: {
+    title: "Edit episode",
+    intro:
+      "If you change the audio or cover, the previous file is deleted when you save.",
+    currentAudio: "Current audio",
+  },
+  form: {
+    audio: "Audio",
+    removeAudio: "Remove audio",
+    uploading: "Uploading…",
+    dropHint: "Drag your audio or click to choose it",
+    audioFormats: "MP3, M4A, WAV, FLAC, OGG or AAC · max 300 MB",
+    cover: "Cover",
+    optional: "(optional)",
+    chooseCover: "Choose cover",
+    coverHint: "Square, at least 1400×1400 px.",
+    coverFormats: "JPG, PNG, WebP or GIF · max 4 MB",
+    title: "Title",
+    titlePlaceholder: "The episode or song title",
+    kind: "Type",
+    podcast: "Podcast",
+    music: "Music",
+    description: "Description",
+    descriptionPlaceholder: "What it is about, who is in it, links mentioned…",
+    tags: "Tags",
+    tagsPlaceholder: "privacy, zcash, interviews",
+    tagsHint: "Separate with commas. Maximum 8.",
+    publishing: "Publishing…",
+    saving: "Saving…",
+    publish: "Publish",
+    saveDraft: "Save draft",
+    needAudio: "Upload audio to save.",
+    errors: {
+      notAudio: "That file does not look like audio.",
+      audioTooLarge: "Audio cannot exceed 300 MB.",
+      notImage: "The cover must be an image.",
+      coverTooLarge: "The cover cannot exceed 4 MB.",
+      uploadFailed: "Could not upload the file.",
+      badResponse: "Unexpected server response.",
+      network: "Network error while uploading.",
+      unauthorized: "Your session expired. Sign in again.",
+      invalidType: "Invalid upload type.",
+      unsupportedFormat: "Unsupported format.",
+      tooLarge: "The file exceeds the maximum allowed size.",
+      noFile: "No file was received.",
+      empty: "The file is empty.",
+      saveFailed: "Could not save the file.",
+    },
+  },
+  delete: {
+    confirm: "Delete this episode? The audio is removed and this cannot be undone.",
+    label: "Delete",
+  },
+};
+
+export const studioEpisodesContent: Record<Locale, StudioEpisodesContent> = {
+  es,
+  en,
+};

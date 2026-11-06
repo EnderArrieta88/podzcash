@@ -2,9 +2,11 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { storage } from "@/lib/storage";
 import type { RailUser } from "@/components/shell/side-rail";
 import { ShellFrame } from "@/components/shell/shell-frame";
+import { getLocale } from "@/lib/i18n/locale";
+import { shellContent } from "@/lib/i18n/shell";
 
 export async function AppShell({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentUser();
+  const [user, locale] = await Promise.all([getCurrentUser(), getLocale()]);
 
   const railUser: RailUser = user
     ? {
@@ -22,5 +24,9 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       }
     : null;
 
-  return <ShellFrame user={railUser}>{children}</ShellFrame>;
+  return (
+    <ShellFrame user={railUser} locale={locale} labels={shellContent[locale]}>
+      {children}
+    </ShellFrame>
+  );
 }

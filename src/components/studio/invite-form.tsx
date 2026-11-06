@@ -4,8 +4,13 @@ import { useActionState } from "react";
 import { createInviteAction } from "@/app/(app)/estudio/actions";
 import { Input } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
+import type { StudioInvitesContent } from "@/lib/i18n/studio-invites";
 
-export function InviteForm() {
+export function InviteForm({
+  labels,
+}: {
+  labels: StudioInvitesContent["form"];
+}) {
   const [state, action] = useActionState(createInviteAction, null);
 
   return (
@@ -14,15 +19,15 @@ export function InviteForm() {
         <Input
           name="note"
           maxLength={80}
-          placeholder="Nota (opcional): para quién es"
-          aria-label="Nota de la invitación"
+          placeholder={labels.notePlaceholder}
+          aria-label={labels.noteAria}
         />
-        <SubmitButton pendingLabel="Generando…">Generar código</SubmitButton>
+        <SubmitButton pendingLabel={labels.pending}>{labels.submit}</SubmitButton>
       </div>
 
       {state?.error && <p className="text-xs text-danger">{state.error}</p>}
       {state?.ok && (
-        <p className="text-xs text-success">Código generado y listo abajo.</p>
+        <p className="text-xs text-success">{labels.generated}</p>
       )}
     </form>
   );

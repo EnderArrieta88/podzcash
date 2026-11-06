@@ -1,11 +1,13 @@
 name: Deploy a producción
 
 # Solo manual: se dispara desde la pestaña Actions → Run workflow.
+# Además, solo se permite desde main y pasa por el entorno "production",
+# que exige la aprobación del mantenedor antes de ejecutar los pasos.
 on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: 'Escribí "deploy" para confirmar'
+        description: 'Escribe "deploy" para confirmar'
         required: true
         default: ""
 
@@ -13,10 +15,17 @@ concurrency:
   group: production-deploy
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
-    if: github.event.inputs.confirm == 'deploy'
+    if: github.ref == 'refs/heads/main' && github.event.inputs.confirm == 'deploy'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: https://podzcash.online
 
     steps:
       - uses: actions/checkout@v4

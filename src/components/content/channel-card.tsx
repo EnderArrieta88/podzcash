@@ -1,11 +1,22 @@
 import Link from "next/link";
 import { storage } from "@/lib/storage";
 import type { ChannelSummary } from "@/lib/catalog";
+import type { Locale } from "@/lib/i18n/config";
+import { sharedLabels } from "@/lib/i18n/shared";
+import { channelPath } from "@/lib/routes";
 
-export function ChannelCard({ channel }: { channel: ChannelSummary }) {
+export function ChannelCard({
+  channel,
+  locale,
+}: {
+  channel: ChannelSummary;
+  locale: Locale;
+}) {
+  const text = sharedLabels[locale];
+
   return (
     <Link
-      href={`/c/${channel.handle}`}
+      href={channelPath(channel.handle)}
       className="group flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-surface-2"
     >
       {channel.avatarKey ? (
@@ -27,7 +38,7 @@ export function ChannelCard({ channel }: { channel: ChannelSummary }) {
         </p>
         <p className="truncate font-mono text-[11px] text-subtle">
           @{channel.handle} · {channel.episodeCount}{" "}
-          {channel.episodeCount === 1 ? "episodio" : "episodios"}
+          {channel.episodeCount === 1 ? text.episodeOne : text.episodeMany}
         </p>
       </div>
     </Link>

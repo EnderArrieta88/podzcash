@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { Music2, Pause, Play } from "lucide-react";
 import { usePlayer, type PlayerTrack } from "@/components/player/player-context";
 import { formatDuration } from "@/lib/format";
+import type { Locale } from "@/lib/i18n/config";
+import { embedContent } from "@/lib/i18n/embed";
 
 function clock(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds <= 0) return "0:00";
@@ -14,14 +16,17 @@ export function EmbedPlayer({
   track,
   coverUrl,
   href,
+  locale,
 }: {
   track: PlayerTrack;
   coverUrl: string | null;
   href: string;
+  locale: Locale;
 }) {
   const { track: current, playing, time, duration, play, toggle, seek } =
     usePlayer();
   const rail = useRef<HTMLDivElement>(null);
+  const text = embedContent[locale];
 
   const isCurrent = current?.id === track.id;
   const isPlaying = isCurrent && playing;
@@ -64,7 +69,7 @@ export function EmbedPlayer({
         <button
           type="button"
           onClick={() => (isCurrent ? toggle() : play(track))}
-          aria-label={isPlaying ? "Pausar" : "Reproducir"}
+          aria-label={isPlaying ? text.pause : text.play}
           className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-[#17130a] transition-colors hover:bg-brand-strong"
         >
           {isPlaying ? (
@@ -84,7 +89,7 @@ export function EmbedPlayer({
           ref={rail}
           role="slider"
           tabIndex={0}
-          aria-label="Progreso"
+          aria-label={text.progress}
           aria-valuemin={0}
           aria-valuemax={Math.round(total)}
           aria-valuenow={Math.round(elapsed)}
@@ -121,7 +126,7 @@ export function EmbedPlayer({
           rel="noreferrer noopener"
           className="text-[11px] text-brand hover:underline"
         >
-          Escuchar en PodZcash
+          {text.listenOn}
         </a>
         <span className="font-mono text-[10px] text-subtle">PodZcash</span>
       </div>

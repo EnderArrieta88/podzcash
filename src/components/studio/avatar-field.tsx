@@ -3,7 +3,18 @@
 import { useRef, useState } from "react";
 import { ImagePlus } from "lucide-react";
 
-export function AvatarField({ initialUrl }: { initialUrl: string | null }) {
+export function AvatarField({
+  initialUrl,
+  labels,
+}: {
+  initialUrl: string | null;
+  labels: {
+    avatar: string;
+    avatarAlt: string;
+    uploadImage: string;
+    avatarHint: string;
+  };
+}) {
   const [preview, setPreview] = useState<string | null>(initialUrl);
   const objectUrl = useRef<string | null>(null);
 
@@ -26,7 +37,9 @@ export function AvatarField({ initialUrl }: { initialUrl: string | null }) {
 
   return (
     <div className="space-y-3">
-      <span className="block text-sm font-medium text-text">Avatar</span>
+      <span className="block text-sm font-medium text-text">
+        {labels.avatar}
+      </span>
 
       <div className="flex items-center gap-4">
         <div className="relative size-20 shrink-0 overflow-hidden rounded-full border border-border bg-surface-2">
@@ -34,7 +47,7 @@ export function AvatarField({ initialUrl }: { initialUrl: string | null }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={preview}
-              alt="Vista previa del avatar"
+              alt={labels.avatarAlt}
               className="size-full object-cover"
             />
           ) : (
@@ -45,7 +58,7 @@ export function AvatarField({ initialUrl }: { initialUrl: string | null }) {
         </div>
 
         <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface-2 px-4 text-sm text-text transition-colors hover:bg-border">
-          Subir imagen
+          {labels.uploadImage}
           <input
             type="file"
             name="avatar"
@@ -56,9 +69,7 @@ export function AvatarField({ initialUrl }: { initialUrl: string | null }) {
         </label>
       </div>
 
-      <p className="text-xs text-subtle">
-        JPG, PNG, WebP o GIF. Máximo 2 MB. Se recorta en círculo.
-      </p>
+      <p className="text-xs text-subtle">{labels.avatarHint}</p>
     </div>
   );
 }

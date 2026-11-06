@@ -18,6 +18,9 @@ import {
 } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { formatBytes, formatDuration } from "@/lib/format";
+import type { StudioEpisodesContent } from "@/lib/i18n/studio-episodes";
+
+type EpisodeFormLabels = StudioEpisodesContent["form"];
 
 type UploadResult = { key: string; size: number; mimeType: string };
 
@@ -68,6 +71,7 @@ function uploadWithProgress(
   kind: "audio" | "image",
   file: File,
   onProgress: (value: number) => void,
+  errors: EpisodeFormLabels["errors"],
 ): Promise<{ result?: UploadResult; error?: string }> {
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
@@ -87,20 +91,36 @@ function uploadWithProgress(
         if (xhr.status >= 200 && xhr.status < 300) {
           resolve({ result: data as UploadResult });
         } else {
-          resolve({ error: data.error ?? "No se pudo subir el archivo." });
+          const byCode: Record<string, string | undefined> = {
+            unauthorized: errors.unauthorized,
+            invalidType: errors.invalidType,
+            unsupportedFormat: errors.unsupportedFormat,
+            tooLarge: errors.tooLarge,
+            noFile: errors.noFile,
+            empty: errors.empty,
+            saveFailed: errors.saveFailed,
+          };
+
+          resolve({ error: byCode[data.error] ?? errors.uploadFailed });
         }
       } catch {
-        resolve({ error: "Respuesta inesperada del servidor." });
+        resolve({ error: errors.badResponse });
       }
     };
 
-    xhr.onerror = () => resolve({ error: "Error de red al subir el archivo." });
+    xhr.onerror = () => resolve({ error: errors.network });
 
     xhr.send(file);
   });
 }
 
-export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) {
+export function EpisodeForm({
+  episode,
+  labels,
+}: {
+  episode: EpisodeFormValues | null;
+  labels: EpisodeFormLabels;
+}) {
   const [state, action] = useActionState(saveEpisodeAction, null);
 
   const [audio, setAudio] = useState<{
@@ -153,12 +173,12 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
 
   async function handleAudio(file: File) {
     if (!file.type.startsWith("audio/")) {
-      setUploadError("Ese archivo no parece ser audio.");
+      setUploadError(labels.errors.notAudio);
       return;
     }
 
     if (file.size > MAX_AUDIO_BYTES) {
-      setUploadError("El audio no puede pasar de 300 MB.");
+      setUploadError(labels.errors.audioTooLarge);
       return;
     }
 
@@ -173,6 +193,7 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
       "audio",
       file,
       setAudioProgress,
+      labels.errors,
     );
 
     setUploading(null);
@@ -195,12 +216,12 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
 
   async function handleCover(file: File) {
     if (!file.type.startsWith("image/")) {
-      setUploadError("La portada tiene que ser una imagen.");
+      setUploadError(labels.errors.notImage);
       return;
     }
 
     if (file.size > MAX_COVER_BYTES) {
-      setUploadError("La portada no puede pasar de 4 MB.");
+      setUploadError(labels.errors.coverTooLarge);
       return;
     }
 
@@ -212,6 +233,7 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
       "image",
       file,
       setCoverProgress,
+      labels.errors,
     );
 
     setUploading(null);
@@ -253,7 +275,9 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
 
       {/* Audio */}
       <div>
-        <span className="mb-2 block text-sm font-medium text-text">Audio</span>
+        <span className="mb-2 block text-sm font-medium text-text">
+          {labels.audio}
+        </span>
 
         {audio ? (
           <div className="flex items-center gap-3 rounded-[10px] border border-border bg-surface-2 p-4">
@@ -274,7 +298,7 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
                 if (audioInput.current) audioInput.current.value = "";
               }}
               className="inline-flex size-8 items-center justify-center rounded-md border border-border text-muted transition-colors hover:border-danger/40 hover:text-danger"
-              aria-label="Quitar audio"
+              aria-label={labels.removeAudio}
             >
               <X size={14} />
             </button>
@@ -310,12 +334,10 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
             <CloudUpload size={22} className="text-subtle" />
             <p className="mt-3 text-sm">
               {uploading === "audio"
-                ? `Subiendo… ${audioProgress}%`
-                : "Arrastra tu audio o haz clic para elegirlo"}
+                ? `${labels.uploading} ${audioProgress}%`
+                : labels.dropHint}
             </p>
-            <p className="mt-1 text-xs text-subtle">
-              MP3, M4A, WAV, FLAC, OGG o AAC · máximo 300 MB
-            </p>
+            <p className="mt-1 text-xs text-subtle">{labels.audioFormats}</p>
 
             {uploading === "audio" && (
               <div className="mt-4 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-border">
@@ -344,7 +366,8 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
       {/* Portada */}
       <div>
         <span className="mb-2 block text-sm font-medium text-text">
-          Portada <span className="font-normal text-subtle">(opcional)</span>
+          {labels.cover}{" "}
+          <span className="font-normal text-subtle">{labels.optional}</span>
         </span>
 
         <div className="flex items-center gap-4">
@@ -352,7 +375,7 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
             type="button"
             onClick={() => coverInput.current?.click()}
             className="relative size-24 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-2 text-subtle transition-colors hover:border-border-strong"
-            aria-label="Elegir portada"
+            aria-label={labels.chooseCover}
           >
             {cover ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -367,13 +390,13 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
           <div className="text-sm text-muted">
             {uploading === "cover" ? (
               <span className="font-mono text-xs tabular">
-                Subiendo… {coverProgress}%
+                {labels.uploading} {coverProgress}%
               </span>
             ) : (
               <span>
-                Cuadrada, mínimo 1400×1400 px.
+                {labels.coverHint}
                 <span className="block text-xs text-subtle">
-                  JPG, PNG, WebP o GIF · máximo 4 MB
+                  {labels.coverFormats}
                 </span>
               </span>
             )}
@@ -395,7 +418,7 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
 
       {/* Metadatos */}
       <div>
-        <Label htmlFor="title">Título</Label>
+        <Label htmlFor="title">{labels.title}</Label>
         <Input
           id="title"
           name="title"
@@ -403,17 +426,19 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
           onChange={(event) => updateMeta("title", event.target.value)}
           required
           maxLength={140}
-          placeholder="El título del episodio o la canción"
+          placeholder={labels.titlePlaceholder}
         />
         <FieldError>{state?.fields?.title}</FieldError>
       </div>
 
       <div>
-        <span className="mb-2 block text-sm font-medium text-text">Tipo</span>
+        <span className="mb-2 block text-sm font-medium text-text">
+          {labels.kind}
+        </span>
         <div className="flex gap-3">
           {[
-            { value: "podcast", label: "Podcast" },
-            { value: "music", label: "Música" },
+            { value: "podcast", label: labels.podcast },
+            { value: "music", label: labels.music },
           ].map((option) => (
             <label
               key={option.value}
@@ -435,7 +460,7 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
       </div>
 
       <div>
-        <Label htmlFor="description">Descripción</Label>
+        <Label htmlFor="description">{labels.description}</Label>
         <Textarea
           id="description"
           name="description"
@@ -443,22 +468,22 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
           onChange={(event) => updateMeta("description", event.target.value)}
           rows={5}
           maxLength={5000}
-          placeholder="De qué trata, quién participa, enlaces mencionados…"
+          placeholder={labels.descriptionPlaceholder}
         />
         <FieldError>{state?.fields?.description}</FieldError>
       </div>
 
       <div>
-        <Label htmlFor="tags">Etiquetas</Label>
+        <Label htmlFor="tags">{labels.tags}</Label>
         <Input
           id="tags"
           name="tags"
           value={meta.tags}
           onChange={(event) => updateMeta("tags", event.target.value)}
           maxLength={240}
-          placeholder="privacidad, zcash, entrevistas"
+          placeholder={labels.tagsPlaceholder}
         />
-        <FieldHint>Sepáralas con comas. Máximo 8.</FieldHint>
+        <FieldHint>{labels.tagsHint}</FieldHint>
         <FieldError>{state?.fields?.tags}</FieldError>
       </div>
 
@@ -466,27 +491,25 @@ export function EpisodeForm({ episode }: { episode: EpisodeFormValues | null }) 
         <SubmitButton
           name="intent"
           value="publish"
-          pendingLabel="Guardando…"
+          pendingLabel={labels.publishing}
           disabled={!canSave}
         >
           <CheckCircle2 size={15} />
-          Publicar
+          {labels.publish}
         </SubmitButton>
 
         <SubmitButton
           name="intent"
           value="draft"
           variant="secondary"
-          pendingLabel="Guardando…"
+          pendingLabel={labels.saving}
           disabled={!canSave}
         >
-          Guardar borrador
+          {labels.saveDraft}
         </SubmitButton>
 
         {!audio && (
-          <p className="text-xs text-subtle">
-            Sube un audio para poder guardar.
-          </p>
+          <p className="text-xs text-subtle">{labels.needAudio}</p>
         )}
       </div>
     </form>

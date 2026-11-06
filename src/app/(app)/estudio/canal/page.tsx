@@ -3,23 +3,28 @@ import { requireUser } from "@/lib/auth/guards";
 import { parseLinks } from "@/lib/links";
 import { storage } from "@/lib/storage";
 import { ChannelForm } from "@/components/studio/channel-form";
+import { getLocale } from "@/lib/i18n/locale";
+import { channelSettingsContent } from "@/lib/i18n/studio-channel";
 
-export const metadata: Metadata = { title: "Mi canal" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+
+  return { title: channelSettingsContent[locale].metaTitle };
+}
 
 export default async function ChannelSettingsPage() {
-  const user = await requireUser();
+  const [user, locale] = await Promise.all([requireUser(), getLocale()]);
+  const content = channelSettingsContent[locale];
   const channel = user.channel;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl tracking-tight">
-          {channel ? "Mi canal" : "Crear mi canal"}
+          {channel ? content.editTitle : content.createTitle}
         </h1>
         <p className="mt-2 text-sm text-muted">
-          {channel
-            ? "Así te ve la comunidad. Los cambios se guardan al instante."
-            : "Elige tu nombre de usuario y cuéntale a la comunidad quién eres."}
+          {channel ? content.editIntro : content.createIntro}
         </p>
       </div>
 
@@ -39,6 +44,7 @@ export default async function ChannelSettingsPage() {
               : null
           }
           links={parseLinks(channel?.links ?? null)}
+          labels={content.form}
         />
       </div>
     </div>

@@ -4,14 +4,20 @@ import { useEffect, useState } from "react";
 import { SideRail, type RailUser } from "@/components/shell/side-rail";
 import { TopBar } from "@/components/shell/top-bar";
 import { cn } from "@/lib/utils";
+import type { Locale } from "@/lib/i18n/config";
+import type { ShellContent } from "@/lib/i18n/shell";
 
 const STORAGE_KEY = "podzcash:rail";
 
 export function ShellFrame({
   user,
+  locale,
+  labels,
   children,
 }: {
   user: RailUser;
+  locale: Locale;
+  labels: ShellContent;
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -48,6 +54,7 @@ export function ShellFrame({
         user={user}
         collapsed={collapsed}
         onToggle={() => setCollapsed((current) => !current)}
+        labels={labels}
       />
 
       <div
@@ -56,7 +63,7 @@ export function ShellFrame({
           collapsed ? "lg:pl-20" : "lg:pl-64",
         )}
       >
-        <TopBar user={user} />
+        <TopBar user={user} locale={locale} labels={labels} />
         <main className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6">
           {children}
         </main>

@@ -15,6 +15,7 @@ import { storage } from "@/lib/storage";
 import { parseTags } from "@/lib/tags";
 import { channelSchema, episodeSchema, passwordChangeSchema, toFieldErrors } from "@/lib/validation";
 import { validateZcashAddress } from "@/lib/zcash-address";
+import { channelPath, episodePath } from "@/lib/routes";
 import type { ActionState } from "@/lib/action-state";
 
 export async function logoutAction(): Promise<void> {
@@ -22,11 +23,15 @@ export async function logoutAction(): Promise<void> {
   redirect("/");
 }
 
+import { getLocale } from "@/lib/i18n/locale";
+import { studioErrors } from "@/lib/i18n/studio-errors";
+
 export async function saveChannelAction(
   _previous: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const user = await requireUser();
+  const [user, locale] = await Promise.all([requireUser(), getLocale()]);
+  const errors = studioErrors[locale];
 
   const parsed = channelSchema.safeParse({
     displayName: formData.get("displayName"),
@@ -36,7 +41,7 @@ export async function saveChannelAction(
   });
 
   if (!parsed.success) {
-    return { fields: toFieldErrors(parsed.error) };
+    return { fields: toFieldErrors(parsed.error, locale) };
   }
 
   const { displayName, handle } = parsed.data;
@@ -46,7 +51,7 @@ export async function saveChannelAction(
   const addressInput = (parsed.data.zcashAddress ?? "").trim();
 
   if (addressInput) {
-    const address = validateZcashAddress(addressInput);
+    const address = validateZcashAddress(addressInput, locale);
 
     if (!address.ok) {
       return { fields: { zcashAddress: address.error } };
@@ -61,7 +66,7 @@ export async function saveChannelAction(
   });
 
   if (clash) {
-    return { fields: { handle: "Ese nombre de usuario ya está ocupado. Prueba otro." } };
+    return { fields: { handle: errors.handleTaken } };
   }
 
   let linksJson: string | null = null;
@@ -74,7 +79,7 @@ export async function saveChannelAction(
       if (!parsedLinks.success) {
         return {
           fields: {
-            links: "Cada enlace necesita una etiqueta y una URL válida.",
+            links: errors.linksInvalid,
           },
         };
       }
@@ -83,7 +88,7 @@ export async function saveChannelAction(
         linksJson = JSON.stringify(parsedLinks.data);
       }
     } catch {
-      return { fields: { links: "No pudimos leer los enlaces." } };
+      return { fields: { links: errors.linksUnreadable } };
     }
   }
 
@@ -93,12 +98,12 @@ export async function saveChannelAction(
   if (file instanceof File && file.size > 0) {
     if (!IMAGE_MIME[file.type]) {
       return {
-        fields: { avatar: "Formato no soportado. Usa JPG, PNG, WebP o GIF." },
+        fields: { avatar: errors.avatarFormat },
       };
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      return { fields: { avatar: "La imagen no puede pasar de 2 MB." } };
+      return { fields: { avatar: errors.avatarSize } };
     }
 
     const extension = IMAGE_MIME[file.type];
@@ -142,10 +147,10 @@ export async function saveChannelAction(
   }
 
   revalidatePath("/estudio");
-  revalidatePath(`/c/${handle}`);
+  revalidatePath(channelPath(handle));
 
   if (previousHandle && previousHandle !== handle) {
-    revalidatePath(`/c/${previousHandle}`);
+    revalidatePath(channelPath(previousHandle));
   }
 
   return { ok: true };
@@ -155,7 +160,7 @@ export async function createInviteAction(
   _previous: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const admin = await requireAdmin();
+  const [admin, locale] = await Promise.all([requireAdmin(), getLocale()]);
   const note = String(formData.get("note") ?? "").trim().slice(0, 80) || null;
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -173,7 +178,7 @@ export async function createInviteAction(
     }
   }
 
-  return { error: "No se pudo generar el código. Inténtalo otra vez." };
+  return { error: studioErrors[locale].inviteFailed };
 }
 
 export async function revokeInviteAction(formData: FormData): Promise<void> {
@@ -195,7 +200,8 @@ export async function saveEpisodeAction(
   _previous: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const user = await requireUser();
+  const [user, locale] = await Promise.all([requireUser(), getLocale()]);
+  const errors = studioErrors[locale];
   const channel = user.channel;
 
   if (!channel) redirect("/estudio/canal");
@@ -211,7 +217,7 @@ export async function saveEpisodeAction(
   });
 
   if (!parsed.success) {
-    return { fields: toFieldErrors(parsed.error) };
+    return { fields: toFieldErrors(parsed.error, locale) };
   }
 
   const { title, description, kind } = parsed.data;
@@ -223,14 +229,14 @@ export async function saveEpisodeAction(
     : null;
 
   if (episodeId && !existing) {
-    return { error: "Ese episodio no existe." };
+    return { error: errors.episodeNotFound };
   }
 
   const newAudioKey = String(formData.get("audioKey") ?? "").trim() || null;
   const audioPath = newAudioKey ?? existing?.audioPath ?? null;
 
   if (!audioPath) {
-    return { fields: { audio: "Sube un archivo de audio antes de guardar." } };
+    return { fields: { audio: errors.audioRequired } };
   }
 
   const newCoverKey = String(formData.get("coverKey") ?? "").trim() || null;
@@ -316,7 +322,7 @@ export async function saveEpisodeAction(
     });
   } catch (error) {
     console.error("No se pudo guardar el episodio:", error);
-    return { error: "No se pudo guardar el episodio. Inténtalo otra vez." };
+    return { error: errors.episodeSaveFailed };
   }
 
   if (newAudioKey && existing && existing.audioPath !== newAudioKey) {
@@ -330,8 +336,8 @@ export async function saveEpisodeAction(
   await indexEpisode(savedEpisodeId);
 
   revalidatePath("/estudio/episodios");
-  revalidatePath(`/c/${channel.handle}`);
-  revalidatePath(`/c/${channel.handle}/${slug}`);
+  revalidatePath(channelPath(channel.handle));
+  revalidatePath(episodePath(channel.handle, slug));
 
   redirect("/estudio/episodios");
 }
@@ -358,7 +364,7 @@ export async function deleteEpisodeAction(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/estudio/episodios");
-  revalidatePath(`/c/${channel.handle}`);
+  revalidatePath(channelPath(channel.handle));
 }
 
 // ---------------------------------------------------------------------------

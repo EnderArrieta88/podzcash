@@ -1,8 +1,20 @@
 import Link from "next/link";
 import { Search, ShieldCheck, Upload } from "lucide-react";
 import { MobileNav, type RailUser } from "@/components/shell/side-rail";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import type { Locale } from "@/lib/i18n/config";
+import type { ShellContent } from "@/lib/i18n/shell";
+import { channelPath } from "@/lib/routes";
 
-export function TopBar({ user }: { user: RailUser }) {
+export function TopBar({
+  user,
+  locale,
+  labels,
+}: {
+  user: RailUser;
+  locale: Locale;
+  labels: ShellContent;
+}) {
   return (
     <header className="sticky top-0 z-30 glass border-b">
       <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
@@ -27,8 +39,8 @@ export function TopBar({ user }: { user: RailUser }) {
           <input
             type="search"
             name="q"
-            placeholder="Buscar podcasts, música, canales…"
-            aria-label="Buscar"
+            placeholder={labels.searchPlaceholder}
+            aria-label={labels.searchLabel}
             className="h-10 w-full rounded-xl border border-transparent bg-surface-2 pl-10 pr-16 text-sm text-text placeholder:text-subtle transition-colors outline-none focus:border-brand/50 focus:bg-surface-3"
           />
           <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[10px] text-subtle xl:block">
@@ -37,9 +49,11 @@ export function TopBar({ user }: { user: RailUser }) {
         </form>
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="hidden items-center gap-1.5 rounded-full border border-jade/25 bg-jade-soft px-3 py-1.5 text-[11px] text-jade-bright md:flex">
+          <LanguageSwitcher locale={locale} label={labels.language} />
+
+          <span className="hidden whitespace-nowrap items-center gap-1.5 rounded-full border border-jade/25 bg-jade-soft px-3 py-1.5 text-[11px] text-jade-bright xl:flex">
             <ShieldCheck size={13} />
-            ZEC sin custodia
+            {labels.nonCustodial}
           </span>
 
           {user?.channel ? (
@@ -48,22 +62,22 @@ export function TopBar({ user }: { user: RailUser }) {
               className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-brand px-3.5 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
             >
               <Upload size={15} />
-              <span className="hidden sm:inline">Subir</span>
+              <span className="hidden sm:inline">{labels.upload}</span>
             </Link>
           ) : (
             <Link
               href="/entrar"
-              className="inline-flex h-9 items-center rounded-xl border border-border bg-surface-2 px-3.5 text-sm text-text transition-colors hover:bg-surface-3"
+              className="inline-flex h-9 items-center whitespace-nowrap rounded-xl border border-border bg-surface-2 px-3.5 text-sm text-text transition-colors hover:bg-surface-3"
             >
-              Entrar
+              {labels.enter}
             </Link>
           )}
 
           {user && (
             <Link
-              href={user.channel ? `/c/${user.channel.handle}` : "/estudio/canal"}
+              href={user.channel ? channelPath(user.channel.handle) : "/estudio/canal"}
               className="flex size-9 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-3 text-xs font-semibold text-brand"
-              aria-label="Mi perfil"
+              aria-label={labels.myProfile}
             >
               {user.channel?.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -80,7 +94,7 @@ export function TopBar({ user }: { user: RailUser }) {
         </div>
       </div>
 
-      <MobileNav />
+      <MobileNav labels={labels} />
     </header>
   );
 }
