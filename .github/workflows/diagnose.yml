@@ -1,0 +1,65 @@
+name: Diagnóstico de producción
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Instalar lftp
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lftp
+
+      - name: Descargar .env y logs
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          set -uo pipefail
+          mkdir -p diag
+
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -c "
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          get '$REMOTE_DIR/.env' -o diag/env.txt
+          " || echo "No se pudo descargar .env"
+
+          for file in stderr.log next-development.log tmp/restart.txt; do
+            name=$(echo "$file" | tr '/' '_')
+            lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -c "
+            set ssl:verify-certificate no
+            set ftp:ssl-allow yes
+            get '$REMOTE_DIR/$file' -o 'diag/$name'
+            " || true
+          done
+
+          ls -lah diag
+
+      - name: Cifrar diagnóstico
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          tar -czf diag.tar.gz -C diag .
+          printf '%s' "$BACKUP_PASSPHRASE" | gpg \
+            --batch --yes --passphrase-fd 0 \
+            --symmetric --cipher-algo AES256 \
+            -o diag.tar.gz.gpg diag.tar.gz
+          rm diag.tar.gz
+          ls -lh diag.tar.gz.gpg
+
+      - name: Subir diagnóstico cifrado
+        uses: actions/upload-artifact@v4
+        with:
+          name: podzcash-diagnostico-${{ github.run_id }}
+          path: diag.tar.gz.gpg
+          retention-days: 1
