@@ -114,6 +114,28 @@ export async function saveChannelAction(
     newAvatarKey = key;
   }
 
+  let newBannerKey: string | undefined;
+  const banner = formData.get("banner");
+
+  if (banner instanceof File && banner.size > 0) {
+    if (!IMAGE_MIME[banner.type]) {
+      return {
+        fields: { banner: errors.bannerFormat },
+      };
+    }
+
+    if (banner.size > 4 * 1024 * 1024) {
+      return { fields: { banner: errors.bannerSize } };
+    }
+
+    const extension = IMAGE_MIME[banner.type];
+    const key = `banners/${user.id}/${randomUUID()}.${extension}`;
+    const bytes = Buffer.from(await banner.arrayBuffer());
+
+    await storage.put(key, bytes);
+    newBannerKey = key;
+  }
+
   const data = {
     displayName,
     handle,
@@ -121,6 +143,7 @@ export async function saveChannelAction(
     zcashAddress,
     links: linksJson,
     ...(newAvatarKey ? { avatarKey: newAvatarKey } : {}),
+    ...(newBannerKey ? { bannerKey: newBannerKey } : {}),
   };
 
   let previousHandle: string | null = null;
@@ -139,6 +162,10 @@ export async function saveChannelAction(
 
     if (newAvatarKey && user.channel.avatarKey) {
       await storage.remove(user.channel.avatarKey);
+    }
+
+    if (newBannerKey && user.channel.bannerKey) {
+      await storage.remove(user.channel.bannerKey);
     }
   } else {
     await prisma.channel.create({

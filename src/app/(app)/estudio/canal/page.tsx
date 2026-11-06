@@ -39,6 +39,9 @@ export default async function ChannelSettingsPage() {
                   avatarUrl: channel.avatarKey
                     ? storage.url(channel.avatarKey)
                     : null,
+                  bannerUrl: channel.bannerKey
+                    ? storage.url(channel.bannerKey)
+                    : null,
                   zcashAddress: channel.zcashAddress,
                 }
               : null
