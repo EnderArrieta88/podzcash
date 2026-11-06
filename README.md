@@ -16,6 +16,7 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 ## Qué incluye
 
 - Registro por invitación y sesiones con cookie httpOnly.
+- Verificación de email por enlace firmado antes de activar la cuenta.
 - Recuperación de contraseña por email con enlaces firmados y caducidad.
 - Canales con nombre de usuario, bio, avatar, enlaces y dirección Zcash.
 - Subida de audio en streaming, portadas, borradores y publicación.
@@ -66,7 +67,7 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `FEED_OWNER_EMAIL` | Email de propietario en el feed RSS |
 | `MEDIA_ROOT` | Carpeta de audio y portadas |
 | `SEARCH_DB_PATH` | Ruta del índice FTS5 |
-| `AUTH_SECRET` | Firma los enlaces de recuperación de contraseña |
+| `AUTH_SECRET` | Firma los enlaces de verificación y recuperación |
 | `RESEND_API_KEY` | API key de Resend para emails transaccionales |
 | `EMAIL_FROM` | Remitente verificado en Resend |
 
@@ -149,8 +150,8 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
   `BACKUP_PASSPHRASE`.
 - **Monitorización:** healthcheck cada 15 minutos. Ver
   [docs/monitoring.md](docs/monitoring.md).
-- **Email:** recuperación de contraseña con Resend. Ver
-  [docs/email.md](docs/email.md).
+- **Email:** verificación de cuenta y recuperación de contraseña con Resend.
+  Ver [docs/email.md](docs/email.md).
 - **Staging:** pendiente de un segundo hosting/base de datos.
 
 ## Seguridad
@@ -163,7 +164,8 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
 - Backups diarios cifrados con restauración verificada.
 - Monitor de disponibilidad cada 15 minutos.
 - Recuperación de contraseña con enlaces firmados y Resend.
-- Pendientes: auditoría externa, verificación de email y staging.
+- Verificación de email para activar cuentas nuevas.
+- Pendientes: auditoría externa, lista de espera de creadores y portada de canal.
 
 ## Estructura
 

@@ -21,7 +21,7 @@ model User {
   name         String
   // "admin" | "creator"
   role         String    @default("creator")
-  // "active" | "suspended"
+  // "active" | "unverified" | "suspended"
   status       String    @default("active")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt

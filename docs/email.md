@@ -1,7 +1,9 @@
-# Email y recuperación de contraseña
+# Email, verificación y recuperación de contraseña
 
-PodZcash usa [Resend](https://resend.com) para enviar el enlace de
-recuperación de contraseña.
+PodZcash usa [Resend](https://resend.com) para enviar dos correos:
+
+- **Verificación de cuenta** al registrarse.
+- **Recuperación de contraseña** cuando se solicita.
 
 ## Variables de entorno
 
@@ -14,8 +16,9 @@ RESEND_API_KEY="re_..."
 EMAIL_FROM="PodZcash <hola@podzcash.online>"
 ```
 
-- `AUTH_SECRET` firma los enlaces de recuperación. Genera al menos 32 bytes
-  aleatorios y guárdalo en un gestor de contraseñas.
+- `AUTH_SECRET` firma los enlaces de verificación y recuperación. Genera al
+  menos 32 bytes aleatorios y guárdalo en un gestor de contraseñas.
+  **Un secreto corto permite falsificar enlaces**: usa 64 caracteres.
 - `RESEND_API_KEY` se crea en el panel de Resend.
 - `EMAIL_FROM` debe usar un dominio verificado en Resend.
 - El deploy **no sube `.env`**: hay que editar el archivo en el hosting y
@@ -30,7 +33,29 @@ EMAIL_FROM="PodZcash <hola@podzcash.online>"
 5. Crear una API key con permiso de envío.
 6. Copiar la key al `.env` del servidor como `RESEND_API_KEY`.
 
-## Probar
+## Verificación de email
+
+Al crear una cuenta, el usuario queda con estado `unverified` y recibe un
+enlace. Hasta que no lo confirma:
+
+- No puede iniciar sesión (el mensaje ofrece reenviar el correo).
+- No tiene sesión activa.
+
+El enlace abre `/verificar`, que muestra un botón de confirmación. Al
+confirmarlo, la cuenta pasa a `active`.
+
+- El enlace caduca en **48 horas**.
+- Se puede pedir uno nuevo desde `/verificar`.
+- La respuesta del reenvío es genérica: no revela si el email existe.
+- La **primera cuenta** (administrador) se activa directamente para no dejar
+  una instalación nueva sin acceso.
+- Si el entorno no tiene `RESEND_API_KEY`, las cuentas nuevas se activan
+  directamente (útil en desarrollo y demos).
+
+No requiere migración: se reutiliza el campo `User.status`, que ya admitía
+`active` y `suspended`.
+
+## Recuperación de contraseña
 
 1. Abrir `/recuperar`.
 2. Escribir el email de una cuenta existente.
@@ -44,15 +69,10 @@ la consola del servidor y no se envía ningún correo.
 
 ## Seguridad
 
-- El enlace caduca en **1 hora**.
-- Está firmado con HMAC-SHA256; no se guarda en la base.
-- Queda inválido cuando cambia la contraseña.
-- La respuesta de `/recuperar` es genérica para no revelar si un email existe.
+- Recuperación: caduca en **1 hora**; verificación: **48 horas**.
+- Ambos enlaces están firmados con HMAC-SHA256 y no se guardan en la base.
+- El enlace de recuperación queda inválido cuando cambia la contraseña.
+- Las respuestas de `/recuperar` y `/verificar` son genéricas para no revelar
+  si un email existe.
 - Hay límite de solicitudes por email.
 - No se registran tokens en producción.
-
-## Pendiente
-
-La verificación de email requiere guardar un estado por cuenta. No se añadió
-todavía para no introducir una migración de base de datos en producción sin un
-plan de migración seguro.

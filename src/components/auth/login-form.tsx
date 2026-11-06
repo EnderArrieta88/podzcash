@@ -13,9 +13,17 @@ export function LoginForm({ labels }: { labels: LoginLabels }) {
   return (
     <form action={action} className="space-y-5">
       {state?.error && (
-        <p className="rounded-[10px] border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-sm text-danger">
-          {state.error}
-        </p>
+        <div className="rounded-[10px] border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-sm text-danger">
+          <p>{state.error}</p>
+          {state.code === "unverified" && (
+            <Link
+              href="/verificar"
+              className="mt-1 inline-block font-medium text-brand hover:underline"
+            >
+              {labels.resendVerification}
+            </Link>
+          )}
+        </div>
       )}
 
       <div>

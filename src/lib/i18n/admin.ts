@@ -44,10 +44,11 @@ const es = {
     string,
     string
   >,
-  userStatus: { active: "activo", suspended: "suspendido" } as Record<
-    string,
-    string
-  >,
+  userStatus: {
+    active: "activo",
+    unverified: "sin verificar",
+    suspended: "suspendido",
+  } as Record<string, string>,
   episodeStatus: {
     published: "publicado",
     hidden: "oculto",
@@ -101,10 +102,11 @@ const en: AdminContent = {
     string,
     string
   >,
-  userStatus: { active: "active", suspended: "suspended" } as Record<
-    string,
-    string
-  >,
+  userStatus: {
+    active: "active",
+    unverified: "unverified",
+    suspended: "suspended",
+  } as Record<string, string>,
   episodeStatus: {
     published: "published",
     hidden: "hidden",
