@@ -48,6 +48,7 @@ No aplica.
 
 - [ ] `npm run lint` pasa.
 - [ ] `npm run typecheck` pasa.
+- [ ] `npm test` pasa.
 - [ ] `npm run build` pasa.
 - [ ] Probado en español.
 - [ ] Probado en inglés (si toca textos).

@@ -48,8 +48,8 @@ Reglas prácticas:
   actualizada. Seguimos los principios de revisión de `librustzcash` adaptados a
   TypeScript: revisión antes de fusionar, CI obligatorio, historial legible y
   ningún secreto en el repositorio.
-- **Pruebas:** cuando existan tests, deben pasar en CI. Hoy el check automático
-  cubre lint, tipos y build.
+- **Pruebas:** los tests unitarios viven en `*.test.ts` y deben pasar en CI.
+  `npm run check` ejecuta lint, tipos y tests; `npm run build` valida el build.
 - **Datos:** no subas bases de datos, audios, portadas, `.env` ni datos de
   producción.
 
@@ -112,7 +112,8 @@ Cada PR a `main` ejecuta `.github/workflows/ci.yml`:
 2. `npx prisma generate`
 3. `npm run lint`
 4. `npm run typecheck`
-5. `npm run build`
+5. `npm test`
+6. `npm run build`
 
 Si algo falla, el PR no debe fusionarse. En local se puede reproducir con:
 

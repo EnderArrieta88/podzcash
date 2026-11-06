@@ -19,9 +19,10 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 - Canales con nombre de usuario, bio, avatar, enlaces y dirección Zcash.
 - Subida de audio en streaming, portadas, borradores y publicación.
 - Reproductor persistente, búsqueda full-text y reproductor embebible.
+- Conteo agregado de reproducciones por episodio, sin cookies.
 - Donaciones ZEC con QR y enlace ZIP-321, sin custodia.
 - Validación de direcciones transparentes, Sapling y unificadas.
-- Feed RSS 2.0 + Podcasting 2.0 por canal.
+- Feed RSS 2.0 + Podcasting 2.0 por canal, con enlace de apoyo ZEC.
 - Panel de creador, invitaciones, moderación, reportes y administración.
 - Interfaz bilingüe ES/EN con selector por cookie.
 
@@ -74,7 +75,8 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `npm run start` | Servidor de producción |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript sin emitir |
-| `npm run check` | Lint + tipos |
+| `npm run test` | Tests unitarios con Vitest |
+| `npm run check` | Lint + tipos + tests |
 | `npx prisma studio` | Explorador de la base |
 | `npx prisma migrate dev --name <nombre>` | Nueva migración |
 
@@ -142,8 +144,8 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
 - `security.txt`: `/.well-known/security.txt`.
 - Dependencias de producción sin vulnerabilidades conocidas en `npm audit`
   al momento de esta revisión; el tooling de desarrollo puede mostrar avisos.
-- Pendientes: tests automatizados, auditoría externa, backups verificados y
-  monitorización.
+- Tests unitarios para rutas, ZIP-321, RSS, validación y utilidades.
+- Pendientes: auditoría externa, backups verificados y monitorización.
 
 ## Estructura
 
