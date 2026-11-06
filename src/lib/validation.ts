@@ -1,4 +1,9 @@
 import { z } from "zod";
+import type { Locale } from "@/lib/i18n/config";
+import {
+  validationMessages,
+  type ValidationMessages,
+} from "@/lib/i18n/validation";
 
 export const RESERVED_HANDLES = new Set([
   "admin",
@@ -27,91 +32,95 @@ export const handleSchema = z
   .string()
   .trim()
   .toLowerCase()
-  .min(3, "El nombre de usuario necesita al menos 3 caracteres.")
-  .max(30, "El nombre de usuario no puede pasar de 30 caracteres.")
-  .regex(
-    /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])$/,
-    "Solo minúsculas, números y guiones. No puede empezar ni terminar con guion.",
-  )
+  .min(3, "usernameMin")
+  .max(30, "usernameMax")
+  .regex(/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])$/, "usernameChars")
   .refine((value) => !RESERVED_HANDLES.has(value), {
-    message: "Ese nombre de usuario está reservado. Elige otro.",
+    message: "usernameReserved",
   });
 
 export const registerSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, "Escribe tu nombre.")
-    .max(60, "El nombre es demasiado largo."),
+    .min(2, "nameMin")
+    .max(60, "nameMax"),
   email: z
-    .email("Escribe un email válido.")
+    .email("emailInvalid")
     .transform((value) => value.trim().toLowerCase()),
   password: z
     .string()
-    .min(8, "La contraseña necesita al menos 8 caracteres.")
-    .max(100, "La contraseña es demasiado larga."),
-  inviteCode: z.string().trim().max(64).optional(),
+    .min(8, "passwordMin")
+    .max(100, "passwordMax"),
+  inviteCode: z.string().trim().max(64, "inviteCodeMax").optional(),
 });
 
 export const loginSchema = z.object({
   email: z
-    .email("Escribe un email válido.")
+    .email("emailInvalid")
     .transform((value) => value.trim().toLowerCase()),
-  password: z.string().min(1, "Escribe tu contraseña."),
+  password: z.string().min(1, "loginPasswordRequired"),
 });
 
 export const channelSchema = z.object({
   displayName: z
     .string()
     .trim()
-    .min(2, "El nombre del canal necesita al menos 2 caracteres.")
-    .max(60, "El nombre del canal es demasiado largo."),
+    .min(2, "channelNameMin")
+    .max(60, "channelNameMax"),
   handle: handleSchema,
-  bio: z.string().trim().max(500, "La bio no puede pasar de 500 caracteres."),
-  zcashAddress: z.string().trim().max(200).optional(),
+  bio: z.string().trim().max(500, "bioMax"),
+  zcashAddress: z.string().trim().max(200, "zcashAddressMax").optional(),
 });
 
 export const episodeSchema = z.object({
   title: z
     .string()
     .trim()
-    .min(2, "El título necesita al menos 2 caracteres.")
-    .max(140, "El título no puede pasar de 140 caracteres."),
+    .min(2, "titleMin")
+    .max(140, "titleMax"),
   description: z
     .string()
     .trim()
-    .max(5000, "La descripción no puede pasar de 5000 caracteres."),
+    .max(5000, "descriptionMax"),
   kind: z.enum(["podcast", "music"], {
-    message: "Elige podcast o música.",
+    message: "kindRequired",
   }),
-  tags: z.string().trim().max(240).optional(),
+  tags: z.string().trim().max(240, "tagsMax").optional(),
 });
 
 export type EpisodeInput = z.infer<typeof episodeSchema>;
 
 export const passwordChangeSchema = z
   .object({
-    currentPassword: z.string().min(1, "Escribe tu contraseña actual."),
+    currentPassword: z.string().min(1, "currentPasswordRequired"),
     newPassword: z
       .string()
-      .min(8, "La nueva contraseña necesita al menos 8 caracteres.")
-      .max(100, "La nueva contraseña es demasiado larga."),
+      .min(8, "newPasswordMin")
+      .max(100, "newPasswordMax"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Las contraseñas no coinciden.",
+    message: "passwordsMismatch",
     path: ["confirmPassword"],
   });
 
 export type FieldErrors = Record<string, string>;
 
-export function toFieldErrors(error: z.ZodError): FieldErrors {
+export function toFieldErrors(
+  error: z.ZodError,
+  locale: Locale = "es",
+): FieldErrors {
+  const messages = validationMessages[locale];
   const errors: FieldErrors = {};
 
   for (const issue of error.issues) {
     const key = issue.path[0];
+    const translated =
+      messages[issue.message as keyof ValidationMessages] ?? issue.message;
+
     if (typeof key === "string" && !errors[key]) {
-      errors[key] = issue.message;
+      errors[key] = translated;
     }
   }
 

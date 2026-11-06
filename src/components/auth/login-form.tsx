@@ -5,8 +5,9 @@ import Link from "next/link";
 import { loginAction } from "@/app/(site)/(auth)/actions";
 import { Input, Label, FieldError } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
+import type { LoginLabels } from "@/lib/i18n/auth";
 
-export function LoginForm() {
+export function LoginForm({ labels }: { labels: LoginLabels }) {
   const [state, action] = useActionState(loginAction, null);
 
   return (
@@ -18,20 +19,20 @@ export function LoginForm() {
       )}
 
       <div>
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{labels.email}</Label>
         <Input
           id="email"
           name="email"
           type="email"
           autoComplete="email"
           required
-          placeholder="tu@email.com"
+          placeholder={labels.emailPlaceholder}
         />
         <FieldError>{state?.fields?.email}</FieldError>
       </div>
 
       <div>
-        <Label htmlFor="password">Contraseña</Label>
+        <Label htmlFor="password">{labels.password}</Label>
         <Input
           id="password"
           name="password"
@@ -43,14 +44,14 @@ export function LoginForm() {
         <FieldError>{state?.fields?.password}</FieldError>
       </div>
 
-      <SubmitButton className="w-full" pendingLabel="Entrando…">
-        Entrar
+      <SubmitButton className="w-full" pendingLabel={labels.pending}>
+        {labels.submit}
       </SubmitButton>
 
       <p className="text-center text-sm text-muted">
-        ¿Tienes un código de invitación?{" "}
+        {labels.invitePrompt}{" "}
         <Link href="/registro" className="text-brand hover:underline">
-          Crear cuenta
+          {labels.createAccount}
         </Link>
       </p>
     </form>

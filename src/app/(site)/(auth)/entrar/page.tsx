@@ -2,22 +2,29 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 import { LoginForm } from "@/components/auth/login-form";
+import { getLocale } from "@/lib/i18n/locale";
+import { authContent } from "@/lib/i18n/auth";
 
-export const metadata: Metadata = { title: "Entrar" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+
+  return { title: authContent[locale].login.metaTitle };
+}
 
 export default async function LoginPage() {
   const user = await getCurrentUser();
   if (user) redirect("/estudio");
 
+  const locale = await getLocale();
+  const content = authContent[locale].login;
+
   return (
     <div>
-      <h1 className="font-display text-4xl tracking-tight">Entra a tu estudio</h1>
-      <p className="mt-2 text-sm text-muted">
-        Publica tu contenido y gestiona tu canal.
-      </p>
+      <h1 className="font-display text-4xl tracking-tight">{content.title}</h1>
+      <p className="mt-2 text-sm text-muted">{content.intro}</p>
 
       <div className="mt-8 rounded-2xl border border-border bg-surface p-6">
-        <LoginForm />
+        <LoginForm labels={content} />
       </div>
     </div>
   );

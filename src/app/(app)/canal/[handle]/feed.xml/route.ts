@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { contentTypeFor } from "@/lib/media-types";
 import { cdata, escapeXml, itunesDuration, rfc822, siteOrigin } from "@/lib/rss";
+import { channelPath, feedPath, normalizeHandleParam } from "@/lib/routes";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ export async function GET(request: Request, context: RouteContext) {
   const { handle } = await context.params;
 
   const channel = await prisma.channel.findUnique({
-    where: { handle: handle.toLowerCase() },
+    where: { handle: normalizeHandleParam(handle) },
     include: {
       episodes: {
         where: { status: "published" },
@@ -28,8 +29,8 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const origin = siteOrigin(request);
-  const channelUrl = `${origin}/c/${channel.handle}`;
-  const feedUrl = `${origin}/c/${channel.handle}/feed.xml`;
+  const channelUrl = `${origin}${channelPath(channel.handle)}`;
+  const feedUrl = `${origin}${feedPath(channel.handle)}`;
   const description =
     channel.bio ?? `Podcasts y música de ${channel.displayName} en PodZcash.`;
 

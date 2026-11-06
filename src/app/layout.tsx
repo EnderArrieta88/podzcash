@@ -7,6 +7,8 @@ import {
 } from "next/font/google";
 import { PlayerProvider } from "@/components/player/player-context";
 import { PlayerBar } from "@/components/player/player-bar";
+import { getLocale } from "@/lib/i18n/locale";
+import { commonContent } from "@/lib/i18n/common";
 import "./globals.css";
 
 const display = Instrument_Serif({
@@ -35,23 +37,28 @@ const mono = Space_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "PodZcash — Podcasts y música del ecosistema Zcash",
-    template: "%s · PodZcash",
-  },
-  description:
-    "La plataforma donde podcasters y músicos del ecosistema Zcash publican su contenido, construyen su canal y reciben donaciones directas en ZEC.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+  return {
+    title: {
+      default: commonContent[locale].siteTitle,
+      template: "%s · PodZcash",
+    },
+    description: commonContent[locale].siteDescription,
+  };
+}
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
+
   return (
-    <html lang="es">
+    <html lang={locale}>
       <body
         className={`${display.variable} ${sans.variable} ${heading.variable} ${mono.variable} min-h-dvh antialiased`}
       >
         <PlayerProvider>
-          <PlayerBar />
+          <PlayerBar locale={locale} />
           {children}
         </PlayerProvider>
       </body>

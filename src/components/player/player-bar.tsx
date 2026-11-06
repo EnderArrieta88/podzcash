@@ -15,6 +15,9 @@ import {
   usePlayer,
 } from "@/components/player/player-context";
 import { cn } from "@/lib/utils";
+import type { Locale } from "@/lib/i18n/config";
+import { playerContent, type PlayerContent } from "@/lib/i18n/player";
+import { channelPath } from "@/lib/routes";
 
 const SEGMENTS = 64;
 
@@ -33,7 +36,7 @@ function formatClock(seconds: number): string {
   return `${minutes}:${rest}`;
 }
 
-function Scrubber() {
+function Scrubber({ labels }: { labels: PlayerContent }) {
   const { time, duration, seek } = usePlayer();
   const railRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -54,11 +57,11 @@ function Scrubber() {
       ref={railRef}
       role="slider"
       tabIndex={0}
-      aria-label="Progreso del episodio"
+      aria-label={labels.progress}
       aria-valuemin={0}
       aria-valuemax={Math.round(duration)}
       aria-valuenow={Math.round(time)}
-      aria-valuetext={`${formatClock(time)} de ${formatClock(duration)}`}
+      aria-valuetext={`${formatClock(time)} ${labels.of} ${formatClock(duration)}`}
       onPointerDown={(event) => {
         event.currentTarget.setPointerCapture(event.pointerId);
         setDragging(true);
@@ -98,7 +101,7 @@ function Scrubber() {
   );
 }
 
-export function PlayerBar() {
+export function PlayerBar({ locale }: { locale: Locale }) {
   const {
     track,
     playing,
@@ -110,6 +113,8 @@ export function PlayerBar() {
     changeRate,
     close,
   } = usePlayer();
+
+  const labels = playerContent[locale];
 
   if (!track) return null;
 
@@ -135,7 +140,7 @@ export function PlayerBar() {
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{track.title}</p>
             <Link
-              href={`/c/${track.channelHandle}`}
+              href={channelPath(track.channelHandle)}
               className="truncate text-xs text-subtle transition-colors hover:text-muted"
             >
               {track.channelName}
@@ -147,7 +152,7 @@ export function PlayerBar() {
               type="button"
               onClick={() => skip(-15)}
               className="hidden size-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text sm:inline-flex"
-              aria-label="Retroceder 15 segundos"
+              aria-label={labels.back}
             >
               <RotateCcw size={16} />
             </button>
@@ -156,7 +161,7 @@ export function PlayerBar() {
               type="button"
               onClick={toggle}
               className="inline-flex size-11 items-center justify-center rounded-full bg-brand text-[#17130a] transition-colors hover:bg-brand-strong"
-              aria-label={playing ? "Pausar" : "Reproducir"}
+              aria-label={playing ? labels.pause : labels.play}
             >
               {playing ? (
                 <Pause size={18} fill="currentColor" />
@@ -169,7 +174,7 @@ export function PlayerBar() {
               type="button"
               onClick={() => skip(15)}
               className="hidden size-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text sm:inline-flex"
-              aria-label="Avanzar 15 segundos"
+              aria-label={labels.forward}
             >
               <RotateCw size={16} />
             </button>
@@ -185,7 +190,7 @@ export function PlayerBar() {
                 changeRate(PLAYBACK_RATES[(index + 1) % PLAYBACK_RATES.length]);
               }}
               className="inline-flex h-8 min-w-11 items-center justify-center rounded-full border border-border px-2 font-mono text-xs tabular text-muted transition-colors hover:border-border-strong hover:text-text"
-              aria-label="Cambiar velocidad"
+              aria-label={labels.speed}
             >
               {rate}×
             </button>
@@ -194,7 +199,7 @@ export function PlayerBar() {
               type="button"
               onClick={close}
               className="inline-flex size-8 items-center justify-center rounded-full text-subtle transition-colors hover:bg-surface-2 hover:text-text"
-              aria-label="Cerrar reproductor"
+              aria-label={labels.close}
             >
               <X size={16} />
             </button>
@@ -206,7 +211,7 @@ export function PlayerBar() {
             {formatClock(time)}
           </span>
 
-          <Scrubber />
+          <Scrubber labels={labels} />
 
           <span className="w-10 shrink-0 font-mono text-[11px] tabular text-subtle">
             {formatClock(duration)}

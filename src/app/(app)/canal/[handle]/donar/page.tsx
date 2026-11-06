@@ -6,12 +6,15 @@ import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { DonationBox } from "@/components/donate/donation-box";
 import { ButtonLink } from "@/components/ui/button-link";
+import { getLocale } from "@/lib/i18n/locale";
+import { donateContent } from "@/lib/i18n/donate";
+import { channelPath, normalizeHandleParam } from "@/lib/routes";
 
 type PageProps = { params: Promise<{ handle: string }> };
 
 async function loadChannel(handle: string) {
   return prisma.channel.findUnique({
-    where: { handle: handle.toLowerCase() },
+    where: { handle: normalizeHandleParam(handle) },
     select: {
       handle: true,
       displayName: true,
@@ -25,36 +28,22 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { handle } = await params;
+  const locale = await getLocale();
+  const content = donateContent[locale];
   const channel = await loadChannel(handle);
 
-  if (!channel) return { title: "Canal no encontrado" };
+  if (!channel) return { title: content.notFound };
 
   return {
-    title: `Apoyar a ${channel.displayName}`,
-    description: `Dona ZEC directamente a ${channel.displayName} en PodZcash.`,
+    title: content.metaTitle(channel.displayName),
+    description: content.metaDescription(channel.displayName),
   };
 }
 
-const notes = [
-  {
-    icon: ShieldCheck,
-    title: "Sin custodia",
-    body: "El pago va directo a la wallet del creador. PodZcash nunca retiene el dinero.",
-  },
-  {
-    icon: UserX,
-    title: "Sin cuenta",
-    body: "No hace falta registrarse ni iniciar sesión para donar.",
-  },
-  {
-    icon: EyeOff,
-    title: "Privacidad",
-    body: "Con una dirección protegida, el monto y el memo quedan cifrados. Con una transparente, son públicos.",
-  },
-];
-
 export default async function DonatePage({ params }: PageProps) {
   const { handle } = await params;
+  const locale = await getLocale();
+  const content = donateContent[locale];
   const channel = await loadChannel(handle);
 
   if (!channel) notFound();
@@ -63,13 +52,11 @@ export default async function DonatePage({ params }: PageProps) {
     return (
       <div className="mx-auto w-full max-w-lg py-20 text-center">
         <p className="font-display text-3xl tracking-tight">
-          {channel.displayName} todavía no acepta donaciones
+          {content.noAddressTitle(channel.displayName)}
         </p>
-        <p className="mt-3 text-sm text-muted">
-          Cuando el creador agregue su dirección de Zcash, va a aparecer acá.
-        </p>
-        <ButtonLink href={`/c/${channel.handle}`} className="mt-7">
-          Volver al canal
+        <p className="mt-3 text-sm text-muted">{content.noAddressBody}</p>
+        <ButtonLink href={channelPath(channel.handle)} className="mt-7">
+          {content.backToChannel}
         </ButtonLink>
       </div>
     );
@@ -78,7 +65,7 @@ export default async function DonatePage({ params }: PageProps) {
   return (
     <div className="mx-auto w-full max-w-3xl">
       <Link
-        href={`/c/${channel.handle}`}
+        href={channelPath(channel.handle)}
         className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-text"
       >
         <ArrowLeft size={15} />
@@ -101,11 +88,9 @@ export default async function DonatePage({ params }: PageProps) {
 
         <div>
           <h1 className="font-display text-3xl tracking-tight">
-            Apoyar a {channel.displayName}
+            {content.title(channel.displayName)}
           </h1>
-          <p className="mt-1 text-sm text-muted">
-            Donación directa en ZEC, de persona a persona.
-          </p>
+          <p className="mt-1 text-sm text-muted">{content.subtitle}</p>
         </div>
       </div>
 
@@ -113,24 +98,29 @@ export default async function DonatePage({ params }: PageProps) {
         <DonationBox
           address={channel.zcashAddress}
           channelName={channel.displayName}
+          labels={content.box}
         />
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        {notes.map((note) => (
-          <div
-            key={note.title}
-            className="rounded-xl border border-border bg-surface p-4"
-          >
-            <note.icon size={16} className="text-jade" />
-            <p className="mt-2 font-heading text-sm font-semibold">
-              {note.title}
-            </p>
-            <p className="mt-1 text-xs leading-relaxed text-muted">
-              {note.body}
-            </p>
-          </div>
-        ))}
+        {content.notes.map((note, index) => {
+          const Icon = [ShieldCheck, UserX, EyeOff][index] ?? ShieldCheck;
+
+          return (
+            <div
+              key={note.title}
+              className="rounded-xl border border-border bg-surface p-4"
+            >
+              <Icon size={16} className="text-jade" />
+              <p className="mt-2 font-heading text-sm font-semibold">
+                {note.title}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-muted">
+                {note.body}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

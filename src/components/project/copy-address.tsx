@@ -5,9 +5,15 @@ import { Check, Copy } from "lucide-react";
 
 type CopyAddressProps = {
   address: string;
+  copyLabel: string;
+  copiedLabel: string;
 };
 
-export function CopyAddress({ address }: CopyAddressProps) {
+export function CopyAddress({
+  address,
+  copyLabel,
+  copiedLabel,
+}: CopyAddressProps) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -29,12 +35,12 @@ export function CopyAddress({ address }: CopyAddressProps) {
       {copied ? (
         <>
           <Check size={12} className="text-jade" />
-          Dirección copiada
+          {copiedLabel}
         </>
       ) : (
         <>
           <Copy size={12} />
-          Copiar dirección
+          {copyLabel}
         </>
       )}
     </button>

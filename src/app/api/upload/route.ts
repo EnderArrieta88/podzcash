@@ -17,13 +17,11 @@ const LIMITS = {
     mimes: AUDIO_MIME,
     maxBytes: MAX_AUDIO_BYTES,
     prefix: "audio",
-    label: "audio",
   },
   image: {
     mimes: IMAGE_MIME,
     maxBytes: MAX_IMAGE_BYTES,
     prefix: "covers",
-    label: "imagen",
   },
 } as const;
 
@@ -33,16 +31,13 @@ export async function POST(request: Request) {
   const user = await getCurrentUser();
 
   if (!user) {
-    return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const kind = new URL(request.url).searchParams.get("kind") as UploadKind | null;
 
   if (!kind || !(kind in LIMITS)) {
-    return NextResponse.json(
-      { error: "Tipo de subida inválido." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "invalidType" }, { status: 400 });
   }
 
   const limit = LIMITS[kind];
@@ -54,26 +49,17 @@ export async function POST(request: Request) {
   const extension = limit.mimes[mimeType as keyof typeof limit.mimes];
 
   if (!extension) {
-    return NextResponse.json(
-      { error: `Formato de ${limit.label} no soportado.` },
-      { status: 415 },
-    );
+    return NextResponse.json({ error: "unsupportedFormat" }, { status: 415 });
   }
 
   const declared = Number(request.headers.get("content-length") ?? "0");
 
   if (declared > limit.maxBytes) {
-    return NextResponse.json(
-      { error: "El archivo supera el máximo permitido." },
-      { status: 413 },
-    );
+    return NextResponse.json({ error: "tooLarge" }, { status: 413 });
   }
 
   if (!request.body) {
-    return NextResponse.json(
-      { error: "No se recibió el archivo." },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "noFile" }, { status: 400 });
   }
 
   const key = `${limit.prefix}/${user.id}/${randomUUID()}.${extension}`;
@@ -83,27 +69,18 @@ export async function POST(request: Request) {
 
     if (size > limit.maxBytes) {
       await storage.remove(key);
-      return NextResponse.json(
-        { error: "El archivo supera el máximo permitido." },
-        { status: 413 },
-      );
+      return NextResponse.json({ error: "tooLarge" }, { status: 413 });
     }
 
     if (size === 0) {
       await storage.remove(key);
-      return NextResponse.json(
-        { error: "El archivo está vacío." },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "empty" }, { status: 400 });
     }
 
     return NextResponse.json({ key, size, mimeType });
   } catch (error) {
     console.error("Falló la subida:", error);
     await storage.remove(key);
-    return NextResponse.json(
-      { error: "No se pudo guardar el archivo." },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "saveFailed" }, { status: 500 });
   }
 }

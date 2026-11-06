@@ -5,13 +5,15 @@ import QRCode from "qrcode";
 import { Check, Copy, ExternalLink, ShieldCheck } from "lucide-react";
 import { AMOUNT_PRESETS, buildPaymentUri } from "@/lib/zip321";
 import { cn } from "@/lib/utils";
+import type { DonationBoxLabels } from "@/lib/i18n/donate";
 
 type DonationBoxProps = {
   address: string;
   channelName: string;
+  labels: DonationBoxLabels;
 };
 
-export function DonationBox({ address, channelName }: DonationBoxProps) {
+export function DonationBox({ address, channelName, labels }: DonationBoxProps) {
   const [amount, setAmount] = useState("");
   const [memo, setMemo] = useState("");
   const [qr, setQr] = useState<string | null>(null);
@@ -65,15 +67,15 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={qr}
-              alt={`Código QR para donar a ${channelName}`}
+              alt={`${labels.qrAlt} ${channelName}`}
               className="size-full"
             />
           ) : (
-            <span className="text-xs text-[#6b655f]">Generando QR…</span>
+            <span className="text-xs text-[#6b655f]">{labels.generating}</span>
           )}
         </div>
         <p className="mt-2 text-center font-mono text-[11px] text-subtle">
-          Escanea con Zashi, Zingo o Ywallet
+          {labels.scanHint}
         </p>
       </div>
 
@@ -81,11 +83,11 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
         <div>
           <div className="flex items-center justify-between gap-2">
             <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">
-              Dirección Zcash
+              {labels.addressLabel}
             </p>
             <span className="inline-flex items-center gap-1 font-mono text-[10px] text-jade-bright">
               <ShieldCheck size={11} />
-              verificada
+              {labels.verified}
             </span>
           </div>
 
@@ -97,7 +99,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
               type="button"
               onClick={() => copy(address, "address")}
               className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-border-strong hover:text-text"
-              aria-label="Copiar dirección"
+              aria-label={labels.copyAria}
             >
               {copied === "address" ? (
                 <Check size={14} className="text-jade" />
@@ -110,7 +112,8 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
 
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">
-            Monto <span className="normal-case tracking-normal">(opcional)</span>
+            {labels.amount}{" "}
+            <span className="normal-case tracking-normal">{labels.optional}</span>
           </p>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -139,8 +142,8 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
                 inputMode="decimal"
                 value={amount}
                 onChange={(event) => setAmount(event.target.value)}
-                placeholder="Otro"
-                aria-label="Monto en ZEC"
+                placeholder={labels.other}
+                aria-label={labels.amountAria}
                 className="h-9 w-24 rounded-lg border border-border bg-surface-2 px-3 pr-9 font-mono text-xs tabular text-text placeholder:text-subtle outline-none focus:border-brand"
               />
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-subtle">
@@ -155,21 +158,18 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
             htmlFor="donation-memo"
             className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle"
           >
-            Mensaje en el memo{" "}
-            <span className="normal-case tracking-normal">(opcional)</span>
+            {labels.memoLabel}{" "}
+            <span className="normal-case tracking-normal">{labels.optional}</span>
           </label>
           <input
             id="donation-memo"
             value={memo}
             onChange={(event) => setMemo(event.target.value)}
             maxLength={200}
-            placeholder="Gracias por el episodio"
+            placeholder={labels.memoPlaceholder}
             className="mt-2 h-10 w-full rounded-xl border border-border bg-surface-2 px-3 text-sm text-text placeholder:text-subtle outline-none focus:border-brand focus:ring-4 focus:ring-brand/15"
           />
-          <p className="mt-1.5 text-xs text-subtle">
-            Solo funciona con transacciones protegidas y algunos wallets lo
-            ignoran.
-          </p>
+          <p className="mt-1.5 text-xs text-subtle">{labels.memoHint}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
@@ -177,7 +177,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
             href={uri}
             className="inline-flex h-10 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
           >
-            Abrir en wallet
+            {labels.openWallet}
             <ExternalLink size={14} />
           </a>
 
@@ -191,7 +191,7 @@ export function DonationBox({ address, channelName }: DonationBoxProps) {
             ) : (
               <Copy size={14} />
             )}
-            {copied === "uri" ? "Copiado" : "Copiar enlace zcash:"}
+            {copied === "uri" ? labels.copied : labels.copyUri}
           </button>
         </div>
       </div>

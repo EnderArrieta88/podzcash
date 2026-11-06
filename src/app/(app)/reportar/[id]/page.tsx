@@ -4,20 +4,19 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Flag } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { Input, Label, Textarea } from "@/components/ui/field";
+import { getLocale } from "@/lib/i18n/locale";
+import { reportContent } from "@/lib/i18n/report";
+import { episodePath } from "@/lib/routes";
 import { submitReportAction } from "../actions";
 
-export const metadata: Metadata = {
-  title: "Reportar contenido",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
 
-const reasons = [
-  { value: "spam", label: "Spam o contenido engañoso" },
-  { value: "acoso", label: "Acoso o discurso de odio" },
-  { value: "copyright", label: "Infracción de derechos de autor" },
-  { value: "explicito", label: "Contenido explícito sin aviso" },
-  { value: "otro", label: "Otro motivo" },
-];
+  return {
+    title: reportContent[locale].metaTitle,
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function ReportPage({
   params,
@@ -26,8 +25,12 @@ export default async function ReportPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ ok?: string; error?: string }>;
 }) {
-  const { id } = await params;
-  const query = await searchParams;
+  const [{ id }, query, locale] = await Promise.all([
+    params,
+    searchParams,
+    getLocale(),
+  ]);
+  const content = reportContent[locale];
 
   const episode = await prisma.episode.findUnique({
     where: { id },
@@ -39,28 +42,28 @@ export default async function ReportPage({
   return (
     <div className="mx-auto w-full max-w-xl">
       <Link
-        href={`/c/${episode.channel.handle}/${episode.slug}`}
+        href={episodePath(episode.channel.handle, episode.slug)}
         className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-text"
       >
         <ArrowLeft size={15} />
-        Volver al episodio
+        {content.back}
       </Link>
 
       <div className="mt-5 flex items-center gap-2">
         <Flag size={16} className="text-brand" />
         <h1 className="font-heading text-2xl font-bold tracking-tight">
-          Reportar contenido
+          {content.title}
         </h1>
       </div>
 
       <p className="mt-2 text-sm text-muted">
-        Episodio: <span className="text-text">{episode.title}</span> ·{" "}
+        {content.episode} <span className="text-text">{episode.title}</span> ·{" "}
         {episode.channel.displayName}
       </p>
 
       {query.ok === "1" ? (
         <div className="mt-6 rounded-xl border border-jade/30 bg-jade-soft px-4 py-3 text-sm text-jade-bright">
-          Gracias. Recibimos el reporte y lo vamos a revisar.
+          {content.thanks}
         </div>
       ) : (
         <form
@@ -73,13 +76,13 @@ export default async function ReportPage({
           {query.error && (
             <p className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-2.5 text-sm text-danger">
               {query.error === "limit"
-                ? "Demasiados reportes desde tu conexión. Probá más tarde."
-                : "Revisá los datos e intentá de nuevo."}
+                ? content.errors.limit
+                : content.errors.invalid}
             </p>
           )}
 
           <div>
-            <Label htmlFor="reason">Motivo</Label>
+            <Label htmlFor="reason">{content.reason}</Label>
             <select
               id="reason"
               name="reason"
@@ -88,9 +91,9 @@ export default async function ReportPage({
               className="h-11 w-full rounded-[10px] border border-border bg-surface-2 px-3 text-sm text-text outline-none focus:border-brand"
             >
               <option value="" disabled>
-                Elegí un motivo
+                {content.reasonPlaceholder}
               </option>
-              {reasons.map((reason) => (
+              {content.reasons.map((reason) => (
                 <option key={reason.value} value={reason.value}>
                   {reason.label}
                 </option>
@@ -99,27 +102,27 @@ export default async function ReportPage({
           </div>
 
           <div>
-            <Label htmlFor="details">Detalles</Label>
+            <Label htmlFor="details">{content.details}</Label>
             <Textarea
               id="details"
               name="details"
               rows={4}
               maxLength={1000}
-              placeholder="Contanos qué está mal en este contenido."
+              placeholder={content.detailsPlaceholder}
             />
           </div>
 
           <div>
             <Label htmlFor="email">
-              Tu email{" "}
-              <span className="font-normal text-subtle">(opcional)</span>
+              {content.email}{" "}
+              <span className="font-normal text-subtle">{content.optional}</span>
             </Label>
             <Input
               id="email"
               name="email"
               type="email"
               maxLength={200}
-              placeholder="Para responderte si hace falta"
+              placeholder={content.emailPlaceholder}
             />
           </div>
 
@@ -128,7 +131,7 @@ export default async function ReportPage({
               type="submit"
               className="inline-flex h-11 items-center rounded-full bg-brand px-6 text-sm font-medium text-[#17130a] transition-colors hover:bg-brand-strong"
             >
-              Enviar reporte
+              {content.submit}
             </button>
           </div>
         </form>

@@ -8,11 +8,20 @@ import { formatDate, formatDuration } from "@/lib/format";
 import { storage } from "@/lib/storage";
 import { ButtonLink } from "@/components/ui/button-link";
 import { DeleteEpisodeButton } from "@/components/studio/delete-episode-button";
+import { getLocale } from "@/lib/i18n/locale";
+import { studioEpisodesContent } from "@/lib/i18n/studio-episodes";
+import { episodePath } from "@/lib/routes";
 
-export const metadata: Metadata = { title: "Episodios" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+
+  return { title: studioEpisodesContent[locale].meta.list };
+}
 
 export default async function EpisodesPage() {
-  const user = await requireUser();
+  const [user, locale] = await Promise.all([requireUser(), getLocale()]);
+  const content = studioEpisodesContent[locale];
+  const labels = content.list;
 
   if (!user.channel) redirect("/estudio/canal");
 
@@ -30,17 +39,19 @@ export default async function EpisodesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl tracking-tight">Episodios</h1>
+          <h1 className="font-display text-3xl tracking-tight">
+            {labels.title}
+          </h1>
           <p className="mt-2 text-sm text-muted">
             {episodes.length === 0
-              ? "Tu catálogo está vacío."
-              : `${episodes.length} en total · ${published.length} publicados`}
+              ? labels.emptyIntro
+              : `${episodes.length} ${labels.countPrefix} ${published.length} ${labels.publishedSuffix}`}
           </p>
         </div>
 
         <ButtonLink href="/estudio/episodios/nuevo">
           <Plus size={16} />
-          Subir episodio
+          {labels.upload}
         </ButtonLink>
       </div>
 
@@ -49,14 +60,13 @@ export default async function EpisodesPage() {
           <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-surface-2 text-subtle">
             <Mic2 size={20} />
           </span>
-          <p className="mt-4 text-sm font-medium">Todavía no subiste nada</p>
+          <p className="mt-4 text-sm font-medium">{labels.emptyTitle}</p>
           <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted">
-            Sube tu primer episodio o tema. Puedes dejarlo en borrador y
-            publicarlo cuando estés listo.
+            {labels.emptyBody}
           </p>
           <ButtonLink href="/estudio/episodios/nuevo" className="mt-6">
             <Plus size={16} />
-            Subir episodio
+            {labels.upload}
           </ButtonLink>
         </div>
       ) : (
@@ -91,7 +101,7 @@ export default async function EpisodesPage() {
                     </p>
                     <p className="mt-0.5 font-mono text-xs tabular text-subtle">
                       {formatDuration(episode.durationSec)} ·{" "}
-                      {formatDate(episode.publishedAt ?? episode.createdAt)}
+                      {formatDate(episode.publishedAt ?? episode.createdAt, locale)}
                     </p>
                     {episode.tags.length > 0 && (
                       <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -115,16 +125,16 @@ export default async function EpisodesPage() {
                           : "bg-surface-2 text-subtle"
                       }`}
                     >
-                      {isPublished ? "Publicado" : "Borrador"}
+                      {isPublished ? labels.published : labels.draft}
                     </span>
 
                     <div className="flex items-center gap-3">
                       {isPublished && (
                         <Link
-                          href={`/c/${channel.handle}/${episode.slug}`}
+                          href={episodePath(channel.handle, episode.slug)}
                           target="_blank"
                           className="text-muted transition-colors hover:text-text"
-                          aria-label="Ver episodio"
+                          aria-label={labels.viewAria}
                         >
                           <ExternalLink size={15} />
                         </Link>
@@ -133,12 +143,15 @@ export default async function EpisodesPage() {
                       <Link
                         href={`/estudio/episodios/${episode.id}`}
                         className="text-muted transition-colors hover:text-text"
-                        aria-label="Editar episodio"
+                        aria-label={labels.editAria}
                       >
                         <PencilLine size={15} />
                       </Link>
 
-                      <DeleteEpisodeButton id={episode.id} />
+                      <DeleteEpisodeButton
+                        id={episode.id}
+                        labels={content.delete}
+                      />
                     </div>
                   </div>
                 </div>

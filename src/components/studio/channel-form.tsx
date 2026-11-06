@@ -7,6 +7,7 @@ import { AvatarField } from "@/components/studio/avatar-field";
 import { LinksEditor } from "@/components/studio/links-editor";
 import { FieldError, FieldHint, Input, Label, Textarea } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
+import type { ChannelFormLabels } from "@/lib/i18n/studio-channel";
 
 type ChannelFormProps = {
   channel: {
@@ -17,9 +18,10 @@ type ChannelFormProps = {
     zcashAddress: string | null;
   } | null;
   links: ChannelLink[];
+  labels: ChannelFormLabels;
 };
 
-export function ChannelForm({ channel, links }: ChannelFormProps) {
+export function ChannelForm({ channel, links, labels }: ChannelFormProps) {
   const [state, action] = useActionState(saveChannelAction, null);
 
   // Campos controlados: React resetea los formularios no controlados después de
@@ -39,7 +41,7 @@ export function ChannelForm({ channel, links }: ChannelFormProps) {
     <form action={action} className="space-y-6">
       {state?.ok && (
         <p className="rounded-[10px] border border-success/30 bg-success/10 px-3.5 py-2.5 text-sm text-success">
-          Canal guardado.
+          {labels.saved}
         </p>
       )}
 
@@ -49,11 +51,19 @@ export function ChannelForm({ channel, links }: ChannelFormProps) {
         </p>
       )}
 
-      <AvatarField initialUrl={channel?.avatarUrl ?? null} />
+      <AvatarField
+        initialUrl={channel?.avatarUrl ?? null}
+        labels={{
+          avatar: labels.avatar,
+          avatarAlt: labels.avatarAlt,
+          uploadImage: labels.uploadImage,
+          avatarHint: labels.avatarHint,
+        }}
+      />
       <FieldError>{state?.fields?.avatar}</FieldError>
 
       <div>
-        <Label htmlFor="displayName">Nombre del canal</Label>
+        <Label htmlFor="displayName">{labels.displayName}</Label>
         <Input
           id="displayName"
           name="displayName"
@@ -61,16 +71,16 @@ export function ChannelForm({ channel, links }: ChannelFormProps) {
           onChange={(event) => update("displayName", event.target.value)}
           required
           maxLength={60}
-          placeholder="Mi podcast"
+          placeholder={labels.displayNamePlaceholder}
         />
         <FieldError>{state?.fields?.displayName}</FieldError>
       </div>
 
       <div>
-        <Label htmlFor="handle">Nombre de usuario</Label>
+        <Label htmlFor="handle">{labels.username}</Label>
         <div className="flex items-center gap-2">
           <span className="shrink-0 font-mono text-sm text-subtle">
-            /c/
+            /canal/@
           </span>
           <Input
             id="handle"
@@ -80,18 +90,16 @@ export function ChannelForm({ channel, links }: ChannelFormProps) {
             required
             minLength={3}
             maxLength={30}
-            placeholder="mi-podcast"
+            placeholder={labels.usernamePlaceholder}
             className="font-mono"
           />
         </div>
         <FieldError>{state?.fields?.handle}</FieldError>
-        <FieldHint>
-          Es la dirección de tu canal. Solo minúsculas, números y guiones.
-        </FieldHint>
+        <FieldHint>{labels.usernameHint}</FieldHint>
       </div>
 
       <div>
-        <Label htmlFor="bio">Bio</Label>
+        <Label htmlFor="bio">{labels.bio}</Label>
         <Textarea
           id="bio"
           name="bio"
@@ -99,43 +107,51 @@ export function ChannelForm({ channel, links }: ChannelFormProps) {
           onChange={(event) => update("bio", event.target.value)}
           rows={4}
           maxLength={500}
-          placeholder="Cuéntale a la comunidad de qué hablas o qué música haces."
+          placeholder={labels.bioPlaceholder}
         />
         <FieldError>{state?.fields?.bio}</FieldError>
       </div>
 
-      <LinksEditor initial={links} />
+      <LinksEditor
+        initial={links}
+        labels={{
+          links: labels.links,
+          optional: labels.optional,
+          linkLabel: labels.linkLabel,
+          linkUrl: labels.linkUrl,
+          linkLabelAria: labels.linkLabelAria,
+          linkUrlAria: labels.linkUrlAria,
+          removeLink: labels.removeLink,
+          addLink: labels.addLink,
+        }}
+      />
       <FieldError>{state?.fields?.links}</FieldError>
 
       <div className="rounded-xl border border-border bg-surface-2/60 p-4">
         <Label htmlFor="zcashAddress">
-          Dirección Zcash{" "}
-          <span className="font-normal text-subtle">(opcional)</span>
+          {labels.zcashAddress}{" "}
+          <span className="font-normal text-subtle">{labels.optional}</span>
         </Label>
         <Input
           id="zcashAddress"
           name="zcashAddress"
           value={values.zcashAddress}
           onChange={(event) => update("zcashAddress", event.target.value)}
-          placeholder="u1… · zs1… · t1… · t3…"
+          placeholder={labels.zcashPlaceholder}
           className="font-mono text-xs"
           spellCheck={false}
           autoComplete="off"
         />
         <FieldError>{state?.fields?.zcashAddress}</FieldError>
-        <FieldHint>
-          Activa las donaciones de tu canal. Validamos el checksum al guardar.
-          Ideal una dirección unificada (u1) o Sapling (zs1) para que el monto y
-          el memo queden protegidos.
-        </FieldHint>
+        <FieldHint>{labels.zcashHint}</FieldHint>
       </div>
 
       <div className="flex items-center gap-3 border-t border-border pt-6">
-        <SubmitButton>{channel ? "Guardar cambios" : "Crear canal"}</SubmitButton>
+        <SubmitButton pendingLabel={labels.saving}>
+          {channel ? labels.save : labels.create}
+        </SubmitButton>
         {!channel && (
-          <p className="text-xs text-subtle">
-            Podrás editarlo cuando quieras.
-          </p>
+          <p className="text-xs text-subtle">{labels.editLater}</p>
         )}
       </div>
     </form>

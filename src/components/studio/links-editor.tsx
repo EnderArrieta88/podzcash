@@ -7,7 +7,22 @@ import { Input } from "@/components/ui/field";
 
 const EMPTY: ChannelLink = { label: "", url: "" };
 
-export function LinksEditor({ initial }: { initial: ChannelLink[] }) {
+export function LinksEditor({
+  initial,
+  labels,
+}: {
+  initial: ChannelLink[];
+  labels: {
+    links: string;
+    optional: string;
+    linkLabel: string;
+    linkUrl: string;
+    linkLabelAria: string;
+    linkUrlAria: string;
+    removeLink: string;
+    addLink: string;
+  };
+}) {
   const [links, setLinks] = useState<ChannelLink[]>(initial);
 
   function update(index: number, patch: Partial<ChannelLink>) {
@@ -25,7 +40,8 @@ export function LinksEditor({ initial }: { initial: ChannelLink[] }) {
   return (
     <div className="space-y-3">
       <span className="block text-sm font-medium text-text">
-        Enlaces <span className="font-normal text-subtle">(opcional)</span>
+        {labels.links}{" "}
+        <span className="font-normal text-subtle">{labels.optional}</span>
       </span>
 
       <input type="hidden" name="links" value={JSON.stringify(links)} />
@@ -33,15 +49,15 @@ export function LinksEditor({ initial }: { initial: ChannelLink[] }) {
       {links.map((link, index) => (
         <div key={index} className="flex items-start gap-2">
           <Input
-            aria-label={`Etiqueta del enlace ${index + 1}`}
-            placeholder="Etiqueta"
+            aria-label={`${labels.linkLabelAria} ${index + 1}`}
+            placeholder={labels.linkLabel}
             value={link.label}
             onChange={(event) => update(index, { label: event.target.value })}
             className="w-32 shrink-0"
           />
           <Input
-            aria-label={`URL del enlace ${index + 1}`}
-            placeholder="https://…"
+            aria-label={`${labels.linkUrlAria} ${index + 1}`}
+            placeholder={labels.linkUrl}
             value={link.url}
             onChange={(event) => update(index, { url: event.target.value })}
           />
@@ -49,7 +65,7 @@ export function LinksEditor({ initial }: { initial: ChannelLink[] }) {
             type="button"
             onClick={() => remove(index)}
             className="mt-1 inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-border text-muted transition-colors hover:border-danger/40 hover:text-danger"
-            aria-label="Quitar enlace"
+            aria-label={labels.removeLink}
           >
             <X size={14} />
           </button>
@@ -62,7 +78,7 @@ export function LinksEditor({ initial }: { initial: ChannelLink[] }) {
           onClick={() => setLinks((current) => [...current, { ...EMPTY }])}
           className="inline-flex items-center gap-1.5 text-sm text-brand hover:underline"
         >
-          <Plus size={14} /> Agregar enlace
+          <Plus size={14} /> {labels.addLink}
         </button>
       )}
     </div>

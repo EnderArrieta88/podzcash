@@ -5,8 +5,15 @@ import Link from "next/link";
 import { registerAction } from "@/app/(site)/(auth)/actions";
 import { Input, Label, FieldError, FieldHint } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
+import type { RegisterLabels } from "@/lib/i18n/auth";
 
-export function RegisterForm({ firstUser }: { firstUser: boolean }) {
+export function RegisterForm({
+  firstUser,
+  labels,
+}: {
+  firstUser: boolean;
+  labels: RegisterLabels;
+}) {
   const [state, action] = useActionState(registerAction, null);
 
   return (
@@ -19,38 +26,37 @@ export function RegisterForm({ firstUser }: { firstUser: boolean }) {
 
       {firstUser && (
         <p className="rounded-[10px] border border-brand/30 bg-brand-soft/60 px-3.5 py-2.5 text-sm text-brand">
-          Eres la primera cuenta: se creará como administrador y no necesitas
-          invitación.
+          {labels.firstUserNote}
         </p>
       )}
 
       <div>
-        <Label htmlFor="name">Nombre</Label>
+        <Label htmlFor="name">{labels.name}</Label>
         <Input
           id="name"
           name="name"
           autoComplete="name"
           required
-          placeholder="Cómo te llamas"
+          placeholder={labels.namePlaceholder}
         />
         <FieldError>{state?.fields?.name}</FieldError>
       </div>
 
       <div>
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{labels.email}</Label>
         <Input
           id="email"
           name="email"
           type="email"
           autoComplete="email"
           required
-          placeholder="tu@email.com"
+          placeholder={labels.emailPlaceholder}
         />
         <FieldError>{state?.fields?.email}</FieldError>
       </div>
 
       <div>
-        <Label htmlFor="password">Contraseña</Label>
+        <Label htmlFor="password">{labels.password}</Label>
         <Input
           id="password"
           name="password"
@@ -58,14 +64,14 @@ export function RegisterForm({ firstUser }: { firstUser: boolean }) {
           autoComplete="new-password"
           required
           minLength={8}
-          placeholder="Mínimo 8 caracteres"
+          placeholder={labels.passwordPlaceholder}
         />
         <FieldError>{state?.fields?.password}</FieldError>
       </div>
 
       {!firstUser && (
         <div>
-          <Label htmlFor="inviteCode">Código de invitación</Label>
+          <Label htmlFor="inviteCode">{labels.inviteCode}</Label>
           <Input
             id="inviteCode"
             name="inviteCode"
@@ -75,15 +81,12 @@ export function RegisterForm({ firstUser }: { firstUser: boolean }) {
             className="font-mono tracking-wider uppercase"
           />
           <FieldError>{state?.fields?.inviteCode}</FieldError>
-          <FieldHint>
-            Te lo entrega un administrador de PodZcash. Sin código no se puede
-            crear cuenta.
-          </FieldHint>
+          <FieldHint>{labels.inviteHint}</FieldHint>
         </div>
       )}
 
-      <SubmitButton className="w-full" pendingLabel="Creando cuenta…">
-        Crear cuenta
+      <SubmitButton className="w-full" pendingLabel={labels.pending}>
+        {labels.submit}
       </SubmitButton>
 
       {/* Honeypot: invisible para personas, tentador para bots. */}
@@ -91,7 +94,7 @@ export function RegisterForm({ firstUser }: { firstUser: boolean }) {
         aria-hidden="true"
         className="pointer-events-none absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden"
       >
-        <label htmlFor="website">Sitio web</label>
+        <label htmlFor="website">Website</label>
         <input
           id="website"
           name="website"
@@ -102,9 +105,9 @@ export function RegisterForm({ firstUser }: { firstUser: boolean }) {
       </div>
 
       <p className="text-center text-sm text-muted">
-        ¿Ya tienes cuenta?{" "}
+        {labels.loginPrompt}{" "}
         <Link href="/entrar" className="text-brand hover:underline">
-          Entrar
+          {labels.signIn}
         </Link>
       </p>
     </form>

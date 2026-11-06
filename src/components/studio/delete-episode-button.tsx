@@ -2,14 +2,18 @@
 
 import { deleteEpisodeAction } from "@/app/(app)/estudio/actions";
 
-export function DeleteEpisodeButton({ id }: { id: string }) {
+export function DeleteEpisodeButton({
+  id,
+  labels,
+}: {
+  id: string;
+  labels: { confirm: string; label: string };
+}) {
   return (
     <form
       action={deleteEpisodeAction}
       onSubmit={(event) => {
-        const confirmed = window.confirm(
-          "¿Borrar este episodio? Se elimina el audio y no se puede deshacer.",
-        );
+        const confirmed = window.confirm(labels.confirm);
 
         if (!confirmed) event.preventDefault();
       }}
@@ -19,7 +23,7 @@ export function DeleteEpisodeButton({ id }: { id: string }) {
         type="submit"
         className="text-xs text-subtle underline-offset-2 transition-colors hover:text-danger hover:underline"
       >
-        Borrar
+        {labels.label}
       </button>
     </form>
   );

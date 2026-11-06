@@ -13,6 +13,8 @@ import {
 } from "@/lib/validation";
 import type { ActionState } from "@/lib/action-state";
 import { clearLimit, take } from "@/lib/rate-limit";
+import { getLocale } from "@/lib/i18n/locale";
+import { authContent } from "@/lib/i18n/auth";
 
 class InviteTakenError extends Error {}
 
@@ -20,9 +22,12 @@ export async function registerAction(
   _previous: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const locale = await getLocale();
+  const content = authContent[locale].register;
+
   // Honeypot: los bots completan campos ocultos.
   if (String(formData.get("website") ?? "").trim()) {
-    return { error: "No se pudo crear la cuenta." };
+    return { error: content.errors.generic };
   }
   const parsed = registerSchema.safeParse({
     name: formData.get("name"),
@@ -32,7 +37,7 @@ export async function registerAction(
   });
 
   if (!parsed.success) {
-    return { fields: toFieldErrors(parsed.error) };
+    return { fields: toFieldErrors(parsed.error, locale) };
   }
 
   const { name, email, password } = parsed.data;
@@ -44,7 +49,7 @@ export async function registerAction(
     const code = normalizeInviteCode(parsed.data.inviteCode ?? "");
 
     if (!code) {
-      return { fields: { inviteCode: "Necesitas un código de invitación." } };
+      return { fields: { inviteCode: content.errors.inviteRequired } };
     }
 
     const invite = await prisma.invite.findUnique({ where: { code } });
@@ -55,7 +60,7 @@ export async function registerAction(
       (invite.expiresAt && invite.expiresAt.getTime() < Date.now())
     ) {
       return {
-        fields: { inviteCode: "El código no es válido o ya fue usado." },
+        fields: { inviteCode: content.errors.inviteInvalid },
       };
     }
 
@@ -64,7 +69,7 @@ export async function registerAction(
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    return { fields: { email: "Ese email ya tiene una cuenta." } };
+    return { fields: { email: content.errors.emailExists } };
   }
 
   const passwordHash = await hashPassword(password);
@@ -100,13 +105,13 @@ export async function registerAction(
     if (error instanceof InviteTakenError) {
       return {
         fields: {
-          inviteCode: "Alguien acaba de usar ese código. Pide otro.",
+          inviteCode: content.errors.inviteTaken,
         },
       };
     }
 
     console.error("No se pudo crear la cuenta:", error);
-    return { error: "No se pudo crear la cuenta. Inténtalo otra vez." };
+    return { error: content.errors.retry };
   }
 
   await createSession(userId);
@@ -117,13 +122,16 @@ export async function loginAction(
   _previous: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const locale = await getLocale();
+  const content = authContent[locale].login;
+
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
 
   if (!parsed.success) {
-    return { fields: toFieldErrors(parsed.error) as FieldErrors };
+    return { fields: toFieldErrors(parsed.error, locale) as FieldErrors };
   }
 
   const { email, password } = parsed.data;
@@ -131,7 +139,7 @@ export async function loginAction(
   const limitKey = `login:${email}`;
 
   if (!take(limitKey, 10, 15 * 60 * 1000)) {
-    return { error: "Demasiados intentos. Esperá unos minutos." };
+    return { error: content.errors.tooMany };
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
@@ -140,11 +148,11 @@ export async function loginAction(
     : false;
 
   if (!user || !valid) {
-    return { error: "Email o contraseña incorrectos." };
+    return { error: content.errors.invalid };
   }
 
   if (user.status !== "active") {
-    return { error: "Esta cuenta está suspendida." };
+    return { error: content.errors.suspended };
   }
 
   clearLimit(limitKey);

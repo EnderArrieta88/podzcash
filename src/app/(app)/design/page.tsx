@@ -15,6 +15,7 @@ import { getLatestEpisodes } from "@/lib/catalog";
 import { formatDuration } from "@/lib/format";
 import { storage } from "@/lib/storage";
 import { cn } from "@/lib/utils";
+import { episodePath } from "@/lib/routes";
 
 export const metadata: Metadata = { title: "Sistema de diseño" };
 
@@ -216,7 +217,7 @@ export default async function DesignPage() {
                 <article key={episode.id} className="group">
                   <div className="relative">
                     <Link
-                      href={`/c/${episode.channel.handle}/${episode.slug}`}
+                      href={episodePath(episode.channel.handle, episode.slug)}
                       className="block aspect-square overflow-hidden rounded-xl border border-border bg-surface-2"
                     >
                       {cover ? (
@@ -238,7 +239,7 @@ export default async function DesignPage() {
                     </span>
                   </div>
 
-                  <Link href={`/c/${episode.channel.handle}/${episode.slug}`}>
+                  <Link href={episodePath(episode.channel.handle, episode.slug)}>
                     <h3 className="mt-3 line-clamp-2 font-heading text-sm font-semibold leading-snug transition-colors group-hover:text-brand">
                       {episode.title}
                     </h3>
@@ -374,7 +375,7 @@ export default async function DesignPage() {
               Silencio en el estudio
             </p>
             <p className="mx-auto mt-1.5 max-w-xs text-xs text-muted">
-              Cuando el creador publique, su primer episodio aparece acá.
+              Cuando el creador publique, su primer episodio aparece aquí.
             </p>
           </div>
 

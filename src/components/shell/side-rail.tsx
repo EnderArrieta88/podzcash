@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { logoutAction } from "@/app/(app)/estudio/actions";
 import { cn } from "@/lib/utils";
+import type { ShellContent } from "@/lib/i18n/shell";
+import { channelPath, donatePath } from "@/lib/routes";
 
 export type RailUser = {
   name: string;
@@ -28,30 +30,28 @@ export type RailUser = {
   } | null;
 } | null;
 
-const nav = [
-  { href: "/", label: "Inicio", icon: LayoutDashboard, exact: true },
-  { href: "/explorar", label: "Explorar", icon: Compass },
-  { href: "/estudio", label: "Mi estudio", icon: ListMusic },
-];
-
 export function SideRail({
   user,
   collapsed,
   onToggle,
+  labels,
 }: {
   user: RailUser;
   collapsed: boolean;
   onToggle: () => void;
+  labels: ShellContent;
 }) {
   const pathname = usePathname();
 
   const items = [
-    ...nav,
+    { href: "/", label: labels.nav.home, icon: LayoutDashboard, exact: true },
+    { href: "/explorar", label: labels.nav.explore, icon: Compass, exact: false },
+    { href: "/estudio", label: labels.nav.studio, icon: ListMusic, exact: false },
     ...(user?.channel
       ? [
           {
-            href: `/c/${user.channel.handle}`,
-            label: "Mi canal",
+            href: channelPath(user.channel.handle),
+            label: labels.nav.myChannel,
             icon: Radio,
             exact: false,
           },
@@ -61,7 +61,7 @@ export function SideRail({
       ? [
           {
             href: "/estudio/admin",
-            label: "Administración",
+            label: labels.nav.admin,
             icon: ShieldAlert,
             exact: false,
           },
@@ -109,8 +109,8 @@ export function SideRail({
             type="button"
             onClick={onToggle}
             className="inline-flex size-8 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-surface-2 hover:text-text"
-            aria-label="Minimizar el menú"
-            title="Minimizar el menú"
+            aria-label={labels.collapse}
+            title={labels.collapse}
           >
             <PanelLeftClose size={16} />
           </button>
@@ -122,8 +122,8 @@ export function SideRail({
           type="button"
           onClick={onToggle}
           className="mx-auto mb-2 inline-flex size-8 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-surface-2 hover:text-text"
-          aria-label="Expandir el menú"
-          title="Expandir el menú"
+          aria-label={labels.expand}
+          title={labels.expand}
         >
           <PanelLeftOpen size={16} />
         </button>
@@ -133,7 +133,7 @@ export function SideRail({
         {items.map((item) => {
           const active = item.exact
             ? pathname === item.href
-            : pathname.startsWith(item.href);
+            : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
@@ -159,21 +159,21 @@ export function SideRail({
         <div className="mx-3 mt-6 rounded-xl border border-border bg-surface-2 p-3.5">
           <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-subtle">
             <ShieldCheck size={12} className="text-jade" />
-            Donaciones
+            {labels.donations}
           </p>
           <p className="mt-2 text-sm font-semibold text-text">
-            Directo a tu wallet
+            {labels.donationTitle}
           </p>
           <p className="mt-1 text-xs leading-relaxed text-muted">
-            ZEC de persona a persona. PodZcash nunca retiene tus fondos.
+            {labels.donationBody}
           </p>
 
           {user?.channel && (
             <Link
-              href={`/c/${user.channel.handle}/donar`}
+              href={donatePath(user.channel.handle)}
               className="mt-3 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-full border border-jade/30 bg-jade-soft text-xs font-medium text-jade-bright transition-colors hover:border-jade/60"
             >
-              Ver página de apoyo
+              {labels.supportPage}
             </Link>
           )}
         </div>
@@ -216,7 +216,7 @@ export function SideRail({
                     {user.channel?.displayName ?? user.name}
                   </p>
                   <p className="truncate font-mono text-[11px] text-subtle">
-                    {user.channel ? `@${user.channel.handle}` : "Sin canal"}
+                    {user.channel ? `@${user.channel.handle}` : labels.noChannel}
                   </p>
                 </div>
               )}
@@ -225,7 +225,7 @@ export function SideRail({
             <form action={logoutAction}>
               <button
                 type="submit"
-                title="Cerrar sesión"
+                title={labels.logout}
                 className={cn(
                   "flex items-center rounded-lg text-xs text-subtle transition-colors hover:bg-surface-2 hover:text-text",
                   collapsed
@@ -234,20 +234,20 @@ export function SideRail({
                 )}
               >
                 <LogOut size={14} />
-                {!collapsed && "Cerrar sesión"}
+                {!collapsed && labels.logout}
               </button>
             </form>
           </>
         ) : (
           <Link
             href="/entrar"
-            title="Entrar"
+            title={labels.enter}
             className={cn(
               "flex items-center justify-center rounded-full bg-brand text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong",
               collapsed ? "size-10" : "h-10 w-full px-4",
             )}
           >
-            {collapsed ? <LogIn size={16} /> : "Entrar"}
+            {collapsed ? <LogIn size={16} /> : labels.enter}
           </Link>
         )}
       </div>
@@ -255,13 +255,13 @@ export function SideRail({
   );
 }
 
-export function MobileNav() {
+export function MobileNav({ labels }: { labels: ShellContent }) {
   const pathname = usePathname();
 
   const items = [
-    { href: "/", label: "Inicio", icon: LayoutDashboard, exact: true },
-    { href: "/explorar", label: "Explorar", icon: Compass },
-    { href: "/estudio", label: "Estudio", icon: Upload },
+    { href: "/", label: labels.nav.home, icon: LayoutDashboard, exact: true },
+    { href: "/explorar", label: labels.nav.explore, icon: Compass, exact: false },
+    { href: "/estudio", label: labels.nav.mobileStudio, icon: Upload, exact: false },
   ];
 
   return (
@@ -269,7 +269,7 @@ export function MobileNav() {
       {items.map((item) => {
         const active = item.exact
           ? pathname === item.href
-          : pathname.startsWith(item.href);
+          : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
         return (
           <Link

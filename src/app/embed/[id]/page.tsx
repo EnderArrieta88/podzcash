@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { EmbedPlayer } from "@/components/embed/embed-player";
+import { getLocale } from "@/lib/i18n/locale";
+import { embedContent } from "@/lib/i18n/embed";
+import { episodePath } from "@/lib/routes";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -10,19 +13,22 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
+  const locale = await getLocale();
+  const content = embedContent[locale];
   const episode = await prisma.episode.findUnique({
     where: { id },
     select: { title: true },
   });
 
   return {
-    title: episode?.title ?? "Episodio",
+    title: episode?.title ?? content.episodeFallback,
     robots: { index: false, follow: false },
   };
 }
 
 export default async function EmbedPage({ params }: PageProps) {
   const { id } = await params;
+  const locale = await getLocale();
 
   const episode = await prisma.episode.findUnique({
     where: { id },
@@ -53,7 +59,8 @@ export default async function EmbedPage({ params }: PageProps) {
           durationSec: episode.durationSec,
         }}
         coverUrl={cover}
-        href={`${origin}/c/${episode.channel.handle}/${episode.slug}`}
+        href={`${origin}${episodePath(episode.channel.handle, episode.slug)}`}
+        locale={locale}
       />
     </div>
   );

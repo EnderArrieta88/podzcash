@@ -4,16 +4,22 @@ import { PlayButton } from "@/components/player/play-button";
 import { formatDuration, relativeDate } from "@/lib/format";
 import { storage } from "@/lib/storage";
 import type { EpisodeCard as EpisodeCardData } from "@/lib/catalog";
+import type { Locale } from "@/lib/i18n/config";
+import { sharedLabels } from "@/lib/i18n/shared";
+import { episodePath } from "@/lib/routes";
 
 export function EpisodeRow({
   episode,
   index,
+  locale,
 }: {
   episode: EpisodeCardData;
   index?: number;
+  locale: Locale;
 }) {
   const cover = episode.coverKey ? storage.url(episode.coverKey) : null;
-  const href = `/c/${episode.channel.handle}/${episode.slug}`;
+  const href = episodePath(episode.channel.handle, episode.slug);
+  const text = sharedLabels[locale];
 
   return (
     <li className="group flex items-center gap-4 px-4 py-3 transition-colors hover:bg-surface-2">
@@ -40,7 +46,7 @@ export function EpisodeRow({
         </p>
         <p className="mt-0.5 truncate text-xs text-muted">
           {episode.channel.displayName} ·{" "}
-          {episode.kind === "music" ? "Música" : "Podcast"}
+          {episode.kind === "music" ? text.musicTitle : text.podcastTitle}
         </p>
       </Link>
 
@@ -49,7 +55,7 @@ export function EpisodeRow({
       </span>
 
       <span className="hidden font-mono text-[11px] tabular text-subtle md:block">
-        {relativeDate(episode.publishedAt ?? episode.createdAt)}
+        {relativeDate(episode.publishedAt ?? episode.createdAt, locale)}
       </span>
 
       <PlayButton
@@ -62,6 +68,7 @@ export function EpisodeRow({
           src: storage.url(episode.audioPath),
           durationSec: episode.durationSec,
         }}
+        locale={locale}
       />
     </li>
   );

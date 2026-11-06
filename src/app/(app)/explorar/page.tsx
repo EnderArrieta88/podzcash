@@ -6,12 +6,18 @@ import { EpisodeCard } from "@/components/content/episode-card";
 import { ChannelCard } from "@/components/content/channel-card";
 import { SearchField } from "@/components/content/search-field";
 import { cn } from "@/lib/utils";
+import { getLocale } from "@/lib/i18n/locale";
+import { exploreContent } from "@/lib/i18n/explore";
 
-export const metadata: Metadata = {
-  title: "Explorar",
-  description:
-    "Descubre podcasts y música del ecosistema Zcash. Busca por título, canal o etiqueta.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const content = exploreContent[locale];
+
+  return {
+    title: content.meta.title,
+    description: content.meta.description,
+  };
+}
 
 type SearchParams = Promise<{ q?: string; tipo?: string; tag?: string }>;
 
@@ -85,6 +91,8 @@ export default async function ExplorePage({
   searchParams: SearchParams;
 }) {
   const params = await searchParams;
+  const locale = await getLocale();
+  const content = exploreContent[locale];
   const query = (params.q ?? "").trim();
   const tipo =
     params.tipo === "podcast" || params.tipo === "musica" ? params.tipo : undefined;
@@ -101,24 +109,34 @@ export default async function ExplorePage({
   const activeTag = tag
     ? tags.find((item) => item.slug === tag)?.name ?? tag
     : null;
+  const countLabel = query
+    ? results.length === 1
+      ? content.count.result
+      : content.count.results
+    : results.length === 1
+      ? content.count.episode
+      : content.count.episodes;
 
   return (
     <div className="mx-auto w-full max-w-6xl">
       <header className="mb-7 flex flex-wrap items-end justify-between gap-5">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-subtle">
-            Catálogo
+            {content.eyebrow}
           </p>
           <h1 className="mt-2 font-heading text-4xl font-extrabold tracking-tight">
-            Explorar
+            {content.title}
           </h1>
-          <p className="mt-2 text-sm text-muted">
-            Todo el podcast y la música del ecosistema Zcash, en un solo lugar.
-          </p>
+          <p className="mt-2 text-sm text-muted">{content.intro}</p>
         </div>
 
         <div className="w-full max-w-sm">
-          <SearchField defaultValue={query} />
+          <SearchField
+            defaultValue={query}
+            placeholder={content.search.placeholder}
+            buttonLabel={content.search.button}
+            ariaLabel={content.search.aria}
+          />
         </div>
       </header>
 
@@ -126,19 +144,19 @@ export default async function ExplorePage({
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Chip href={buildHref(params, { tipo: null })} active={!tipo}>
-              Todo
+              {content.filters.all}
             </Chip>
             <Chip
               href={buildHref(params, { tipo: "podcast" })}
               active={tipo === "podcast"}
             >
-              Podcasts
+              {content.filters.podcasts}
             </Chip>
             <Chip
               href={buildHref(params, { tipo: "musica" })}
               active={tipo === "musica"}
             >
-              Música
+              {content.filters.music}
             </Chip>
 
             {tags.length > 0 && (
@@ -162,18 +180,19 @@ export default async function ExplorePage({
             <p className="text-sm text-muted">
               {query ? (
                 <>
-                  {results.length}{" "}
-                  {results.length === 1 ? "resultado" : "resultados"} para{" "}
-                  <span className="text-text">“{query}”</span>
+                  {results.length} {countLabel} {content.count.for}{" "}
+                  <span className="text-text">&quot;{query}&quot;</span>
                 </>
               ) : (
                 <>
-                  {results.length}{" "}
-                  {results.length === 1 ? "episodio" : "episodios"}
+                  {results.length} {countLabel}
                 </>
               )}
               {activeTag && (
-                <span className="text-subtle"> · etiqueta {activeTag}</span>
+                <span className="text-subtle">
+                  {" "}
+                  · {content.count.tag} {activeTag}
+                </span>
               )}
             </p>
 
@@ -182,7 +201,7 @@ export default async function ExplorePage({
                 href="/explorar"
                 className="shrink-0 text-xs text-subtle underline-offset-2 hover:text-text hover:underline"
               >
-                Limpiar filtros
+                {content.clear}
               </Link>
             )}
           </div>
@@ -190,7 +209,7 @@ export default async function ExplorePage({
           {results.length > 0 ? (
             <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3">
               {results.map((episode) => (
-                <EpisodeCard key={episode.id} episode={episode} />
+                <EpisodeCard key={episode.id} episode={episode} locale={locale} />
               ))}
             </div>
           ) : (
@@ -199,19 +218,17 @@ export default async function ExplorePage({
                 <SearchX size={20} />
               </span>
               <p className="mt-4 font-heading text-sm font-semibold">
-                {query ? "Sin resultados" : "Silencio en el estudio"}
+                {query ? content.empty.noResults : content.empty.silence}
               </p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted">
-                {query
-                  ? "Prueba con otra palabra, quita filtros o busca por el nombre del canal."
-                  : "Cuando los creadores publiquen, todo va a aparecer acá."}
+                {query ? content.empty.noResultsBody : content.empty.silenceBody}
               </p>
               {hasFilters && (
                 <Link
                   href="/explorar"
                   className="mt-5 inline-flex h-9 items-center rounded-xl border border-border bg-surface-2 px-4 text-sm transition-colors hover:bg-surface-3"
                 >
-                  Ver todo
+                  {content.empty.viewAll}
                 </Link>
               )}
             </div>
@@ -221,7 +238,7 @@ export default async function ExplorePage({
         <aside className="hidden space-y-4 xl:block">
           {channels.length > 0 && (
             <Panel
-              title="Canales"
+              title={content.panels.channels}
               action={
                 <Link href="/explorar" className="text-subtle hover:text-text">
                   <ArrowRight size={14} />
@@ -230,14 +247,18 @@ export default async function ExplorePage({
             >
               <div className="space-y-1">
                 {channels.map((channel) => (
-                  <ChannelCard key={channel.id} channel={channel} />
+                  <ChannelCard
+                    key={channel.id}
+                    channel={channel}
+                    locale={locale}
+                  />
                 ))}
               </div>
             </Panel>
           )}
 
           {tags.length > 0 && (
-            <Panel title="Etiquetas">
+            <Panel title={content.panels.tags}>
               <div className="flex flex-wrap gap-1.5">
                 {tags.map((item) => (
                   <Link
@@ -255,11 +276,10 @@ export default async function ExplorePage({
           <div className="rounded-xl border border-jade/25 bg-jade-soft p-4">
             <ShieldCheck size={18} className="text-jade-bright" />
             <p className="mt-2 font-heading text-sm font-semibold text-jade-bright">
-              Apoyá directo
+              {content.support.title}
             </p>
             <p className="mt-1 text-xs leading-relaxed text-jade-bright/70">
-              Las donaciones van de wallet a wallet. PodZcash nunca retiene los
-              fondos.
+              {content.support.body}
             </p>
           </div>
         </aside>

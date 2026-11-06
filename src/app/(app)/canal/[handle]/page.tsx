@@ -13,14 +13,17 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { parseLinks } from "@/lib/links";
 import { storage } from "@/lib/storage";
+import { donatePath, feedPath, normalizeHandleParam } from "@/lib/routes";
 import { EpisodeRow } from "@/components/content/episode-row";
 import { formatDate } from "@/lib/format";
+import { getLocale } from "@/lib/i18n/locale";
+import { channelContent } from "@/lib/i18n/channel";
 
 type PageProps = { params: Promise<{ handle: string }> };
 
 async function loadChannel(handle: string) {
   return prisma.channel.findUnique({
-    where: { handle: handle.toLowerCase() },
+    where: { handle: normalizeHandleParam(handle) },
     include: {
       _count: {
         select: { episodes: { where: { status: "published" } } },
@@ -52,20 +55,22 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { handle } = await params;
+  const locale = await getLocale();
+  const content = channelContent[locale];
   const channel = await loadChannel(handle);
 
-  if (!channel) return { title: "Canal no encontrado" };
+  if (!channel) return { title: content.notFound };
 
   return {
     title: channel.displayName,
-    description:
-      channel.bio ??
-      `Escucha a ${channel.displayName} en PodZcash. Podcasts y música del ecosistema Zcash.`,
+    description: channel.bio ?? content.metaDescription(channel.displayName),
   };
 }
 
 export default async function ChannelPage({ params }: PageProps) {
   const { handle } = await params;
+  const locale = await getLocale();
+  const content = channelContent[locale];
   const channel = await loadChannel(handle);
 
   if (!channel) notFound();
@@ -97,11 +102,11 @@ export default async function ChannelPage({ params }: PageProps) {
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={storage.url(channel.avatarKey)}
-                alt={`Avatar de ${channel.displayName}`}
-                className="size-24 rounded-full border-4 border-surface object-cover"
+                alt={content.avatarAlt(channel.displayName)}
+                className="relative z-10 size-24 rounded-full border-4 border-surface object-cover"
               />
             ) : (
-              <span className="flex size-24 items-center justify-center rounded-full border-4 border-surface bg-brand-soft font-display text-3xl text-brand">
+              <span className="relative z-10 flex size-24 items-center justify-center rounded-full border-4 border-surface bg-brand-soft font-display text-3xl text-brand">
                 {channel.displayName.slice(0, 1).toUpperCase()}
               </span>
             )}
@@ -113,16 +118,16 @@ export default async function ChannelPage({ params }: PageProps) {
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-surface-2 px-4 text-sm transition-colors hover:bg-surface-3"
                 >
                   <PencilLine size={15} />
-                  Editar canal
+                  {content.edit}
                 </Link>
               ) : (
                 channel.zcashAddress && (
                   <Link
-                    href={`/c/${channel.handle}/donar`}
+                    href={donatePath(channel.handle)}
                     className="inline-flex h-10 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
                   >
                     <ShieldCheck size={15} />
-                    Apoyar con ZEC
+                    {content.support}
                   </Link>
                 )
               )}
@@ -134,7 +139,7 @@ export default async function ChannelPage({ params }: PageProps) {
           </h1>
 
           <p className="mt-2 font-mono text-xs text-subtle">
-            @{channel.handle} · desde {formatDate(channel.createdAt)}
+            @{channel.handle} · {content.since} {formatDate(channel.createdAt, locale)}
           </p>
 
           {channel.bio && (
@@ -146,15 +151,13 @@ export default async function ChannelPage({ params }: PageProps) {
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted">
               <Radio size={13} />
-              {channel._count.episodes === 1
-                ? "1 episodio"
-                : `${channel._count.episodes} episodios`}
+              {content.episodeLabel(channel._count.episodes)}
             </span>
 
             {channel.zcashAddress && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-jade/30 bg-jade-soft px-3 py-1 text-xs text-jade-bright">
                 <span className="size-1.5 animate-pulse rounded-full bg-jade" />
-                Acepta ZEC
+                {content.acceptsZec}
               </span>
             )}
 
@@ -172,9 +175,9 @@ export default async function ChannelPage({ params }: PageProps) {
             ))}
 
             <a
-              href={`/c/${channel.handle}/feed.xml`}
+              href={feedPath(channel.handle)}
               className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-xs text-muted transition-colors hover:border-brand/40 hover:text-brand"
-              title="Feed RSS del canal"
+              title={content.rssTitle}
             >
               <Rss size={12} />
               RSS
@@ -187,7 +190,7 @@ export default async function ChannelPage({ params }: PageProps) {
         <section className="min-w-0">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="font-heading text-xl font-bold tracking-tight">
-              Episodios
+              {content.episodes}
             </h2>
             <span className="font-mono text-[11px] text-subtle">
               {channel._count.episodes}
@@ -200,26 +203,29 @@ export default async function ChannelPage({ params }: PageProps) {
                 <Mic2 size={20} />
               </span>
               <p className="mt-4 font-heading text-sm font-semibold">
-                Silencio en el estudio
+                {content.emptyTitle}
               </p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted">
-                {isOwner
-                  ? "Tu canal está listo. Sube tu primer episodio desde el estudio."
-                  : "Este canal está empezando. Vuelve pronto para escucharlo."}
+                {isOwner ? content.emptyOwner : content.emptyVisitor}
               </p>
               {isOwner && (
                 <Link
                   href="/estudio/episodios/nuevo"
                   className="mt-5 inline-flex h-9 items-center rounded-xl bg-brand px-4 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
                 >
-                  Subir episodio
+                  {content.upload}
                 </Link>
               )}
             </div>
           ) : (
             <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">
               {channel.episodes.map((episode, index) => (
-                <EpisodeRow key={episode.id} episode={episode} index={index} />
+                <EpisodeRow
+                  key={episode.id}
+                  episode={episode}
+                  index={index}
+                  locale={locale}
+                />
               ))}
             </ul>
           )}
@@ -230,25 +236,25 @@ export default async function ChannelPage({ params }: PageProps) {
             <div className="rounded-xl border border-jade/25 bg-jade-soft p-4">
               <ShieldCheck size={18} className="text-jade-bright" />
               <p className="mt-2 font-heading text-sm font-semibold text-jade-bright">
-                Apoyá este canal
+                {content.supportPanelTitle}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-jade-bright/70">
-                ZEC directo a la wallet del creador, sin intermediarios.
+                {content.supportPanelBody}
               </p>
               <Link
-                href={`/c/${channel.handle}/donar`}
+                href={donatePath(channel.handle)}
                 className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-xl bg-brand text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
               >
-                Enviar ZEC
+                {content.sendZec}
               </Link>
             </div>
           ) : (
             <div className="rounded-xl border border-border bg-surface p-4">
               <p className="font-heading text-sm font-semibold">
-                Donaciones
+                {content.donations}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-muted">
-                Este canal todavía no configuró una dirección Zcash.
+                {content.noAddress}
               </p>
             </div>
           )}
@@ -256,7 +262,7 @@ export default async function ChannelPage({ params }: PageProps) {
           {links.length > 0 && (
             <div className="rounded-xl border border-border bg-surface p-4">
               <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">
-                Enlaces
+                {content.links}
               </p>
               <ul className="space-y-1">
                 {links.map((link) => (

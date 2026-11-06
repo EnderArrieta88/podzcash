@@ -28,6 +28,22 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
+  async redirects() {
+    return [
+      // Las URLs antiguas /c/... siguen funcionando con una redirección
+      // permanente para no romper enlaces compartidos ni feeds suscritos.
+      {
+        source: "/c/:handle",
+        destination: "/canal/@:handle",
+        permanent: true,
+      },
+      {
+        source: "/c/:handle/:path*",
+        destination: "/canal/@:handle/:path*",
+        permanent: true,
+      },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": {
