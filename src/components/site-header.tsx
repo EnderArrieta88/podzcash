@@ -13,6 +13,7 @@ export async function SiteHeader() {
     { label: content.nav.how, href: "/#como-funciona" },
     { label: content.nav.creators, href: "/#creadores" },
     { label: content.nav.project, href: "/proyecto" },
+    { label: content.nav.about, href: "/acerca" },
     { label: content.nav.donations, href: "/#donaciones" },
   ];
 
@@ -38,7 +39,7 @@ export async function SiteHeader() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex">
+        <nav className="hidden items-center gap-6 lg:flex">
           {navigation.map((item) => (
             <Link
               key={item.href}

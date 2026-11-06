@@ -29,6 +29,11 @@ export async function registerAction(
   if (String(formData.get("website") ?? "").trim()) {
     return { error: content.errors.generic };
   }
+
+  if (formData.get("terms") !== "on") {
+    return { fields: { terms: content.errors.termsRequired } };
+  }
+
   const parsed = registerSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),

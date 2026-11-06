@@ -15,6 +15,7 @@ const es = {
     how: "Cómo funciona",
     creators: "Para creadores",
     project: "Proyecto",
+    about: "Acerca",
     donations: "Donaciones",
   },
   enter: "Entrar",
@@ -24,6 +25,11 @@ const es = {
   footer: {
     tagline: "podcasts y música del ecosistema Zcash.",
     note: "Proyecto en desarrollo · Donaciones directas en ZEC, sin custodia.",
+    about: "Acerca",
+    privacy: "Privacidad",
+    terms: "Términos",
+    disclaimer:
+      "Proyecto independiente. No afiliado a Zcash Foundation ni a Electric Coin Company. Zcash es una marca de Zcash Foundation.",
   },
 };
 
@@ -44,6 +50,7 @@ const en: CommonContent = {
     how: "How it works",
     creators: "For creators",
     project: "Project",
+    about: "About",
     donations: "Donations",
   },
   enter: "Sign in",
@@ -53,6 +60,11 @@ const en: CommonContent = {
   footer: {
     tagline: "podcasts and music from the Zcash ecosystem.",
     note: "Work in progress · Direct ZEC donations, non-custodial.",
+    about: "About",
+    privacy: "Privacy",
+    terms: "Terms",
+    disclaimer:
+      "Independent project. Not affiliated with the Zcash Foundation or Electric Coin Company. Zcash is a trademark of the Zcash Foundation.",
   },
 };
 

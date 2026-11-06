@@ -40,6 +40,10 @@ const es = {
     pending: "Creando cuenta…",
     loginPrompt: "¿Ya tienes cuenta?",
     signIn: "Entrar",
+    termsPrefix: "Acepto los",
+    termsLabel: "Términos",
+    termsJoin: "y la",
+    privacyLabel: "Política de privacidad",
     errors: {
       generic: "No se pudo crear la cuenta.",
       inviteRequired: "Necesitas un código de invitación.",
@@ -47,6 +51,8 @@ const es = {
       emailExists: "Ese email ya tiene una cuenta.",
       inviteTaken: "Alguien acaba de usar ese código. Pide otro.",
       retry: "No se pudo crear la cuenta. Inténtalo otra vez.",
+      termsRequired:
+        "Debes aceptar los términos y la política de privacidad.",
     },
   },
 };
@@ -96,6 +102,10 @@ const en: AuthContent = {
     pending: "Creating account…",
     loginPrompt: "Already have an account?",
     signIn: "Sign in",
+    termsPrefix: "I accept the",
+    termsLabel: "Terms",
+    termsJoin: "and the",
+    privacyLabel: "Privacy policy",
     errors: {
       generic: "Could not create the account.",
       inviteRequired: "You need an invite code.",
@@ -103,6 +113,7 @@ const en: AuthContent = {
       emailExists: "That email already has an account.",
       inviteTaken: "Someone just used that code. Ask for another one.",
       retry: "Could not create the account. Try again.",
+      termsRequired: "You must accept the terms and the privacy policy.",
     },
   },
 };

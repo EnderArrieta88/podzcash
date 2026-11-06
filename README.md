@@ -1,186 +1,181 @@
 # PodZcash
 
-Plataforma para que podcasters y músicos del ecosistema Zcash publiquen su
-contenido, construyan su canal y reciban donaciones directas en ZEC.
+Plataforma de podcasts y música para el ecosistema Zcash: cada creador tiene su
+canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 
-> Estado: **Fase 0 — Fundaciones**. Proyecto en desarrollo local.
+- **Aplicación:** <https://podzcash.online>
+- **Estado:** beta cerrada en producción, por invitación.
+- **Idiomas:** español e inglés.
+- **Licencia:** [MIT](LICENSE).
+- **Repositorio:** <https://github.com/EnderArrieta88/podzcash>
 
-## Flujo de trabajo (obligatorio)
+> PodZcash es un proyecto independiente. No está afiliado, patrocinado ni
+> respaldado por Zcash Foundation ni por Electric Coin Company. Zcash es una
+> marca de Zcash Foundation. Ver [TRADEMARK.md](TRADEMARK.md).
 
-1. **Todo se hace en local.** Se desarrolla y se verifica acá: `npm run dev`,
-   `npx tsc --noEmit`, `npm run lint` y `npm run build`.
-2. **Se sube a GitHub** cuando el cambio está terminado y verificado
-   (`git push origin main`).
-3. **El deploy es el último paso, y es manual.** No se despliega por cada
-   cambio ni de forma automática.
-   Solo cuando no habrá más cambios en esa tanda: **GitHub → Actions → Deploy a
-   producción → Run workflow → `deploy`**.
+## Qué incluye
 
-El deploy nunca toca los datos: `prisma/dev.db`, `.media`, `.data`, `.env` y
-`.htaccess` están excluidos del workflow.
+- Registro por invitación y sesiones con cookie httpOnly.
+- Canales con nombre de usuario, bio, avatar, enlaces y dirección Zcash.
+- Subida de audio en streaming, portadas, borradores y publicación.
+- Reproductor persistente, búsqueda full-text y reproductor embebible.
+- Donaciones ZEC con QR y enlace ZIP-321, sin custodia.
+- Validación de direcciones transparentes, Sapling y unificadas.
+- Feed RSS 2.0 + Podcasting 2.0 por canal.
+- Panel de creador, invitaciones, moderación, reportes y administración.
+- Interfaz bilingüe ES/EN con selector por cookie.
 
-## Stack
+## Stack actual
 
-- **Next.js 16** (App Router) + TypeScript + Tailwind CSS 4
-- **Prisma 7** + SQLite (local) → Postgres en producción
-- **better-sqlite3** vía driver adapter
-- Archivos de audio en disco local (`MEDIA_ROOT`) → Cloudflare R2 en producción
+- **Next.js 16** (App Router), React 19, TypeScript y Tailwind CSS 4.
+- **Prisma 7** con SQLite mediante `better-sqlite3`.
+- Audio y portadas en disco local (`MEDIA_ROOT`).
+- Búsqueda FTS5 en `.data/search.db`.
+- Deploy en hosting compartido con Node/Passenger, automatizado por GitHub
+  Actions y FTP.
 
-## Arrancar
+La migración a Postgres, almacenamiento de objetos/CDN, backups automáticos y
+monitorización forma parte de la hoja de ruta. **Todavía no está implementada.**
+
+## Arranque local
+
+Requiere Node.js 22.
 
 ```bash
-npm install
-cp .env.example .env      # en PowerShell: Copy-Item .env.example .env
+npm ci
+cp .env.example .env          # PowerShell: Copy-Item .env.example .env
+npx prisma generate
 npx prisma migrate dev
 npm run dev
 ```
 
-Abre <http://localhost:3000>. La sección "Estado del proyecto" de la home
-muestra si la base de datos responde.
+Abre <http://localhost:3000>.
 
-La **primera cuenta** que se registre queda como administradora y no necesita
-código. A partir de ahí el registro es por invitación: los códigos se generan
-en **/estudio/invitaciones**.
+La **primera cuenta** queda como administradora y no necesita invitación. A
+partir de ahí el registro es por invitación; los códigos se generan en
+`/estudio/invitaciones`.
 
-## Rutas
+### Variables de entorno
 
-| Ruta | Qué es |
+| Variable | Uso |
 |---|---|
-| `/` | Landing pública |
-| `/registro` | Crear cuenta (primera vez o con invitación) |
-| `/entrar` | Iniciar sesión |
-| `/estudio` | Panel del creador |
-| `/estudio/episodios` | Lista de episodios |
-| `/estudio/episodios/nuevo` | Subir episodio |
-| `/estudio/canal` | Crear / editar el canal |
-| `/estudio/invitaciones` | Generar códigos (solo admin) |
-| `/explorar` | Búsqueda y filtros (`?q=`, `?tipo=`, `?tag=`) |
-| `/design` | Laboratorio local del sistema de diseño |
-| `/canal/@[handle]` | Página pública del canal |
-| `/canal/@[handle]/donar` | Donación con QR y ZIP-321 |
-| `/canal/@[handle]/[slug]` | Episodio público |
-| `/canal/@[handle]/feed.xml` | Feed RSS 2.0 + Podcasting 2.0 |
-| `/embed/[id]` | Reproductor embebible |
-| `/estudio/distribucion` | Feed, instrucciones y código de embed |
-| `/estudio/admin` | Moderación, cuentas y limpieza (solo admin) |
-| `/reportar/[id]` | Formulario público de reporte |
-| `/api/upload?kind=audio\|image` | Subida en streaming (sin cargar en memoria) |
-| `/media/[...path]` | Archivos locales con soporte de `Range` |
+| `DATABASE_URL` | Ruta de SQLite, por ejemplo `file:./prisma/dev.db` |
+| `SITE_URL` | Origen público para RSS, embeds y enlaces |
+| `FEED_OWNER_EMAIL` | Email de propietario en el feed RSS |
+| `MEDIA_ROOT` | Carpeta de audio y portadas |
+| `SEARCH_DB_PATH` | Ruta del índice FTS5 |
 
-## Comandos útiles
+## Comandos
 
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` | Servidor de desarrollo |
 | `npm run build` | Build de producción |
+| `npm run start` | Servidor de producción |
 | `npm run lint` | ESLint |
-| `npx prisma studio` | Explorador visual de la base |
+| `npm run typecheck` | TypeScript sin emitir |
+| `npm run check` | Lint + tipos |
+| `npx prisma studio` | Explorador de la base |
 | `npx prisma migrate dev --name <nombre>` | Nueva migración |
 
-## Estructura
+## Rutas principales
 
-```
-prisma/
-  schema.prisma        Modelo de datos
-  migrations/          Historial de migraciones (sí se versiona)
-src/
-  app/                 Rutas y páginas
-  components/          UI
-  lib/db.ts            Cliente Prisma (singleton)
-  generated/prisma/    Cliente generado (no se versiona)
-.media/                Audios y portadas locales (no se versiona)
-```
-
-## Principio de arquitectura
-
-Todo lo que en producción será un servicio externo vive detrás de una
-interfaz, para migrar sin reescribir:
-
-| Hoy (local) | Mañana (producción) |
+| Ruta | Qué es |
 |---|---|
-| SQLite | Postgres |
-| Disco local (`MEDIA_ROOT`) | Cloudflare R2 |
-| Sesión con cookie propia | Magic link / OAuth |
-| QR + enlace ZIP-321 | Watcher de UFVK |
+| `/` | Landing pública |
+| `/explorar` | Catálogo y búsqueda (`?q=`, `?tipo=`, `?tag=`) |
+| `/proyecto` | Estado, plan y financiamiento del proyecto |
+| `/acerca` | Quién construye el proyecto y cómo colaborar |
+| `/privacidad` | Política de privacidad |
+| `/terminos` | Términos del servicio |
+| `/registro` | Crear cuenta con invitación |
+| `/entrar` | Iniciar sesión |
+| `/estudio` | Panel del creador |
+| `/estudio/episodios` | Episodios y borradores |
+| `/estudio/episodios/nuevo` | Subir episodio |
+| `/estudio/canal` | Crear o editar el canal |
+| `/estudio/distribucion` | Feed RSS, instrucciones y embed |
+| `/estudio/invitaciones` | Códigos de invitación (admin) |
+| `/estudio/admin` | Moderación, cuentas y limpieza (admin) |
+| `/canal/@[handle]` | Página pública del canal |
+| `/canal/@[handle]/[slug]` | Episodio público |
+| `/canal/@[handle]/donar` | Donación con QR y ZIP-321 |
+| `/canal/@[handle]/feed.xml` | Feed RSS del canal |
+| `/embed/[id]` | Reproductor embebible |
+| `/reportar/[id]` | Formulario público de reporte |
 
-## Reproductor
-
-El reproductor vive en el layout raíz, así que **la reproducción no se corta
-al navegar** entre páginas.
-
-| Acción | Cómo |
-|---|---|
-| Play / pausa | Botón dorado o `Espacio` |
-| ±15 s | Flechas `←` / `→` (o los botones de la barra) |
-| Velocidad | Botón `1×` (cicla 1 → 1.25 → 1.5 → 2 → 0.8) |
-| Posición | Clic o arrastre sobre la barra de progreso |
-| Continuar | Se guarda en `localStorage` cada 2 s y al cerrar la pestaña |
-
-La barra de progreso son 64 segmentos sobre la línea de tiempo, no una
-waveform de amplitud: dibujar la onda real requiere extraer picos del audio en
-el servidor (transcodificación) o decodificar el archivo completo en el
-navegador, y ninguna de las dos es viable todavía.
-
-## Búsqueda
-
-El índice full-text (FTS5) vive en `.data/search.db`, **fuera de la base que
-gestiona Prisma**: las tablas virtuales de FTS aparecen como deriva en
-`prisma migrate dev` y bloquean las migraciones.
-
-- Se actualiza al publicar, editar o borrar un episodio, y al renombrar un canal.
-- Si el archivo se borra o está vacío, se reconstruye solo en la primera
-  búsqueda.
-- Para forzar un reindexado: borra `.data/search.db` y busca de nuevo.
+Las URLs antiguas `/c/...` redirigen de forma permanente a `/canal/@...`.
 
 ## Donaciones
 
-El creador pega su dirección en `/estudio/canal`. La plataforma **nunca toca
-los fondos**: solo genera un QR y un enlace ZIP-321.
+El creador pega su dirección en `/estudio/canal`. La plataforma **nunca toca los
+fondos**: solo genera un QR y un enlace ZIP-321.
 
-- Se valida el checksum real de la dirección: **Base58Check** en `t1`/`t3` y
-  **Bech32/Bech32m** en `zs1`/`u1`. Se rechazan direcciones de testnet y Sprout.
-- La URI es
-  `zcash:<dirección>?amount=<zec>&memo=<base64url>&message=<texto>`.
-- El memo va en base64url sin padding, como define ZIP-321.
+- Se valida el checksum real de la dirección: Base58Check en `t1`/`t3` y
+  Bech32/Bech32m en `zs1`/`u1`.
+- Se rechazan direcciones de testnet y Sprout.
+- La URI es `zcash:<dirección>?amount=<zec>&memo=<base64url>&message=<texto>`.
 - El QR se regenera en el navegador al cambiar monto o memo.
+- La plataforma no verifica transacciones ni custodia claves. La verificación
+  privacy-preserving de donaciones está en la hoja de ruta.
 
-## Despliegue en hosting compartido (cPanel + Node.js Selector)
+## Flujo de trabajo
 
-El proyecto compila como bundle autónomo (`output: "standalone"`) para correr en
-un hosting con Node, sin VPS.
+`main` es la rama estable y está protegida. Cada cambio entra por Pull Request:
 
-1. **Build para Linux** (el servidor es Linux, así que el bundle se genera en
-   WSL para que `better-sqlite3` traiga el binario correcto):
-   ```bash
-   rsync -a --exclude node_modules --exclude .next --exclude .git \
-     --exclude .media --exclude .data /mnt/c/PodZcash/ ~/podzcash-build/
-   cd ~/podzcash-build && npm ci && npx prisma generate && npm run build
-   ```
-2. **Armar el bundle**: copiar `.next/standalone`, `.next/static`, `public`,
-   `prisma/dev.db`, `.media` y `.env` a una carpeta y comprimirla desde dentro
-   (`zip -qr ../app.zip .`) para que `server.js` quede en la raíz.
-3. **cPanel → Node.js → Create Application**:
-   - Versión: Node 22
-   - Modo: Production
-   - Application root: `podzcash` (fuera de `public_html`)
-   - Application URL: el dominio o subdominio
-   - Application startup file: `server.js`
-4. Subir el ZIP a esa carpeta, extraerlo y reiniciar la app.
-5. Variables (opcionales si va el `.env`):
-   `DATABASE_URL=file:./prisma/dev.db`, `MEDIA_ROOT=./.media`,
-   `SEARCH_DB_PATH=./.data/search.db`.
-6. Activar AutoSSL para HTTPS.
+1. Crear una rama (`feat/`, `fix/`, `i18n/`, `deploy/`, `docs/`).
+2. Abrir un PR con la plantilla.
+3. Pasar **Validar PR** (lint, tipos y build).
+4. Fusionar con Squash.
+5. Desplegar manualmente desde `main`.
 
-La app necesita permisos de escritura en `prisma/`, `.media/` y `.data/`.
+El deploy no es automático: se ejecuta desde GitHub Actions → **Deploy a
+producción**, escribe `deploy` y requiere aprobación del entorno `production`.
 
-## Fases
+Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
+`FTP_PASSWORD`, `FTP_SERVER_DIR`). El deploy excluye `prisma/dev.db`, `.media`,
+`.data`, `.env` y `.htaccess`; los datos de producción no se versionan.
 
-- [x] **Fase 0** — Fundaciones: proyecto, base de datos, diseño base
-- [x] **Fase 1** — Cuentas, invitaciones y canales
-- [x] **Fase 2** — Subida de audio y estudio del creador
-- [x] **Fase 3** — Reproductor persistente y páginas de episodio
-- [x] **Fase 4** — Descubrimiento y búsqueda
-- [x] **Fase 5** — Donaciones ZEC (QR + ZIP-321)
-- [x] **Fase 6** — RSS y embeds
-- [x] **Fase 7** — Administración y moderación
-- [ ] **Fase 8** — Despliegue
+## Seguridad
+
+- Reportes privados: ver [SECURITY.md](SECURITY.md).
+- `security.txt`: `/.well-known/security.txt`.
+- Dependencias de producción sin vulnerabilidades conocidas en `npm audit`
+  al momento de esta revisión; el tooling de desarrollo puede mostrar avisos.
+- Pendientes: tests automatizados, auditoría externa, backups verificados y
+  monitorización.
+
+## Estructura
+
+```text
+prisma/
+  schema.prisma        Modelo de datos
+  migrations/          Historial de migraciones
+src/
+  app/                 Rutas y páginas
+  components/          UI y componentes de cliente
+  lib/db.ts            Cliente Prisma
+  lib/i18n/            Contenido ES/EN
+  lib/routes.ts        URLs de canales y episodios
+  lib/storage.ts       Abstracción de almacenamiento
+  lib/validation.ts    Esquemas Zod y errores localizados
+  generated/prisma/    Cliente generado (no se versiona)
+.media/                Audio y portadas locales (no se versiona)
+.data/                 Índice de búsqueda local (no se versiona)
+```
+
+## Contribuir
+
+Lee [CONTRIBUTING.md](CONTRIBUTING.md) y [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+Para vulnerabilidades, usa [SECURITY.md](SECURITY.md).
+
+## Hoja de ruta
+
+El plan de producto, estado y financiamiento está en
+<https://podzcash.online/proyecto>. La Fase 0 de preparación pública está
+documentada en [docs/fase-0.md](docs/fase-0.md).
+
+## Licencia y marca
+
+El código se publica bajo [MIT](LICENSE). El uso del nombre y del dominio se
+revisa conforme a la política de marcas de Zcash; ver [TRADEMARK.md](TRADEMARK.md).
