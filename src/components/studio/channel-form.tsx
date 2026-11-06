@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { saveChannelAction } from "@/app/(app)/estudio/actions";
 import type { ChannelLink } from "@/lib/links";
 import { AvatarField } from "@/components/studio/avatar-field";
+import { BannerField } from "@/components/studio/banner-field";
 import { LinksEditor } from "@/components/studio/links-editor";
 import { FieldError, FieldHint, Input, Label, Textarea } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -15,6 +16,7 @@ type ChannelFormProps = {
     displayName: string;
     bio: string | null;
     avatarUrl: string | null;
+    bannerUrl: string | null;
     zcashAddress: string | null;
   } | null;
   links: ChannelLink[];
@@ -61,6 +63,17 @@ export function ChannelForm({ channel, links, labels }: ChannelFormProps) {
         }}
       />
       <FieldError>{state?.fields?.avatar}</FieldError>
+
+      <BannerField
+        initialUrl={channel?.bannerUrl ?? null}
+        labels={{
+          banner: labels.banner,
+          bannerAlt: labels.bannerAlt,
+          uploadBanner: labels.uploadBanner,
+          bannerHint: labels.bannerHint,
+        }}
+      />
+      <FieldError>{state?.fields?.banner}</FieldError>
 
       <div>
         <Label htmlFor="displayName">{labels.displayName}</Label>

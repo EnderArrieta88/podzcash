@@ -38,6 +38,11 @@ const es = {
     avatarAlt: "Vista previa del avatar",
     uploadImage: "Subir imagen",
     avatarHint: "JPG, PNG, WebP o GIF. Máximo 2 MB. Se recorta en círculo.",
+    banner: "Portada del canal",
+    bannerAlt: "Vista previa de la portada",
+    uploadBanner: "Subir portada",
+    bannerHint:
+      "JPG, PNG o WebP. Máximo 4 MB. Se muestra arriba del canal, en formato panorámico.",
   },
 };
 
@@ -80,6 +85,11 @@ const en: ChannelSettingsContent = {
     avatarAlt: "Avatar preview",
     uploadImage: "Upload image",
     avatarHint: "JPG, PNG, WebP or GIF. Max 2 MB. Cropped into a circle.",
+    banner: "Channel cover",
+    bannerAlt: "Cover preview",
+    uploadBanner: "Upload cover",
+    bannerHint:
+      "JPG, PNG or WebP. Max 4 MB. Shown at the top of the channel in widescreen.",
   },
 };
 
