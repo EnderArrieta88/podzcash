@@ -5,6 +5,7 @@ import { homeContent } from "@/lib/i18n/home";
 import { getLocale } from "@/lib/i18n/locale";
 import { prisma } from "@/lib/db";
 import { formatDuration } from "@/lib/format";
+import { socialMetadata } from "@/lib/seo";
 import "./home.css";
 
 const wave = [38, 62, 48, 80, 56, 92, 64, 44, 74, 52, 86, 40, 68, 50, 78, 58, 34, 70];
@@ -63,6 +64,14 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: { absolute: content.meta.title },
     description: content.meta.description,
+    ...socialMetadata({
+      title: content.meta.title,
+      description: content.meta.description,
+      path: "/",
+      image: "/landing/app.jpg",
+      imageAlt: "PodZcash",
+      locale,
+    }),
   };
 }
 

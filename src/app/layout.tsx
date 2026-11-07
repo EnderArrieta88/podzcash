@@ -9,6 +9,7 @@ import { PlayerProvider } from "@/components/player/player-context";
 import { PlayerBar } from "@/components/player/player-bar";
 import { getLocale } from "@/lib/i18n/locale";
 import { commonContent } from "@/lib/i18n/common";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const display = Instrument_Serif({
@@ -41,6 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
 
   return {
+    metadataBase: new URL(SITE_URL),
     title: {
       default: commonContent[locale].siteTitle,
       template: "%s · PodZcash",

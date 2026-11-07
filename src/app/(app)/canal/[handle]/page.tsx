@@ -13,11 +13,12 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { parseLinks } from "@/lib/links";
 import { storage } from "@/lib/storage";
-import { donatePath, feedPath, normalizeHandleParam } from "@/lib/routes";
+import { channelPath, donatePath, feedPath, normalizeHandleParam } from "@/lib/routes";
 import { EpisodeRow } from "@/components/content/episode-row";
 import { formatDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
 import { channelContent } from "@/lib/i18n/channel";
+import { absoluteUrl, jsonLd, socialMetadata } from "@/lib/seo";
 
 type PageProps = { params: Promise<{ handle: string }> };
 
@@ -61,9 +62,25 @@ export async function generateMetadata({
 
   if (!channel) return { title: content.notFound };
 
+  const description =
+    channel.bio ?? content.metaDescription(channel.displayName);
+  const image = channel.bannerKey
+    ? storage.url(channel.bannerKey)
+    : channel.avatarKey
+      ? storage.url(channel.avatarKey)
+      : null;
+
   return {
     title: channel.displayName,
-    description: channel.bio ?? content.metaDescription(channel.displayName),
+    description,
+    ...socialMetadata({
+      title: channel.displayName,
+      description,
+      path: channelPath(channel.handle),
+      image,
+      imageAlt: channel.displayName,
+      locale,
+    }),
   };
 }
 
@@ -79,8 +96,29 @@ export default async function ChannelPage({ params }: PageProps) {
   const viewer = await getCurrentUser();
   const isOwner = viewer?.channel?.id === channel.id;
 
+  const image = channel.bannerKey
+    ? storage.url(channel.bannerKey)
+    : channel.avatarKey
+      ? storage.url(channel.avatarKey)
+      : null;
+
+  const seriesLd = {
+    "@context": "https://schema.org",
+    "@type": "PodcastSeries",
+    name: channel.displayName,
+    description: channel.bio ?? undefined,
+    url: absoluteUrl(channelPath(channel.handle)),
+    webFeed: absoluteUrl(feedPath(channel.handle)),
+    image: image ? absoluteUrl(image) : undefined,
+    author: { "@type": "Person", name: channel.displayName },
+  };
+
   return (
     <div className="mx-auto w-full max-w-6xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(seriesLd)}
+      />
       <div className="overflow-hidden rounded-xl border border-border bg-surface">
         <div className="relative h-40 sm:h-52">
           {channel.bannerKey ? (
