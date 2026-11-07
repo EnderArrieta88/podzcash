@@ -8,7 +8,7 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioDistributionContent } from "@/lib/i18n/studio-distribution";
 import { feedPath } from "@/lib/routes";
-import { escapeXml } from "@/lib/rss";
+import { episodeEmbedCode } from "@/lib/embed";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -37,7 +37,7 @@ export default async function DistributionPage() {
   });
 
   const embedCode = latest
-    ? `<iframe src="${SITE}/embed/${latest.id}" width="100%" height="190" style="border:0;border-radius:12px" loading="lazy" title="${escapeXml(latest.title)}"></iframe>`
+    ? episodeEmbedCode({ origin: SITE, id: latest.id, title: latest.title })
     : "";
 
   return (

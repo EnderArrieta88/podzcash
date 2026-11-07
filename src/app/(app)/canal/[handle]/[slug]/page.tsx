@@ -10,7 +10,10 @@ import { PlayButton } from "@/components/player/play-button";
 import { getLocale } from "@/lib/i18n/locale";
 import { episodeContent } from "@/lib/i18n/episode";
 import { sharedLabels } from "@/lib/i18n/shared";
-import { channelPath, donatePath, normalizeHandleParam } from "@/lib/routes";
+import { channelPath, donatePath, episodePath, normalizeHandleParam } from "@/lib/routes";
+import { episodeEmbedCode } from "@/lib/embed";
+import { EmbedCode } from "@/components/embed/embed-code";
+import { absoluteUrl, isoDuration, jsonLd, SITE_URL, socialMetadata } from "@/lib/seo";
 
 type PageProps = { params: Promise<{ handle: string; slug: string }> };
 
@@ -48,9 +51,24 @@ export async function generateMetadata({
 
   if (!data) return { title: content.notFound };
 
+  const cover = data.episode.coverKey
+    ? storage.url(data.episode.coverKey)
+    : data.channel.avatarKey
+      ? storage.url(data.channel.avatarKey)
+      : null;
+
   return {
     title: `${data.episode.title} · ${data.channel.displayName}`,
     description: data.episode.description ?? undefined,
+    ...socialMetadata({
+      title: `${data.episode.title} · ${data.channel.displayName}`,
+      description: data.episode.description,
+      path: episodePath(data.channel.handle, data.episode.slug),
+      image: cover,
+      imageAlt: data.episode.title,
+      locale,
+      type: "article",
+    }),
   };
 }
 
@@ -72,9 +90,42 @@ export default async function EpisodePage({ params }: PageProps) {
 
   const cover = episode.coverKey ? storage.url(episode.coverKey) : null;
   const audioUrl = storage.url(episode.audioPath);
+  const ogImage = cover ?? (channel.avatarKey ? storage.url(channel.avatarKey) : null);
+
+  const episodeLd = {
+    "@context": "https://schema.org",
+    "@type": "PodcastEpisode",
+    name: episode.title,
+    description: episode.description ?? undefined,
+    url: absoluteUrl(episodePath(channel.handle, episode.slug)),
+    datePublished: (episode.publishedAt ?? episode.createdAt).toISOString(),
+    duration: isoDuration(episode.durationSec),
+    image: ogImage ? absoluteUrl(ogImage) : undefined,
+    associatedMedia: {
+      "@type": "MediaObject",
+      contentUrl: absoluteUrl(audioUrl),
+      encodingFormat: episode.mimeType ?? undefined,
+      duration: isoDuration(episode.durationSec),
+    },
+    partOfSeries: {
+      "@type": "PodcastSeries",
+      name: channel.displayName,
+      url: absoluteUrl(channelPath(channel.handle)),
+    },
+  };
+
+  const embed = episodeEmbedCode({
+    origin: SITE_URL,
+    id: episode.id,
+    title: episode.title,
+  });
 
   return (
     <div className="mx-auto w-full max-w-4xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(episodeLd)}
+      />
       <Link
         href={channelPath(channel.handle)}
         className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-text"
@@ -171,6 +222,12 @@ export default async function EpisodePage({ params }: PageProps) {
         <Flag size={12} />
         {content.report}
       </Link>
+
+      {episode.status === "published" && (
+        <div className="mt-6">
+          <EmbedCode code={embed} labels={content.embed} />
+        </div>
+      )}
 
       {channel.zcashAddress && (
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-jade/25 bg-jade-soft p-5">          <div className="flex items-start gap-3">

@@ -9,6 +9,9 @@ import {
 } from "@/components/studio/episode-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioEpisodesContent } from "@/lib/i18n/studio-episodes";
+import { episodeEmbedCode } from "@/lib/embed";
+import { EmbedCode } from "@/components/embed/embed-code";
+import { SITE_URL } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -64,6 +67,23 @@ export default async function EditEpisodePage({
       <div className="rounded-xl border border-border bg-surface p-6">
         <EpisodeForm episode={values} labels={content.form} />
       </div>
+
+      {episode.status === "published" && (
+        <EmbedCode
+          code={episodeEmbedCode({
+            origin: SITE_URL,
+            id: episode.id,
+            title: episode.title,
+          })}
+          labels={{
+            title: content.editPage.embedTitle,
+            hint: content.editPage.embedHint,
+            copy: content.editPage.copy,
+            copied: content.editPage.copied,
+          }}
+          defaultOpen
+        />
+      )}
     </div>
   );
 }

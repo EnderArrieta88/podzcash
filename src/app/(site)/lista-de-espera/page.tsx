@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { WaitlistForm } from "@/components/waitlist/waitlist-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { waitlistContent } from "@/lib/i18n/waitlist";
+import { socialMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -10,6 +11,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: content.metaTitle,
     description: content.metaDescription,
+    ...socialMetadata({
+      title: content.metaTitle,
+      description: content.metaDescription,
+      path: "/lista-de-espera",
+      locale,
+      imageAlt: "PodZcash",
+    }),
   };
 }
 

@@ -33,6 +33,10 @@ const es = {
     intro:
       "Si cambias el audio o la portada, el archivo anterior se elimina al guardar.",
     currentAudio: "Audio actual",
+    embedTitle: "Insertar este episodio",
+    embedHint: "Pega este código en tu web o en una entrada de blog.",
+    copy: "Copiar código",
+    copied: "Copiado",
   },
   form: {
     audio: "Audio",
@@ -119,6 +123,10 @@ const en: StudioEpisodesContent = {
     intro:
       "If you change the audio or cover, the previous file is deleted when you save.",
     currentAudio: "Current audio",
+    embedTitle: "Embed this episode",
+    embedHint: "Paste this code on your site or in a blog post.",
+    copy: "Copy code",
+    copied: "Copied",
   },
   form: {
     audio: "Audio",

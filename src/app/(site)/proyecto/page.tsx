@@ -7,6 +7,7 @@ import { CopyAddress } from "@/components/project/copy-address";
 import { projectContent } from "@/lib/i18n/project";
 import { getLocale } from "@/lib/i18n/locale";
 import { PROJECT_DONATION_URI, PROJECT_ZCASH_ADDRESS } from "@/lib/project";
+import { socialMetadata } from "@/lib/seo";
 import "./proyecto.css";
 
 const shotImages = [
@@ -62,6 +63,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: content.meta.title,
     description: content.meta.description,
+    ...socialMetadata({
+      title: content.meta.title,
+      description: content.meta.description,
+      path: "/proyecto",
+      locale,
+      imageAlt: "PodZcash",
+    }),
   };
 }
 

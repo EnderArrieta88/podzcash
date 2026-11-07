@@ -8,6 +8,7 @@ import { SearchField } from "@/components/content/search-field";
 import { cn } from "@/lib/utils";
 import { getLocale } from "@/lib/i18n/locale";
 import { exploreContent } from "@/lib/i18n/explore";
+import { socialMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -16,6 +17,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: content.meta.title,
     description: content.meta.description,
+    ...socialMetadata({
+      title: content.meta.title,
+      description: content.meta.description,
+      path: "/explorar",
+      locale,
+      imageAlt: "PodZcash",
+    }),
   };
 }
 

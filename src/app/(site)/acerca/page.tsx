@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale } from "@/lib/i18n/locale";
 import { siteLegalContent } from "@/lib/i18n/legal";
+import { socialMetadata } from "@/lib/seo";
 
 const REPO_URL = "https://github.com/EnderArrieta88/podzcash";
 const PROFILE_URL = "https://github.com/EnderArrieta88";
@@ -13,6 +14,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: content.metaTitle,
     description: content.metaDescription,
+    ...socialMetadata({
+      title: content.metaTitle,
+      description: content.metaDescription,
+      path: "/acerca",
+      locale,
+      imageAlt: "PodZcash",
+    }),
   };
 }
 
