@@ -45,7 +45,7 @@ export function StudioNav({
     : baseItems;
 
   return (
-    <nav className="flex items-center gap-1 overflow-x-auto border-b border-border">
+    <nav className="hidden items-center gap-1 overflow-x-auto border-b border-border lg:flex">
       {links.map((item) => {
         const active = item.exact
           ? pathname === item.href

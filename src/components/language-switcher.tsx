@@ -19,6 +19,7 @@ type LanguageSwitcherProps = {
 export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState<"down" | "up">("down");
+  const [align, setAlign] = useState<"left" | "right">("left");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const container = useRef<HTMLDivElement>(null);
@@ -40,6 +41,9 @@ export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
     if (!open && container.current) {
       const rect = container.current.getBoundingClientRect();
       setPlacement(window.innerHeight - rect.bottom < 220 ? "up" : "down");
+      setAlign(
+        rect.left + rect.width / 2 < window.innerWidth / 2 ? "left" : "right",
+      );
     }
     setOpen((value) => !value);
   }
@@ -57,7 +61,7 @@ export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
   }
 
   return (
-    <div className="relative" ref={container}>
+    <div className="relative w-fit self-start" ref={container}>
       <button
         type="button"
         onClick={toggle}
@@ -80,8 +84,12 @@ export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
           aria-label={label}
           className={
             placement === "up"
-              ? "absolute bottom-full right-0 z-50 mb-2 w-40 overflow-hidden rounded-xl border border-border bg-surface-2 p-1 shadow-xl"
-              : "absolute right-0 top-full z-50 mt-2 w-40 overflow-hidden rounded-xl border border-border bg-surface-2 p-1 shadow-xl"
+              ? `absolute bottom-full z-50 mb-2 w-40 overflow-hidden rounded-xl border border-border bg-surface-2 p-1 shadow-xl ${
+                  align === "left" ? "left-0" : "right-0"
+                }`
+              : `absolute top-full z-50 mt-2 w-40 overflow-hidden rounded-xl border border-border bg-surface-2 p-1 shadow-xl ${
+                  align === "left" ? "left-0" : "right-0"
+                }`
           }
         >
           {options.map((option) => (

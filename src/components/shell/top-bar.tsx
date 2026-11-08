@@ -1,19 +1,25 @@
 import Link from "next/link";
-import { Search, ShieldCheck, Upload } from "lucide-react";
-import { MobileNav, type RailUser } from "@/components/shell/side-rail";
+import { Search, ShieldCheck } from "lucide-react";
+import { AccountMenu } from "@/components/shell/account-menu";
+import { MobileMenu } from "@/components/shell/mobile-menu";
+import type { RailUser } from "@/components/shell/side-rail";
+import type { Locale } from "@/lib/i18n/config";
 import type { ShellContent } from "@/lib/i18n/shell";
-import { channelPath } from "@/lib/routes";
 
 export function TopBar({
   user,
+  locale,
   labels,
 }: {
   user: RailUser;
+  locale: Locale;
   labels: ShellContent;
 }) {
   return (
     <header className="sticky top-0 z-30 glass border-b">
-      <div className="flex h-16 items-center gap-4 px-4 sm:px-6">
+      <div className="flex h-16 items-center gap-2 px-4 sm:gap-4 sm:px-6">
+        <MobileMenu user={user} locale={locale} />
+
         <Link href="/" className="flex items-center gap-2 lg:hidden">
           <span className="flex size-7 items-center justify-center rounded-md bg-brand text-[#17130a]">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -50,15 +56,7 @@ export function TopBar({
             {labels.nonCustodial}
           </span>
 
-          {user?.channel ? (
-            <Link
-              href="/estudio/episodios/nuevo"
-              className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-brand px-3.5 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
-            >
-              <Upload size={15} />
-              <span className="hidden sm:inline">{labels.upload}</span>
-            </Link>
-          ) : (
+          {!user && (
             <Link
               href="/entrar"
               className="inline-flex h-9 items-center whitespace-nowrap rounded-xl border border-border bg-surface-2 px-3.5 text-sm text-text transition-colors hover:bg-surface-3"
@@ -67,28 +65,9 @@ export function TopBar({
             </Link>
           )}
 
-          {user && (
-            <Link
-              href={user.channel ? channelPath(user.channel.handle) : "/estudio/canal"}
-              className="flex size-9 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-3 text-xs font-semibold text-brand"
-              aria-label={labels.myProfile}
-            >
-              {user.channel?.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={user.channel.avatarUrl}
-                  alt=""
-                  className="size-full object-cover"
-                />
-              ) : (
-                (user.channel?.displayName ?? user.name).slice(0, 1).toUpperCase()
-              )}
-            </Link>
-          )}
+          {user && <AccountMenu user={user} locale={locale} />}
         </div>
       </div>
-
-      <MobileNav labels={labels} user={user} />
     </header>
   );
 }

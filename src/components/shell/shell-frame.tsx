@@ -64,7 +64,7 @@ export function ShellFrame({
           collapsed ? "lg:pl-20" : "lg:pl-64",
         )}
       >
-        <TopBar user={user} labels={labels} />
+        <TopBar user={user} locale={locale} labels={labels} />
         <main className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6">
           {children}
         </main>
