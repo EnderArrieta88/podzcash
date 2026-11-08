@@ -54,6 +54,12 @@ next-env.d.ts
 # indice de busqueda local
 /.data
 
+# e2e (base, medios y reportes aislados)
+/.media-e2e
+/.data-e2e
+/playwright-report
+/test-results
+
 # artefactos de despliegue
 /deploy/
 /podzcash-deploy.zip

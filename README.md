@@ -83,9 +83,14 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript sin emitir |
 | `npm run test` | Tests unitarios con Vitest |
+| `npm run e2e` | Tests E2E con Playwright (requiere build y Chromium) |
+| `npm run e2e:setup` | Recrea la base y los medios aislados de E2E |
+| `npm run e2e:server` | Levanta el servidor de E2E en el puerto 3100 |
 | `npm run check` | Lint + tipos + tests |
 | `npx prisma studio` | Explorador de la base |
 | `npx prisma migrate dev --name <nombre>` | Nueva migración |
+
+Los tests E2E corren contra una base y medios aislados. Ver [docs/e2e.md](docs/e2e.md).
 
 ## Rutas principales
 
