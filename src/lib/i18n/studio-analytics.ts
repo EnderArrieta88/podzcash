@@ -33,6 +33,8 @@ const es = {
   noRetention: "Todavía no hay datos de progreso.",
   noBreakdown: "Sin datos en este rango.",
   dateError: "El rango de fechas no es válido.",
+  docsLink: "Metodología y privacidad",
+  privacyLink: "Política de privacidad",
 };
 
 export type StudioAnalyticsContent = typeof es;
@@ -70,6 +72,8 @@ const en: StudioAnalyticsContent = {
   noRetention: "No progress data yet.",
   noBreakdown: "No data in this range.",
   dateError: "The date range is not valid.",
+  docsLink: "Methodology and privacy",
+  privacyLink: "Privacy policy",
 };
 
 export const studioAnalyticsContent: Record<Locale, StudioAnalyticsContent> = {
