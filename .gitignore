@@ -57,3 +57,6 @@ next-env.d.ts
 # artefactos de despliegue
 /deploy/
 /podzcash-deploy.zip
+
+# documentos archivados (solo local)
+/docs/archivo/
