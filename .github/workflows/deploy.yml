@@ -101,6 +101,7 @@ jobs:
           set ssl:verify-certificate no
           set ftp:ssl-allow yes
           rm -rf "$REMOTE_DIR/design"
+          rm -rf "$REMOTE_DIR/node_modules/ffmpeg-static"
           bye
           EOF
           true

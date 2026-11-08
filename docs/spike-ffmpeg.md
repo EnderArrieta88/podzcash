@@ -39,5 +39,5 @@ El coste escala de forma aproximadamente lineal con la duración.
 
 ## Artefactos
 
-- `ffmpeg-static` quedó como dependencia para #31.
+- `ffmpeg-static` se retiró del deploy tras el spike para no cargar ~80 MB innecesarios. Se reincorporará cuando se implemente #31 con VPS o worker supervisado.
 - La ruta temporal de diagnóstico se eliminó después del spike.
