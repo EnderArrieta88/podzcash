@@ -1,0 +1,100 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildChannelFeed > genera el feed del canal dos con block y new-feed-url 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+  xmlns:podcast="https://podcastindex.org/namespace/1.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Channel Two</title>
+    <link>https://podzcash.online/canal/@dos</link>
+    <atom:link href="https://podzcash.online/canal/@dos/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Un canal de prueba.</description>
+    <language>en-US</language>
+    <lastBuildDate>Mon, 02 Nov 2026 12:00:00 GMT</lastBuildDate>
+    <generator>PodZcash</generator>
+    <itunes:author>Channel Two</itunes:author>
+    <itunes:summary>Un canal de prueba.</itunes:summary>
+    <itunes:type>episodic</itunes:type>
+    <itunes:explicit>true</itunes:explicit>
+    <itunes:owner>
+      <itunes:name>Channel Two</itunes:name>
+      <itunes:email>owner@example.com</itunes:email>
+    </itunes:owner>
+    <itunes:category text="Society &amp; Culture"/>
+    <itunes:block>yes</itunes:block>
+    <itunes:new-feed-url>https://example.com/new-feed.xml</itunes:new-feed-url>
+    <itunes:image href="https://podzcash.online/media/avatars/two/avatar.jpg"/>
+    <image><url>https://podzcash.online/media/avatars/two/avatar.jpg</url><title>Channel Two</title><link>https://podzcash.online/canal/@dos</link></image>
+    <podcast:locked owner="owner@example.com">no</podcast:locked>
+    <podcast:guid>432fc76a-4651-5439-b6de-fce80c1f3cd1</podcast:guid>
+    <item>
+      <title>Episode two</title>
+      <link>https://podzcash.online/canal/@dos/episode-two</link>
+      <guid isPermaLink="false">episode-two</guid>
+      <pubDate>Mon, 02 Nov 2026 12:00:00 GMT</pubDate>
+      <description>Descripción del episodio.</description>
+      <content:encoded><![CDATA[Descripción del episodio.]]></content:encoded>
+      <enclosure url="https://podzcash.online/media/audio/two/episode.m4a" length="2000000" type="audio/mp4"/>
+      <itunes:duration>00:02:05</itunes:duration>
+      <itunes:episode>1</itunes:episode>
+      <itunes:episodeType>trailer</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+
+    </item>
+  </channel>
+</rss>
+"
+`;
+
+exports[`buildChannelFeed > genera el feed del canal uno 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+  xmlns:podcast="https://podcastindex.org/namespace/1.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Canal Uno</title>
+    <link>https://podzcash.online/canal/@uno</link>
+    <atom:link href="https://podzcash.online/canal/@uno/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Un canal de prueba.</description>
+    <language>es</language>
+    <lastBuildDate>Mon, 02 Nov 2026 12:00:00 GMT</lastBuildDate>
+    <generator>PodZcash</generator>
+    <itunes:author>Canal Uno</itunes:author>
+    <itunes:summary>Un canal de prueba.</itunes:summary>
+    <itunes:type>episodic</itunes:type>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:owner>
+      <itunes:name>Canal Uno</itunes:name>
+      <itunes:email>hola@podzcash.online</itunes:email>
+    </itunes:owner>
+    <itunes:category text="Technology"/>
+    <itunes:image href="https://podzcash.online/media/covers/one/cover.jpg"/>
+    <image><url>https://podzcash.online/media/covers/one/cover.jpg</url><title>Canal Uno</title><link>https://podzcash.online/canal/@uno</link></image>
+    <podcast:locked owner="hola@podzcash.online">no</podcast:locked>
+    <podcast:guid>077841e8-2414-5240-aa08-11b5c5ec1e64</podcast:guid>
+    <podcast:funding url="https://podzcash.online/canal/@uno/donar">Apoyar con ZEC</podcast:funding>
+    <item>
+      <title>Episodio uno</title>
+      <link>https://podzcash.online/canal/@uno/episodio-uno</link>
+      <guid isPermaLink="false">episode-one</guid>
+      <pubDate>Mon, 02 Nov 2026 12:00:00 GMT</pubDate>
+      <description>Descripción del episodio.</description>
+      <content:encoded><![CDATA[Descripción del episodio.]]></content:encoded>
+      <enclosure url="https://podzcash.online/media/audio/one/episode.mp3" length="2000000" type="audio/mpeg"/>
+      <itunes:duration>00:02:05</itunes:duration>
+      <itunes:season>1</itunes:season>
+      <itunes:episode>3</itunes:episode>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <itunes:image href="https://podzcash.online/media/covers/one/cover.jpg"/>
+      <category>privacidad</category>
+    </item>
+  </channel>
+</rss>
+"
+`;

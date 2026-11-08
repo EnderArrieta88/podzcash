@@ -74,6 +74,15 @@ model Channel {
   bannerKey    String?
   // Dirección Zcash protegida del creador (zs1/u1...). Se usa para generar el QR.
   zcashAddress String?
+  // Campos del feed (RSS / Apple Podcasts)
+  feedLanguage  String  @default("es")
+  feedCategory  String  @default("Technology")
+  feedExplicit  Boolean @default(false)
+  ownerEmail    String?
+  // Bloquea el feed en Apple Podcasts cuando sea true.
+  block         Boolean @default(false)
+  // URL nueva del feed para migraciones de hosting.
+  newFeedUrl    String?
   // JSON con enlaces sociales: [{ "label": "...", "url": "..." }]
   links        String?
   userId       String   @unique
@@ -98,6 +107,13 @@ model Episode {
   durationSec Int?
   fileSize    Int?
   mimeType    String?
+  // Campos del feed por episodio
+  season        Int?
+  episodeNumber Int?
+  // "full" | "trailer" | "bonus"
+  episodeType   String  @default("full")
+  // null = hereda el explicit del canal
+  explicit      Boolean?
   // "draft" | "published" | "hidden"
   status      String    @default("draft")
   publishedAt DateTime?

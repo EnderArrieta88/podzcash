@@ -6,8 +6,9 @@ import type { ChannelLink } from "@/lib/links";
 import { AvatarField } from "@/components/studio/avatar-field";
 import { BannerField } from "@/components/studio/banner-field";
 import { LinksEditor } from "@/components/studio/links-editor";
-import { FieldError, FieldHint, Input, Label, Textarea } from "@/components/ui/field";
+import { FieldError, FieldHint, Input, Label, Select, Textarea } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { PODCAST_CATEGORIES } from "@/lib/feed";
 import type { ChannelFormLabels } from "@/lib/i18n/studio-channel";
 
 type ChannelFormProps = {
@@ -18,6 +19,12 @@ type ChannelFormProps = {
     avatarUrl: string | null;
     bannerUrl: string | null;
     zcashAddress: string | null;
+    feedLanguage: string;
+    feedCategory: string;
+    feedExplicit: boolean;
+    ownerEmail: string | null;
+    block: boolean;
+    newFeedUrl: string | null;
   } | null;
   links: ChannelLink[];
   labels: ChannelFormLabels;
@@ -33,9 +40,18 @@ export function ChannelForm({ channel, links, labels }: ChannelFormProps) {
     handle: channel?.handle ?? "",
     bio: channel?.bio ?? "",
     zcashAddress: channel?.zcashAddress ?? "",
+    feedLanguage: channel?.feedLanguage ?? "es",
+    feedCategory: channel?.feedCategory ?? "Technology",
+    feedExplicit: channel?.feedExplicit ?? false,
+    ownerEmail: channel?.ownerEmail ?? "",
+    block: channel?.block ?? false,
+    newFeedUrl: channel?.newFeedUrl ?? "",
   });
 
-  function update(field: keyof typeof values, value: string) {
+  function update<K extends keyof typeof values>(
+    field: K,
+    value: (typeof values)[K],
+  ) {
     setValues((current) => ({ ...current, [field]: value }));
   }
 
@@ -157,6 +173,117 @@ export function ChannelForm({ channel, links, labels }: ChannelFormProps) {
         />
         <FieldError>{state?.fields?.zcashAddress}</FieldError>
         <FieldHint>{labels.zcashHint}</FieldHint>
+      </div>
+
+      <div className="rounded-xl border border-border bg-surface-2/60 p-4">
+        <h2 className="font-heading text-sm font-semibold">
+          {labels.feedSection}
+        </h2>
+        <p className="mt-1 text-xs text-muted">{labels.feedSectionHint}</p>
+
+        <div className="mt-4 space-y-4">
+          <div>
+            <Label htmlFor="feedLanguage">{labels.feedLanguage}</Label>
+            <Input
+              id="feedLanguage"
+              name="feedLanguage"
+              value={values.feedLanguage}
+              onChange={(event) => update("feedLanguage", event.target.value)}
+              maxLength={10}
+              spellCheck={false}
+              autoComplete="off"
+              placeholder="es"
+            />
+            <FieldError>{state?.fields?.feedLanguage}</FieldError>
+            <FieldHint>{labels.feedLanguageHint}</FieldHint>
+          </div>
+
+          <div>
+            <Label htmlFor="feedCategory">{labels.feedCategory}</Label>
+            <Select
+              id="feedCategory"
+              name="feedCategory"
+              value={values.feedCategory}
+              onChange={(event) => update("feedCategory", event.target.value)}
+            >
+              {PODCAST_CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </Select>
+            <FieldError>{state?.fields?.feedCategory}</FieldError>
+            <FieldHint>{labels.feedCategoryHint}</FieldHint>
+          </div>
+
+          <label className="flex items-start gap-3 text-sm text-muted">
+            <input
+              type="checkbox"
+              name="feedExplicit"
+              checked={values.feedExplicit}
+              onChange={(event) =>
+                update("feedExplicit", event.target.checked)
+              }
+              className="mt-0.5 size-4 accent-[var(--color-brand)]"
+            />
+            <span>
+              <span className="block font-medium text-text">
+                {labels.feedExplicit}
+              </span>
+              <span className="block text-xs text-subtle">
+                {labels.feedExplicitHint}
+              </span>
+            </span>
+          </label>
+
+          <div>
+            <Label htmlFor="ownerEmail">{labels.ownerEmail}</Label>
+            <Input
+              id="ownerEmail"
+              name="ownerEmail"
+              type="email"
+              value={values.ownerEmail}
+              onChange={(event) => update("ownerEmail", event.target.value)}
+              autoComplete="email"
+              placeholder="hola@ejemplo.com"
+            />
+            <FieldError>{state?.fields?.ownerEmail}</FieldError>
+            <FieldHint>{labels.ownerEmailHint}</FieldHint>
+          </div>
+
+          <label className="flex items-start gap-3 text-sm text-muted">
+            <input
+              type="checkbox"
+              name="block"
+              checked={values.block}
+              onChange={(event) => update("block", event.target.checked)}
+              className="mt-0.5 size-4 accent-[var(--color-brand)]"
+            />
+            <span>
+              <span className="block font-medium text-text">
+                {labels.block}
+              </span>
+              <span className="block text-xs text-subtle">
+                {labels.blockHint}
+              </span>
+            </span>
+          </label>
+
+          <div>
+            <Label htmlFor="newFeedUrl">{labels.newFeedUrl}</Label>
+            <Input
+              id="newFeedUrl"
+              name="newFeedUrl"
+              type="url"
+              value={values.newFeedUrl}
+              onChange={(event) => update("newFeedUrl", event.target.value)}
+              placeholder="https://..."
+              spellCheck={false}
+            />
+            <FieldError>{state?.fields?.newFeedUrl}</FieldError>
+            <FieldHint>{labels.newFeedUrlHint}</FieldHint>
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center gap-3 border-t border-border pt-6">

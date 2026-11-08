@@ -14,6 +14,7 @@ import {
   FieldHint,
   Input,
   Label,
+  Select,
   Textarea,
 } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -38,6 +39,10 @@ export type EpisodeFormValues = {
   description: string | null;
   kind: string;
   tags: string;
+  season: number | null;
+  episodeNumber: number | null;
+  episodeType: string;
+  explicit: boolean | null;
   audio: ExistingAudio;
   coverKey: string | null;
   coverUrl: string | null;
@@ -72,10 +77,14 @@ function uploadWithProgress(
   file: File,
   onProgress: (value: number) => void,
   errors: EpisodeFormLabels["errors"],
+  purpose?: "cover",
 ): Promise<{ result?: UploadResult; error?: string }> {
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `/api/upload?kind=${kind}`);
+    xhr.open(
+      "POST",
+      `/api/upload?kind=${kind}${purpose ? `&purpose=${purpose}` : ""}`,
+    );
     xhr.setRequestHeader("Content-Type", file.type);
 
     xhr.upload.onprogress = (event) => {
@@ -99,6 +108,9 @@ function uploadWithProgress(
             noFile: errors.noFile,
             empty: errors.empty,
             saveFailed: errors.saveFailed,
+            artworkFormat: errors.artworkFormat,
+            artworkDimensions: errors.artworkDimensions,
+            artworkColor: errors.artworkColor,
           };
 
           resolve({ error: byCode[data.error] ?? errors.uploadFailed });
@@ -162,6 +174,11 @@ export function EpisodeForm({
     description: episode?.description ?? "",
     tags: episode?.tags ?? "",
     kind: episode?.kind ?? "podcast",
+    season: episode?.season?.toString() ?? "",
+    episodeNumber: episode?.episodeNumber?.toString() ?? "",
+    episodeType: episode?.episodeType ?? "full",
+    explicit:
+      episode?.explicit == null ? "" : episode.explicit ? "true" : "false",
   });
 
   function updateMeta(field: keyof typeof meta, value: string) {
@@ -234,6 +251,7 @@ export function EpisodeForm({
       file,
       setCoverProgress,
       labels.errors,
+      "cover",
     );
 
     setUploading(null);
@@ -485,6 +503,79 @@ export function EpisodeForm({
         />
         <FieldHint>{labels.tagsHint}</FieldHint>
         <FieldError>{state?.fields?.tags}</FieldError>
+      </div>
+
+      <div className="rounded-xl border border-border bg-surface-2/60 p-4">
+        <h2 className="font-heading text-sm font-semibold">
+          {labels.feedSection}
+        </h2>
+        <p className="mt-1 text-xs text-muted">{labels.feedSectionHint}</p>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="season">{labels.season}</Label>
+            <Input
+              id="season"
+              name="season"
+              type="number"
+              min={0}
+              max={9999}
+              value={meta.season}
+              onChange={(event) => updateMeta("season", event.target.value)}
+              inputMode="numeric"
+            />
+            <FieldError>{state?.fields?.season}</FieldError>
+          </div>
+
+          <div>
+            <Label htmlFor="episodeNumber">{labels.episodeNumber}</Label>
+            <Input
+              id="episodeNumber"
+              name="episodeNumber"
+              type="number"
+              min={1}
+              max={99999}
+              value={meta.episodeNumber}
+              onChange={(event) =>
+                updateMeta("episodeNumber", event.target.value)
+              }
+              inputMode="numeric"
+            />
+            <FieldError>{state?.fields?.episodeNumber}</FieldError>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <Label htmlFor="episodeType">{labels.episodeType}</Label>
+          <Select
+            id="episodeType"
+            name="episodeType"
+            value={meta.episodeType}
+            onChange={(event) => updateMeta("episodeType", event.target.value)}
+          >
+            <option value="full">{labels.typeFull}</option>
+            <option value="trailer">{labels.typeTrailer}</option>
+            <option value="bonus">{labels.typeBonus}</option>
+          </Select>
+          <FieldError>{state?.fields?.episodeType}</FieldError>
+          <FieldHint>{labels.episodeTypeHint}</FieldHint>
+        </div>
+
+        <div className="mt-4">
+          <Label htmlFor="explicit">{labels.explicit}</Label>
+          <Select
+            id="explicit"
+            name="explicit"
+            value={meta.explicit}
+            onChange={(event) => updateMeta("explicit", event.target.value)}
+          >
+            <option value="">{labels.explicitInherit}</option>
+            <option value="true">{labels.explicitYes}</option>
+            <option value="false">{labels.explicitNo}</option>
+          </Select>
+          <FieldError>{state?.fields?.explicit}</FieldError>
+          <FieldHint>{labels.explicitHint}</FieldHint>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-border pt-6">

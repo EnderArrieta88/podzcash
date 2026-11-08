@@ -10,7 +10,7 @@ import { PlayButton } from "@/components/player/play-button";
 import { getLocale } from "@/lib/i18n/locale";
 import { episodeContent } from "@/lib/i18n/episode";
 import { sharedLabels } from "@/lib/i18n/shared";
-import { channelPath, donatePath, episodePath, normalizeHandleParam } from "@/lib/routes";
+import { channelPath, donatePath, episodePath, feedPath, normalizeHandleParam } from "@/lib/routes";
 import { episodeEmbedCode } from "@/lib/embed";
 import { EmbedCode } from "@/components/embed/embed-code";
 import { absoluteUrl, isoDuration, jsonLd, SITE_URL, socialMetadata } from "@/lib/seo";
@@ -59,18 +59,26 @@ export async function generateMetadata({
       ? storage.url(data.channel.avatarKey)
       : null;
 
+  const social = socialMetadata({
+    title: `${data.episode.title} · ${data.channel.displayName}`,
+    description: data.episode.description,
+    path: episodePath(data.channel.handle, data.episode.slug),
+    image: cover,
+    imageAlt: data.episode.title,
+    locale,
+    type: "article",
+  });
+
   return {
     title: `${data.episode.title} · ${data.channel.displayName}`,
     description: data.episode.description ?? undefined,
-    ...socialMetadata({
-      title: `${data.episode.title} · ${data.channel.displayName}`,
-      description: data.episode.description,
-      path: episodePath(data.channel.handle, data.episode.slug),
-      image: cover,
-      imageAlt: data.episode.title,
-      locale,
-      type: "article",
-    }),
+    ...social,
+    alternates: {
+      ...social.alternates,
+      types: {
+        "application/rss+xml": absoluteUrl(feedPath(data.channel.handle)),
+      },
+    },
   };
 }
 

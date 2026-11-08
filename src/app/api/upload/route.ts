@@ -7,6 +7,7 @@ import {
   MAX_AUDIO_BYTES,
   MAX_IMAGE_BYTES,
 } from "@/lib/media-types";
+import { validateArtwork } from "@/lib/artwork";
 import { storage } from "@/lib/storage";
 
 export const runtime = "nodejs";
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
   }
 
   const kind = new URL(request.url).searchParams.get("kind") as UploadKind | null;
+  const purpose = new URL(request.url).searchParams.get("purpose");
 
   if (!kind || !(kind in LIMITS)) {
     return NextResponse.json({ error: "invalidType" }, { status: 400 });
@@ -65,6 +67,28 @@ export async function POST(request: Request) {
   const key = `${limit.prefix}/${user.id}/${randomUUID()}.${extension}`;
 
   try {
+    if (kind === "image" && purpose === "cover") {
+      const data = Buffer.from(await request.arrayBuffer());
+
+      if (data.length > limit.maxBytes) {
+        return NextResponse.json({ error: "tooLarge" }, { status: 413 });
+      }
+
+      if (data.length === 0) {
+        return NextResponse.json({ error: "empty" }, { status: 400 });
+      }
+
+      const artwork = validateArtwork(data);
+
+      if (!artwork.ok) {
+        return NextResponse.json({ error: artwork.error }, { status: 415 });
+      }
+
+      await storage.put(key, data);
+
+      return NextResponse.json({ key, size: data.length, mimeType });
+    }
+
     const size = await storage.putStream(key, request.body);
 
     if (size > limit.maxBytes) {

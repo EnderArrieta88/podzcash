@@ -27,6 +27,15 @@ const es = {
   zcashAddressMax: "La dirección de Zcash es demasiado larga.",
   tagsMax: "Las etiquetas son demasiado largas.",
   noteMax: "La nota no puede pasar de 400 caracteres.",
+  feedLanguageInvalid:
+    "Usa un código de idioma válido, por ejemplo es, en o es-AR.",
+  feedCategoryRequired: "Elige una categoría para el feed.",
+  feedCategoryMax: "La categoría es demasiado larga.",
+  ownerEmailInvalid: "Escribe un email de propietario válido.",
+  newFeedUrlInvalid: "Escribe una URL válida para el nuevo feed.",
+  seasonInvalid: "La temporada tiene que ser un número entero positivo.",
+  episodeNumberInvalid: "El número de episodio tiene que ser un entero positivo.",
+  episodeTypeInvalid: "Elige un tipo de episodio válido.",
 };
 
 export type ValidationMessages = typeof es;
@@ -58,6 +67,14 @@ const en: ValidationMessages = {
   zcashAddressMax: "The Zcash address is too long.",
   tagsMax: "The tags are too long.",
   noteMax: "The note cannot exceed 400 characters.",
+  feedLanguageInvalid: "Use a valid language code, for example es, en or en-US.",
+  feedCategoryRequired: "Choose a category for the feed.",
+  feedCategoryMax: "The category is too long.",
+  ownerEmailInvalid: "Enter a valid owner email.",
+  newFeedUrlInvalid: "Enter a valid URL for the new feed.",
+  seasonInvalid: "The season must be a positive integer.",
+  episodeNumberInvalid: "The episode number must be a positive integer.",
+  episodeTypeInvalid: "Choose a valid episode type.",
 };
 
 export const validationMessages: Record<Locale, ValidationMessages> = { es, en };

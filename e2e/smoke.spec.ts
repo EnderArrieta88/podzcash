@@ -58,6 +58,26 @@ test("login y validación de dirección Zcash", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("rechaza una portada que no cumple Apple", async ({ page }) => {
+  await login(page);
+  await page.goto("/estudio/episodios/nuevo");
+
+  const tinyPng = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+    "base64",
+  );
+
+  await page.locator('input[type="file"][accept="image/*"]').setInputFiles({
+    name: "portada.png",
+    mimeType: "image/png",
+    buffer: tinyPng,
+  });
+
+  await expect(
+    page.getByText("La portada tiene que ser cuadrada y medir entre 1400 y 3000 px."),
+  ).toBeVisible({ timeout: 15_000 });
+});
+
 test("crear borrador, publicarlo y abrir el episodio", async ({ page }) => {
   await login(page);
   await page.goto("/estudio/episodios/nuevo");

@@ -40,6 +40,20 @@ export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
   );
 }
 
+export function Select({ className, ...props }: ComponentProps<"select">) {
+  return (
+    <select
+      className={cn(
+        "h-11 w-full rounded-[10px] border border-border bg-surface-2 px-3.5 text-sm text-text",
+        "transition-colors outline-none focus:border-brand focus:ring-4 focus:ring-brand/15",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export function FieldError({ children }: { children?: string }) {
   if (!children) return null;
   return <p className="mt-1.5 text-xs text-danger">{children}</p>;

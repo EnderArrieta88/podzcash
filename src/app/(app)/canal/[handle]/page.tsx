@@ -70,17 +70,25 @@ export async function generateMetadata({
       ? storage.url(channel.avatarKey)
       : null;
 
+  const social = socialMetadata({
+    title: channel.displayName,
+    description,
+    path: channelPath(channel.handle),
+    image,
+    imageAlt: channel.displayName,
+    locale,
+  });
+
   return {
     title: channel.displayName,
     description,
-    ...socialMetadata({
-      title: channel.displayName,
-      description,
-      path: channelPath(channel.handle),
-      image,
-      imageAlt: channel.displayName,
-      locale,
-    }),
+    ...social,
+    alternates: {
+      ...social.alternates,
+      types: {
+        "application/rss+xml": absoluteUrl(feedPath(channel.handle)),
+      },
+    },
   };
 }
 
