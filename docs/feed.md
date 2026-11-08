@@ -32,6 +32,8 @@ La página del canal y la del episodio declaran el feed con `<link rel="alternat
 
 La portada de un episodio se valida al subirla: JPG o PNG, cuadrada, RGB y entre 1400 y 3000 px. Un archivo inválido se rechaza con un error localizado y no se usa en el feed.
 
+La portada válida se deriva en servidor a **JPEG cuadrado** de hasta **3000×3000**, sin ampliar imágenes más pequeñas y aplanando la transparencia sobre blanco. El feed, la página del episodio y los metadatos del canal usan esa versión derivada.
+
 ## Validación en CI
 
 `src/lib/feed-xml.test.ts` genera dos feeds de prueba, los compara con snapshots y valida XML, iTunes y los tags obligatorios (GUID, enclosure, pubDate, language, category, artwork). `e2e/feed.spec.ts` valida el feed real de la base E2E y el autodiscovery de la página. Ambos corren en CI.

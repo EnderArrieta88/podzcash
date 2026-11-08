@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import sharp from "sharp";
 
 const EMAIL = "e2e@podzcash.local";
 const PASSWORD = "e2e-password-123";
@@ -76,6 +77,32 @@ test("rechaza una portada que no cumple Apple", async ({ page }) => {
   await expect(
     page.getByText("La portada tiene que ser cuadrada y medir entre 1400 y 3000 px."),
   ).toBeVisible({ timeout: 15_000 });
+});
+
+test("sube una portada válida y la deriva a JPEG", async ({ page }) => {
+  await login(page);
+  await page.goto("/estudio/episodios/nuevo");
+
+  const validPng = await sharp({
+    create: {
+      width: 1500,
+      height: 1500,
+      channels: 3,
+      background: { r: 220, g: 40, b: 40 },
+    },
+  })
+    .png()
+    .toBuffer();
+
+  await page.locator('input[type="file"][accept="image/*"]').setInputFiles({
+    name: "portada.png",
+    mimeType: "image/png",
+    buffer: validPng,
+  });
+
+  const preview = page.locator('img[src^="/media/covers/"]');
+  await expect(preview).toBeVisible({ timeout: 20_000 });
+  await expect(preview).toHaveAttribute("src", /\.jpg$/);
 });
 
 test("crear borrador, publicarlo y abrir el episodio", async ({ page }) => {

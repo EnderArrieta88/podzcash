@@ -1,3 +1,5 @@
+import sharp from "sharp";
+
 export type ArtworkError =
   | "artworkFormat"
   | "artworkDimensions"
@@ -6,6 +8,13 @@ export type ArtworkError =
 export type ArtworkValidation =
   | { ok: true; width: number; height: number }
   | { ok: false; error: ArtworkError };
+
+export type ArtworkDerivative = {
+  data: Buffer;
+  width: number;
+  height: number;
+  mimeType: "image/jpeg";
+};
 
 type ImageInfo = {
   format: "png" | "jpeg" | "webp" | "gif" | "unknown";
@@ -132,4 +141,33 @@ export function validateArtwork(buffer: Buffer): ArtworkValidation {
   }
 
   return { ok: true, width: info.width, height: info.height };
+}
+
+/**
+ * Deriva el artwork para Apple Podcasts: cuadrado, sin transparencia y con un
+ * máximo de 3000×3000. Nunca amplía una imagen más pequeña.
+ */
+export async function deriveArtwork(buffer: Buffer): Promise<ArtworkDerivative> {
+  const source = sharp(buffer, { failOn: "error" });
+  const metadata = await source.metadata();
+
+  if (!metadata.width || !metadata.height) {
+    throw new Error("Artwork sin dimensiones");
+  }
+
+  const size = Math.min(metadata.width, metadata.height, 3000);
+
+  const data = await source
+    .rotate()
+    .flatten({ background: "#ffffff" })
+    .resize({
+      width: size,
+      height: size,
+      fit: "cover",
+      withoutEnlargement: true,
+    })
+    .jpeg({ quality: 88, mozjpeg: true })
+    .toBuffer();
+
+  return { data, width: size, height: size, mimeType: "image/jpeg" };
 }
