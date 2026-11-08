@@ -10,6 +10,15 @@
 
 La lista de bots se puede ampliar con `ANALYTICS_BOT_PATTERNS` (fragmentos de regex separados por coma).
 
+## Agregados diarios
+
+- Tabla `daily_stats` por `day` y `episodeId` con solicitudes, descargas válidas, inicios, escuchas verificadas, clientes únicos y bytes.
+- La reconstrucción de un día es idempotente: borra e inserta el día completo en una transacción.
+- El día se calcula en `ANALYTICS_TIMEZONE` (IANA; por defecto UTC).
+- `reconcileDay(day)` compara los agregados contra los eventos crudos y devuelve diferencias.
+- **Inicio**: evento de `/api/plays` (botón de reproducción).
+- **Escucha verificada**: cliente que inició la escucha y además superó el umbral de descarga.
+
 ## Qué se mide
 
 - **Descarga de servidor**: petición real a `/media/audio/...`, incluyendo peticiones por rango (206) y completas (200).

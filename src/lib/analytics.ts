@@ -8,10 +8,12 @@ const DB_PATH = path.resolve(
   process.cwd(),
   process.env.ANALYTICS_DB_PATH ?? "./.data/analytics.db",
 );
+const DAY_MS = 86_400_000;
 
 type GlobalWithAnalytics = typeof globalThis & {
   podzcashAnalyticsDb?: Database.Database;
   podzcashAnalyticsPruned?: boolean;
+  podzcashAnalyticsRebuilt?: Map<string, number>;
 };
 
 const globalForAnalytics = globalThis as GlobalWithAnalytics;
@@ -90,6 +92,35 @@ export function isPrefetchRequest(headers: Headers): boolean {
   return /prefetch|preview/i.test(purpose);
 }
 
+/**
+ * Día de analítica en la zona configurada. Se usa para agrupar eventos y
+ * agregados; por defecto UTC.
+ */
+export function analyticsDay(date = new Date()): string {
+  const timeZone = process.env.ANALYTICS_TIMEZONE?.trim() || "UTC";
+
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+  } catch {
+    return date.toISOString().slice(0, 10);
+  }
+}
+
+function dayRange(days: number): string[] {
+  const result: string[] = [];
+
+  for (let index = days - 1; index >= 0; index -= 1) {
+    result.push(analyticsDay(new Date(Date.now() - index * DAY_MS)));
+  }
+
+  return result;
+}
+
 function hashValue(value: string, day: string): string {
   const salt =
     process.env.ANALYTICS_SALT ?? process.env.AUTH_SECRET ?? "podzcash-analytics";
@@ -107,6 +138,10 @@ function refererHost(referer: string | null): string | null {
   } catch {
     return null;
   }
+}
+
+function clientKey(event: AnalyticsEvent | ListenEvent): string {
+  return `${event.ipHash ?? event.requestId}|${event.uaHash ?? event.requestId}`;
 }
 
 function getDb(): Database.Database {
@@ -148,14 +183,47 @@ function getDb(): Database.Database {
       ON media_events (episodeId, day);
     CREATE INDEX IF NOT EXISTS media_events_client_day
       ON media_events (episodeId, ipHash, uaHash, day);
+
+    CREATE TABLE IF NOT EXISTS listen_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      requestId TEXT NOT NULL,
+      episodeId TEXT NOT NULL,
+      channelId TEXT NOT NULL,
+      ipHash TEXT,
+      uaHash TEXT,
+      device TEXT,
+      app TEXT,
+      isBot INTEGER NOT NULL DEFAULT 0,
+      day TEXT NOT NULL,
+      createdAt TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS listen_events_episode_day
+      ON listen_events (episodeId, day);
+
+    CREATE TABLE IF NOT EXISTS daily_stats (
+      day TEXT NOT NULL,
+      episodeId TEXT NOT NULL,
+      channelId TEXT NOT NULL,
+      rawDownloads INTEGER NOT NULL DEFAULT 0,
+      validDownloads INTEGER NOT NULL DEFAULT 0,
+      starts INTEGER NOT NULL DEFAULT 0,
+      verifiedListens INTEGER NOT NULL DEFAULT 0,
+      uniqueClients INTEGER NOT NULL DEFAULT 0,
+      bytes INTEGER NOT NULL DEFAULT 0,
+      updatedAt TEXT NOT NULL,
+      PRIMARY KEY (day, episodeId)
+    );
+    CREATE INDEX IF NOT EXISTS daily_stats_episode_day
+      ON daily_stats (episodeId, day);
   `);
 
   if (!globalForAnalytics.podzcashAnalyticsPruned) {
     globalForAnalytics.podzcashAnalyticsPruned = true;
     const cutoff = new Date(
-      Date.now() - RETENTION_DAYS * 86_400_000,
+      Date.now() - RETENTION_DAYS * DAY_MS,
     ).toISOString();
     db.prepare(`DELETE FROM media_events WHERE createdAt < ?`).run(cutoff);
+    db.prepare(`DELETE FROM listen_events WHERE createdAt < ?`).run(cutoff);
   }
 
   globalForAnalytics.podzcashAnalyticsDb = db;
@@ -179,6 +247,15 @@ export type MediaEventInput = {
   isPrefetch: boolean;
 };
 
+export type ListenEventInput = {
+  episodeId: string;
+  channelId: string;
+  ip: string | null;
+  userAgent: string | null;
+  referer: string | null;
+  country: string | null;
+};
+
 export type AnalyticsEvent = {
   requestId: string;
   method: string;
@@ -191,17 +268,46 @@ export type AnalyticsEvent = {
   isPrefetch: number;
 };
 
+export type ListenEvent = {
+  requestId: string;
+  episodeId: string;
+  channelId: string;
+  ipHash: string | null;
+  uaHash: string | null;
+  isBot: number;
+};
+
 export type EpisodeStats = {
   days: number;
   rawDownloads: number;
   validDownloads: number;
+  starts: number;
+  verifiedListens: number;
   uniqueClients: number;
   bytes: number;
 };
 
-export function summarizeMediaEvents(
-  events: AnalyticsEvent[],
-): Omit<EpisodeStats, "days"> {
+export type DailyStats = {
+  day: string;
+  episodeId: string;
+  channelId: string;
+  rawDownloads: number;
+  validDownloads: number;
+  starts: number;
+  verifiedListens: number;
+  uniqueClients: number;
+  bytes: number;
+};
+
+type MediaAnalysis = {
+  rawDownloads: number;
+  validDownloads: number;
+  uniqueClients: number;
+  bytes: number;
+  validClients: Set<string>;
+};
+
+function analyzeMedia(events: AnalyticsEvent[]): MediaAnalysis {
   const downloads = events.filter((event) => event.method === "GET");
   const clients = new Map<
     string,
@@ -215,10 +321,8 @@ export function summarizeMediaEvents(
   for (const event of downloads) {
     if (event.isBot || event.isPrefetch) continue;
 
-    const client = `${event.ipHash ?? event.requestId}|${
-      event.uaHash ?? event.requestId
-    }`;
-    const current = clients.get(client) ?? {
+    const key = clientKey(event);
+    const current = clients.get(key) ?? {
       bytes: 0,
       durationSec: null,
       totalBytes: 0,
@@ -227,12 +331,12 @@ export function summarizeMediaEvents(
     current.bytes += event.bytes;
     current.durationSec = current.durationSec ?? event.durationSec;
     current.totalBytes = current.totalBytes || event.totalBytes;
-    clients.set(client, current);
+    clients.set(key, current);
   }
 
-  let validDownloads = 0;
+  const validClients = new Set<string>();
 
-  for (const client of clients.values()) {
+  for (const [key, client] of clients) {
     const duration = client.durationSec ?? 0;
     const totalBytes = client.totalBytes ?? 0;
 
@@ -242,37 +346,258 @@ export function summarizeMediaEvents(
           (Math.min(60, Math.max(1, duration * 0.1)) / duration)
         : 1_048_576;
 
-    if (client.bytes >= thresholdBytes) validDownloads += 1;
+    if (client.bytes >= thresholdBytes) validClients.add(key);
   }
 
   return {
     rawDownloads: downloads.length,
-    validDownloads,
+    validDownloads: validClients.size,
     uniqueClients: clients.size,
     bytes: downloads.reduce((sum, event) => sum + event.bytes, 0),
+    validClients,
   };
+}
+
+export function summarizeMediaEvents(
+  events: AnalyticsEvent[],
+): Omit<EpisodeStats, "days" | "starts" | "verifiedListens"> {
+  const analysis = analyzeMedia(events);
+
+  return {
+    rawDownloads: analysis.rawDownloads,
+    validDownloads: analysis.validDownloads,
+    uniqueClients: analysis.uniqueClients,
+    bytes: analysis.bytes,
+  };
+}
+
+export function aggregateDay(
+  day: string,
+  mediaEvents: Array<AnalyticsEvent & { episodeId: string; channelId: string }>,
+  listenEvents: ListenEvent[],
+): DailyStats[] {
+  const mediaByEpisode = new Map<string, (AnalyticsEvent & { episodeId: string; channelId: string })[]>();
+  const listenByEpisode = new Map<string, ListenEvent[]>();
+
+  for (const event of mediaEvents) {
+    const list = mediaByEpisode.get(event.episodeId) ?? [];
+    list.push(event);
+    mediaByEpisode.set(event.episodeId, list);
+  }
+
+  for (const event of listenEvents) {
+    const list = listenByEpisode.get(event.episodeId) ?? [];
+    list.push(event);
+    listenByEpisode.set(event.episodeId, list);
+  }
+
+  const episodes = new Set([
+    ...mediaByEpisode.keys(),
+    ...listenByEpisode.keys(),
+  ]);
+  const rows: DailyStats[] = [];
+
+  for (const episodeId of episodes) {
+    const media = mediaByEpisode.get(episodeId) ?? [];
+    const listens = listenByEpisode.get(episodeId) ?? [];
+    const analysis = analyzeMedia(media);
+    const starts = new Set(
+      listens
+        .filter((event) => !event.isBot)
+        .map((event) => clientKey(event)),
+    );
+    const verifiedListens = [...starts].filter((key) =>
+      analysis.validClients.has(key),
+    ).length;
+
+    rows.push({
+      day,
+      episodeId,
+      channelId: media[0]?.channelId ?? listens[0]?.channelId ?? "",
+      rawDownloads: analysis.rawDownloads,
+      validDownloads: analysis.validDownloads,
+      starts: starts.size,
+      verifiedListens,
+      uniqueClients: analysis.uniqueClients,
+      bytes: analysis.bytes,
+    });
+  }
+
+  return rows;
+}
+
+function loadDay(day: string): {
+  media: Array<AnalyticsEvent & { episodeId: string; channelId: string }>;
+  listens: ListenEvent[];
+} {
+  const db = getDb();
+
+  const media = db
+    .prepare(
+      `SELECT requestId, episodeId, channelId, method, bytes, totalBytes,
+              durationSec, ipHash, uaHash, isBot, isPrefetch
+       FROM media_events WHERE day = ?`,
+    )
+    .all(day) as Array<
+    AnalyticsEvent & { episodeId: string; channelId: string }
+  >;
+
+  const listens = db
+    .prepare(
+      `SELECT requestId, episodeId, channelId, ipHash, uaHash, isBot
+       FROM listen_events WHERE day = ?`,
+    )
+    .all(day) as ListenEvent[];
+
+  return { media, listens };
+}
+
+export function rebuildDay(day: string): DailyStats[] {
+  const db = getDb();
+  const { media, listens } = loadDay(day);
+  const rows = aggregateDay(day, media, listens);
+
+  const transaction = db.transaction(() => {
+    db.prepare(`DELETE FROM daily_stats WHERE day = ?`).run(day);
+    const insert = db.prepare(
+      `INSERT INTO daily_stats (
+        day, episodeId, channelId, rawDownloads, validDownloads,
+        starts, verifiedListens, uniqueClients, bytes, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+
+    for (const row of rows) {
+      insert.run(
+        row.day,
+        row.episodeId,
+        row.channelId,
+        row.rawDownloads,
+        row.validDownloads,
+        row.starts,
+        row.verifiedListens,
+        row.uniqueClients,
+        row.bytes,
+        new Date().toISOString(),
+      );
+    }
+  });
+
+  transaction();
+
+  const rebuilt = globalForAnalytics.podzcashAnalyticsRebuilt ?? new Map();
+  rebuilt.set(day, Date.now());
+  globalForAnalytics.podzcashAnalyticsRebuilt = rebuilt;
+
+  return rows;
+}
+
+function ensureDay(day: string): void {
+  const rebuilt = globalForAnalytics.podzcashAnalyticsRebuilt ?? new Map();
+  const last = rebuilt.get(day) ?? 0;
+  const isToday = day === analyticsDay();
+
+  if (isToday || Date.now() - last > 5 * 60_000) {
+    rebuildDay(day);
+  }
+}
+
+export function reconcileDay(day: string): Array<{
+  episodeId: string;
+  field: string;
+  expected: number;
+  actual: number;
+}> {
+  const db = getDb();
+  const { media, listens } = loadDay(day);
+  const expected = aggregateDay(day, media, listens);
+  const actual = db
+    .prepare(`SELECT * FROM daily_stats WHERE day = ?`)
+    .all(day) as Array<DailyStats & Record<string, unknown>>;
+
+  const differences: Array<{
+    episodeId: string;
+    field: string;
+    expected: number;
+    actual: number;
+  }> = [];
+  const fields: Array<keyof DailyStats> = [
+    "rawDownloads",
+    "validDownloads",
+    "starts",
+    "verifiedListens",
+    "uniqueClients",
+    "bytes",
+  ];
+
+  for (const row of expected) {
+    const stored = actual.find((item) => item.episodeId === row.episodeId);
+
+    for (const field of fields) {
+      const expectedValue = Number(row[field]);
+      const actualValue = Number(stored?.[field] ?? 0);
+
+      if (expectedValue !== actualValue) {
+        differences.push({
+          episodeId: row.episodeId,
+          field,
+          expected: expectedValue,
+          actual: actualValue,
+        });
+      }
+    }
+  }
+
+  return differences;
 }
 
 export function getEpisodeStats(episodeId: string, days = 30): EpisodeStats {
   const db = getDb();
-  const cutoff = new Date(Date.now() - days * 86_400_000)
-    .toISOString()
-    .slice(0, 10);
+  const daysList = dayRange(days);
 
-  const events = db
+  for (const day of daysList) ensureDay(day);
+
+  const stats = db
     .prepare(
-      `SELECT requestId, method, bytes, totalBytes, durationSec, ipHash, uaHash, isBot, isPrefetch
-       FROM media_events
+      `SELECT
+        COALESCE(SUM(rawDownloads), 0) AS rawDownloads,
+        COALESCE(SUM(validDownloads), 0) AS validDownloads,
+        COALESCE(SUM(starts), 0) AS starts,
+        COALESCE(SUM(verifiedListens), 0) AS verifiedListens,
+        COALESCE(SUM(bytes), 0) AS bytes
+       FROM daily_stats
        WHERE episodeId = ? AND day >= ?`,
     )
-    .all(episodeId, cutoff) as AnalyticsEvent[];
+    .get(episodeId, daysList[0]) as {
+    rawDownloads: number;
+    validDownloads: number;
+    starts: number;
+    verifiedListens: number;
+    bytes: number;
+  };
 
-  return { days, ...summarizeMediaEvents(events) };
+  const unique = db
+    .prepare(
+      `SELECT COUNT(DISTINCT COALESCE(ipHash, requestId) || '|' || COALESCE(uaHash, requestId)) AS total
+       FROM media_events
+       WHERE episodeId = ? AND day >= ? AND method = 'GET'
+         AND isBot = 0 AND isPrefetch = 0`,
+    )
+    .get(episodeId, daysList[0]) as { total: number };
+
+  return {
+    days,
+    rawDownloads: stats.rawDownloads,
+    validDownloads: stats.validDownloads,
+    starts: stats.starts,
+    verifiedListens: stats.verifiedListens,
+    uniqueClients: unique.total,
+    bytes: stats.bytes,
+  };
 }
 
 export function recordMediaEvent(input: MediaEventInput): void {
   const db = getDb();
-  const day = new Date().toISOString().slice(0, 10);
+  const day = analyticsDay();
   const ua = input.userAgent ?? "";
   const info = classifyUserAgent(input.userAgent);
 
@@ -303,6 +628,30 @@ export function recordMediaEvent(input: MediaEventInput): void {
     info.app,
     info.isBot ? 1 : 0,
     input.isPrefetch ? 1 : 0,
+    day,
+    new Date().toISOString(),
+  );
+}
+
+export function recordListenStart(input: ListenEventInput): void {
+  const db = getDb();
+  const day = analyticsDay();
+  const ua = input.userAgent ?? "";
+  const info = classifyUserAgent(input.userAgent);
+
+  db.prepare(
+    `INSERT INTO listen_events (
+      requestId, episodeId, channelId, ipHash, uaHash, device, app, isBot, day, createdAt
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).run(
+    randomUUID(),
+    input.episodeId,
+    input.channelId,
+    input.ip ? hashValue(input.ip, day) : null,
+    ua ? hashValue(ua, day) : null,
+    info.device,
+    info.app,
+    info.isBot ? 1 : 0,
     day,
     new Date().toISOString(),
   );
