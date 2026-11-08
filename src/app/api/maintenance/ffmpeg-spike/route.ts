@@ -50,11 +50,24 @@ function run(command: string, args: string[], timeout = 20_000) {
   };
 }
 
-function transcode(binary: string) {
+function transcode(
+  binary: string,
+  seconds = 1,
+  format: "mp3" | "aac" = "mp3",
+  loudnorm = false,
+) {
   const dir = mkdtempSync(path.join(os.tmpdir(), "podzcash-ffmpeg-"));
-  const output = path.join(dir, "spike.mp3");
+  const output = path.join(dir, `spike.${format}`);
 
   try {
+    const codec =
+      format === "mp3"
+        ? ["-c:a", "libmp3lame", "-b:a", "192k"]
+        : ["-c:a", "aac", "-b:a", "160k"];
+    const filters = loudnorm
+      ? ["-af", "loudnorm=I=-16:TP=-1:LRA=11"]
+      : [];
+
     const result = run(
       binary,
       [
@@ -65,18 +78,19 @@ function transcode(binary: string) {
         "-f",
         "lavfi",
         "-i",
-        "sine=frequency=440:duration=1",
-        "-c:a",
-        "libmp3lame",
-        "-b:a",
-        "128k",
+        `sine=frequency=440:duration=${seconds}`,
+        ...codec,
+        ...filters,
         output,
       ],
-      30_000,
+      120_000,
     );
 
     return {
       ...result,
+      seconds,
+      format,
+      loudnorm,
       outputBytes: existsSync(output) ? readFileSync(output).length : 0,
     };
   } finally {
@@ -114,22 +128,61 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const action = new URL(request.url).searchParams.get("action") ?? "report";
+  const url = new URL(request.url);
+  const action = url.searchParams.get("action") ?? "report";
 
   if (action === "worker") {
     return NextResponse.json(await workerTest());
   }
 
   if (action === "detach") {
+    const seconds = Math.min(
+      Math.max(Number(url.searchParams.get("seconds")) || 8, 1),
+      120,
+    );
+
     rmSync(DETACH_FILE, { force: true });
     const child = spawn(
       "/bin/sh",
-      ["-c", `sleep 8; echo done > ${JSON.stringify(DETACH_FILE)}`],
+      ["-c", `sleep ${seconds}; echo done > ${JSON.stringify(DETACH_FILE)}`],
       { detached: true, stdio: "ignore" },
     );
     child.unref();
 
-    return NextResponse.json({ ok: true, pid: child.pid, file: DETACH_FILE });
+    return NextResponse.json({
+      ok: true,
+      pid: child.pid,
+      seconds,
+      file: DETACH_FILE,
+    });
+  }
+
+  if (action === "benchmark") {
+    const binary = staticBinary();
+
+    if (!binary) {
+      return NextResponse.json({ ok: false, error: "ffmpeg no disponible" });
+    }
+
+    try {
+      chmodSync(binary, 0o755);
+    } catch {
+      // En algunos hostings el binario ya viene ejecutable.
+    }
+
+    const seconds = Math.min(
+      Math.max(Number(url.searchParams.get("seconds")) || 120, 1),
+      600,
+    );
+
+    return NextResponse.json({
+      ok: true,
+      binary,
+      seconds,
+      mp3: transcode(binary, seconds, "mp3"),
+      aac: transcode(binary, seconds, "aac"),
+      loudnorm: transcode(binary, Math.min(seconds, 120), "mp3", true),
+    });
   }
 
   if (action === "detach-status") {
