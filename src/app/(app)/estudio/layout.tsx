@@ -21,7 +21,7 @@ export default async function StudioLayout({
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">
             {content.eyebrow}
           </p>
-          <h1 className="mt-1 font-display text-3xl leading-none tracking-tight">
+          <h1 className="mt-1 break-words font-display text-3xl leading-none tracking-tight">
             {user.channel?.displayName ?? user.name}
           </h1>
         </div>

@@ -172,7 +172,7 @@ export default async function ChannelPage({ params }: PageProps) {
             </div>
           </div>
 
-          <h1 className="mt-5 font-display text-5xl leading-none tracking-tight">
+          <h1 className="mt-5 break-words font-display text-5xl leading-none tracking-tight">
             {channel.displayName}
           </h1>
 
@@ -181,7 +181,7 @@ export default async function ChannelPage({ params }: PageProps) {
           </p>
 
           {channel.bio && (
-            <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted">
+            <p className="mt-4 max-w-2xl break-words text-pretty leading-relaxed text-muted">
               {channel.bio}
             </p>
           )}

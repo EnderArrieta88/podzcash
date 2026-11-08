@@ -61,29 +61,29 @@ export default async function StudioPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-border bg-surface p-6">
-        <div className="flex flex-wrap items-start gap-5">
+      <div className="rounded-xl border border-border bg-surface p-5 sm:p-6">
+        <div className="flex items-start gap-4">
           {channel.avatarKey ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={storage.url(channel.avatarKey)}
               alt=""
-              className="size-20 rounded-full border border-border object-cover"
+              className="size-20 shrink-0 rounded-full border border-border object-cover"
             />
           ) : (
-            <span className="flex size-20 items-center justify-center rounded-full bg-brand-soft font-display text-2xl text-brand">
+            <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-brand-soft font-display text-2xl text-brand">
               {channel.displayName.slice(0, 1).toUpperCase()}
             </span>
           )}
 
           <div className="min-w-0 flex-1">
-            <h1 className="font-display text-3xl tracking-tight">
+            <h1 className="break-words font-display text-2xl tracking-tight sm:text-3xl">
               {channel.displayName}
             </h1>
-            <p className="mt-1 font-mono text-sm text-subtle">
+            <p className="mt-1 break-all font-mono text-xs text-subtle sm:text-sm">
               {channelPath(channel.handle)}
             </p>
-            <p className="mt-3 max-w-xl text-sm text-muted">
+            <p className="mt-3 max-w-xl break-words text-sm text-muted">
               {channel.bio ?? content.noBio}
             </p>
 
@@ -104,15 +104,6 @@ export default async function StudioPage() {
               </div>
             )}
           </div>
-
-          <Link
-            href={channelPath(channel.handle)}
-            target="_blank"
-            className="inline-flex h-9 items-center gap-2 rounded-full border border-border bg-surface-2 px-4 text-sm transition-colors hover:bg-border"
-          >
-            {content.viewPublic}
-            <ArrowUpRight size={14} />
-          </Link>
         </div>
       </div>
 
