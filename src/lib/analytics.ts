@@ -193,12 +193,31 @@ function getDb(): Database.Database {
       uaHash TEXT,
       device TEXT,
       app TEXT,
+      country TEXT,
       isBot INTEGER NOT NULL DEFAULT 0,
       day TEXT NOT NULL,
       createdAt TEXT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS listen_events_episode_day
       ON listen_events (episodeId, day);
+
+    CREATE TABLE IF NOT EXISTS progress_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      requestId TEXT NOT NULL,
+      episodeId TEXT NOT NULL,
+      channelId TEXT NOT NULL,
+      percent INTEGER NOT NULL,
+      ipHash TEXT,
+      uaHash TEXT,
+      device TEXT,
+      app TEXT,
+      country TEXT,
+      isBot INTEGER NOT NULL DEFAULT 0,
+      day TEXT NOT NULL,
+      createdAt TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS progress_events_episode_day
+      ON progress_events (episodeId, day);
 
     CREATE TABLE IF NOT EXISTS daily_stats (
       day TEXT NOT NULL,
@@ -216,6 +235,14 @@ function getDb(): Database.Database {
     CREATE INDEX IF NOT EXISTS daily_stats_episode_day
       ON daily_stats (episodeId, day);
   `);
+
+  const listenColumns = db
+    .prepare(`PRAGMA table_info("listen_events")`)
+    .all() as Array<{ name: string }>;
+
+  if (!listenColumns.some((column) => column.name === "country")) {
+    db.exec(`ALTER TABLE "listen_events" ADD COLUMN "country" TEXT;`);
+  }
 
   if (!globalForAnalytics.podzcashAnalyticsPruned) {
     globalForAnalytics.podzcashAnalyticsPruned = true;
@@ -256,6 +283,16 @@ export type ListenEventInput = {
   country: string | null;
 };
 
+export type ProgressEventInput = {
+  episodeId: string;
+  channelId: string;
+  percent: number;
+  ip: string | null;
+  userAgent: string | null;
+  referer: string | null;
+  country: string | null;
+};
+
 export type AnalyticsEvent = {
   requestId: string;
   method: string;
@@ -275,6 +312,14 @@ export type ListenEvent = {
   ipHash: string | null;
   uaHash: string | null;
   isBot: number;
+  day?: string;
+};
+
+export type ProgressEvent = ListenEvent & {
+  percent: number;
+  device: string | null;
+  app: string | null;
+  country: string | null;
 };
 
 export type EpisodeStats = {
@@ -595,6 +640,279 @@ export function getEpisodeStats(episodeId: string, days = 30): EpisodeStats {
   };
 }
 
+export type AnalyticsFilters = {
+  episodeId: string;
+  from: string;
+  to: string;
+  country?: string;
+  device?: string;
+  app?: string;
+};
+
+export type AnalyticsSummary = {
+  rawDownloads: number;
+  validDownloads: number;
+  starts: number;
+  verifiedListens: number;
+  uniqueClients: number;
+  bytes: number;
+};
+
+export type DailyPoint = {
+  day: string;
+  rawDownloads: number;
+  validDownloads: number;
+  starts: number;
+  verifiedListens: number;
+  uniqueClients: number;
+  bytes: number;
+};
+
+export type BreakdownItem = {
+  label: string;
+  requests: number;
+  clients: number;
+  bytes: number;
+};
+
+export type RetentionPoint = {
+  percent: number;
+  clients: number;
+};
+
+export type DashboardData = {
+  summary: AnalyticsSummary;
+  daily: DailyPoint[];
+  countries: BreakdownItem[];
+  devices: BreakdownItem[];
+  apps: BreakdownItem[];
+  retention: RetentionPoint[];
+  filterOptions: {
+    countries: string[];
+    devices: string[];
+    apps: string[];
+  };
+};
+
+function dayListBetween(from: string, to: string): string[] {
+  const start = new Date(`${from}T00:00:00.000Z`);
+  const end = new Date(`${to}T00:00:00.000Z`);
+
+  if (
+    Number.isNaN(start.getTime()) ||
+    Number.isNaN(end.getTime()) ||
+    start > end
+  ) {
+    return dayRange(30);
+  }
+
+  const days: string[] = [];
+  const cursor = new Date(start);
+
+  while (cursor <= end && days.length < 120) {
+    days.push(cursor.toISOString().slice(0, 10));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+
+  return days.length > 0 ? days : dayRange(30);
+}
+
+function filterWhere(
+  filters: AnalyticsFilters,
+): { clause: string; params: Array<string> } {
+  const clause = [`episodeId = ?`, `day >= ?`, `day <= ?`];
+  const params = [filters.episodeId, filters.from, filters.to];
+
+  for (const [column, value] of [
+    ["country", filters.country],
+    ["device", filters.device],
+    ["app", filters.app],
+  ] as const) {
+    if (!value) continue;
+
+    if (value === "__unknown__") {
+      clause.push(`${column} IS NULL`);
+    } else {
+      clause.push(`${column} = ?`);
+      params.push(value);
+    }
+  }
+
+  return { clause: clause.join(" AND "), params };
+}
+
+function breakdown(
+  events: Array<
+    AnalyticsEvent & {
+      episodeId: string;
+      channelId: string;
+      country: string | null;
+      device: string | null;
+      app: string | null;
+    }
+  >,
+  field: "country" | "device" | "app",
+): BreakdownItem[] {
+  const groups = new Map<
+    string,
+    { requests: number; clients: Set<string>; bytes: number }
+  >();
+
+  for (const event of events) {
+    if (event.method !== "GET" || event.isBot || event.isPrefetch) continue;
+
+    const label = event[field] || "Desconocido";
+    const group = groups.get(label) ?? {
+      requests: 0,
+      clients: new Set<string>(),
+      bytes: 0,
+    };
+
+    group.requests += 1;
+    group.clients.add(clientKey(event));
+    group.bytes += event.bytes;
+    groups.set(label, group);
+  }
+
+  return [...groups.entries()]
+    .map(([label, group]) => ({
+      label,
+      requests: group.requests,
+      clients: group.clients.size,
+      bytes: group.bytes,
+    }))
+    .sort((a, b) => b.clients - a.clients || b.requests - a.requests)
+    .slice(0, 10);
+}
+
+export function getDashboardData(filters: AnalyticsFilters): DashboardData {
+  const db = getDb();
+  const where = filterWhere(filters);
+
+  const media = db
+    .prepare(
+      `SELECT requestId, episodeId, channelId, method, bytes, totalBytes,
+              durationSec, ipHash, uaHash, isBot, isPrefetch, day,
+              country, device, app
+       FROM media_events WHERE ${where.clause}`,
+    )
+    .all(...where.params) as Array<
+    AnalyticsEvent & {
+      episodeId: string;
+      channelId: string;
+      day: string;
+      country: string | null;
+      device: string | null;
+      app: string | null;
+    }
+  >;
+
+  const listens = db
+    .prepare(
+      `SELECT requestId, episodeId, channelId, ipHash, uaHash, isBot, day
+       FROM listen_events WHERE ${where.clause}`,
+    )
+    .all(...where.params) as ListenEvent[];
+
+  const progress = db
+    .prepare(
+      `SELECT requestId, episodeId, channelId, percent, ipHash, uaHash,
+              device, app, country, isBot
+       FROM progress_events WHERE ${where.clause}`,
+    )
+    .all(...where.params) as ProgressEvent[];
+
+  const analysis = analyzeMedia(media);
+  const starts = new Set(
+    listens.filter((event) => !event.isBot).map((event) => clientKey(event)),
+  );
+  const verifiedListens = [...starts].filter((key) =>
+    analysis.validClients.has(key),
+  ).length;
+
+  const daily: DailyPoint[] = [];
+
+  for (const day of dayListBetween(filters.from, filters.to)) {
+    const dayMedia = media.filter((event) => event.day === day);
+    const dayListens = listens.filter((event) => event.day === day);
+
+    if (dayMedia.length === 0 && dayListens.length === 0) {
+      daily.push({
+        day,
+        rawDownloads: 0,
+        validDownloads: 0,
+        starts: 0,
+        verifiedListens: 0,
+        uniqueClients: 0,
+        bytes: 0,
+      });
+      continue;
+    }
+
+    const [row] = aggregateDay(day, dayMedia, dayListens);
+    daily.push({
+      day,
+      rawDownloads: row?.rawDownloads ?? 0,
+      validDownloads: row?.validDownloads ?? 0,
+      starts: row?.starts ?? 0,
+      verifiedListens: row?.verifiedListens ?? 0,
+      uniqueClients: row?.uniqueClients ?? 0,
+      bytes: row?.bytes ?? 0,
+    });
+  }
+
+  const progressByClient = new Map<string, number>();
+
+  for (const event of progress) {
+    if (event.isBot) continue;
+    const key = clientKey(event);
+    progressByClient.set(
+      key,
+      Math.max(progressByClient.get(key) ?? 0, event.percent),
+    );
+  }
+
+  const retention = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(
+    (percent) => ({
+      percent,
+      clients: [...progressByClient.values()].filter(
+        (value) => value >= percent,
+      ).length,
+    }),
+  );
+
+  const distinct = (field: "country" | "device" | "app") =>
+    (
+      db
+        .prepare(
+          `SELECT DISTINCT ${field} AS value FROM media_events
+           WHERE episodeId = ? AND ${field} IS NOT NULL ORDER BY value`,
+        )
+        .all(filters.episodeId) as Array<{ value: string }>
+    ).map((row) => row.value);
+
+  return {
+    summary: {
+      rawDownloads: analysis.rawDownloads,
+      validDownloads: analysis.validDownloads,
+      starts: starts.size,
+      verifiedListens,
+      uniqueClients: analysis.uniqueClients,
+      bytes: analysis.bytes,
+    },
+    daily,
+    countries: breakdown(media, "country"),
+    devices: breakdown(media, "device"),
+    apps: breakdown(media, "app"),
+    retention,
+    filterOptions: {
+      countries: distinct("country"),
+      devices: distinct("device"),
+      apps: distinct("app"),
+    },
+  };
+}
+
 export function recordMediaEvent(input: MediaEventInput): void {
   const db = getDb();
   const day = analyticsDay();
@@ -641,8 +959,8 @@ export function recordListenStart(input: ListenEventInput): void {
 
   db.prepare(
     `INSERT INTO listen_events (
-      requestId, episodeId, channelId, ipHash, uaHash, device, app, isBot, day, createdAt
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      requestId, episodeId, channelId, ipHash, uaHash, device, app, country, isBot, day, createdAt
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     randomUUID(),
     input.episodeId,
@@ -651,6 +969,35 @@ export function recordListenStart(input: ListenEventInput): void {
     ua ? hashValue(ua, day) : null,
     info.device,
     info.app,
+    input.country,
+    info.isBot ? 1 : 0,
+    day,
+    new Date().toISOString(),
+  );
+}
+
+export function recordProgress(input: ProgressEventInput): void {
+  const db = getDb();
+  const day = analyticsDay();
+  const ua = input.userAgent ?? "";
+  const info = classifyUserAgent(input.userAgent);
+  const percent = Math.max(0, Math.min(100, Math.round(input.percent)));
+
+  db.prepare(
+    `INSERT INTO progress_events (
+      requestId, episodeId, channelId, percent, ipHash, uaHash,
+      device, app, country, isBot, day, createdAt
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).run(
+    randomUUID(),
+    input.episodeId,
+    input.channelId,
+    percent,
+    input.ip ? hashValue(input.ip, day) : null,
+    ua ? hashValue(ua, day) : null,
+    info.device,
+    info.app,
+    input.country,
     info.isBot ? 1 : 0,
     day,
     new Date().toISOString(),

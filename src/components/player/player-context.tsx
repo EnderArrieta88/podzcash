@@ -52,6 +52,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const shouldAutoplay = useRef(false);
   const pendingSeek = useRef(0);
+  const progressMilestones = useRef<Map<string, Set<number>>>(new Map());
 
   const [track, setTrack] = useState<PlayerTrack | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -333,7 +334,40 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       <audio
         ref={audioRef}
         preload="metadata"
-        onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
+        onTimeUpdate={(event) => {
+          const audio = event.currentTarget;
+          setTime(audio.currentTime);
+
+          if (!track || !Number.isFinite(audio.duration) || audio.duration <= 0) {
+            return;
+          }
+
+          const percent = Math.min(
+            100,
+            Math.floor((audio.currentTime / audio.duration) * 100),
+          );
+          const sent =
+            progressMilestones.current.get(track.id) ?? new Set<number>();
+          progressMilestones.current.set(track.id, sent);
+
+          for (const milestone of [25, 50, 75, 100]) {
+            if (percent < milestone || sent.has(milestone)) continue;
+
+            sent.add(milestone);
+            void fetch("/api/analytics/progress", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: track.id,
+                position: audio.currentTime,
+                duration: audio.duration,
+              }),
+              keepalive: true,
+            }).catch(() => {
+              // La analítica es best-effort: no interrumpe la reproducción.
+            });
+          }
+        }}
         onLoadedMetadata={(event) => {
           const audio = event.currentTarget;
           setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);

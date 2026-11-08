@@ -19,6 +19,13 @@ La lista de bots se puede ampliar con `ANALYTICS_BOT_PATTERNS` (fragmentos de re
 - **Inicio**: evento de `/api/plays` (botón de reproducción).
 - **Escucha verificada**: cliente que inició la escucha y además superó el umbral de descarga.
 
+## Dashboard y retención
+
+- `/estudio/episodios/<id>/analitica` muestra resumen, serie diaria, desglose por país/dispositivo/app y retención.
+- Filtros por rango de fechas, país, dispositivo y app.
+- El reproductor envía hitos de progreso (25/50/75/100 %) a `/api/analytics/progress`; la retención cuenta clientes únicos que llegaron a cada decil.
+- La exportación CSV incluye la serie diaria y una fila `total` con los mismos números del resumen.
+
 ## Qué se mide
 
 - **Descarga de servidor**: petición real a `/media/audio/...`, incluyendo peticiones por rango (206) y completas (200).
