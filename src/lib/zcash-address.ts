@@ -1,64 +1,16 @@
-import { createHash } from "node:crypto";
 import type { Locale } from "@/lib/i18n/config";
 import { addressMessages } from "@/lib/i18n/address";
 
-export type AddressKind = "transparent" | "sapling" | "unified";
+export type AddressKind = "sapling" | "unified";
 
 export type AddressValidation =
   | { ok: true; kind: AddressKind; address: string }
   | { ok: false; error: string };
 
-const BASE58_ALPHABET =
-  "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-
 const BECH32_CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
 const BECH32_CONST = 1;
 const BECH32M_CONST = 0x2bc830a3;
-
-function sha256(data: Uint8Array): Buffer {
-  return createHash("sha256").update(data).digest();
-}
-
-function decodeBase58(input: string): Uint8Array | null {
-  const bytes: number[] = [];
-
-  for (const char of input) {
-    const value = BASE58_ALPHABET.indexOf(char);
-    if (value === -1) return null;
-
-    let carry = value;
-
-    for (let index = 0; index < bytes.length; index += 1) {
-      carry += bytes[index] * 58;
-      bytes[index] = carry & 0xff;
-      carry >>= 8;
-    }
-
-    while (carry > 0) {
-      bytes.push(carry & 0xff);
-      carry >>= 8;
-    }
-  }
-
-  for (const char of input) {
-    if (char !== "1") break;
-    bytes.push(0);
-  }
-
-  return Uint8Array.from(bytes.reverse());
-}
-
-function hasValidBase58Check(address: string): boolean {
-  const decoded = decodeBase58(address);
-  if (!decoded || decoded.length < 5) return false;
-
-  const payload = decoded.subarray(0, decoded.length - 4);
-  const checksum = decoded.subarray(decoded.length - 4);
-  const expected = sha256(sha256(payload)).subarray(0, 4);
-
-  return Buffer.from(checksum).equals(expected);
-}
 
 function polymod(values: number[]): number {
   const generators = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
@@ -88,12 +40,50 @@ function hrpExpand(hrp: string): number[] {
   return [...high, 0, ...low];
 }
 
+function convertBits(
+  data: number[],
+  from: number,
+  to: number,
+  pad: boolean,
+): number[] | null {
+  let accumulator = 0;
+  let bits = 0;
+  const result: number[] = [];
+  const maxValue = (1 << to) - 1;
+
+  for (const value of data) {
+    if (value < 0 || value >> from !== 0) return null;
+
+    accumulator = (accumulator << from) | value;
+    bits += from;
+
+    while (bits >= to) {
+      bits -= to;
+      result.push((accumulator >> bits) & maxValue);
+    }
+  }
+
+  if (pad) {
+    if (bits > 0) {
+      result.push((accumulator << (to - bits)) & maxValue);
+    }
+  } else if (bits >= from) {
+    return null;
+  }
+
+  return result;
+}
+
 /**
- * Verifica el checksum Bech32 o Bech32m. Las direcciones Sapling usan Bech32
- * y las unificadas Bech32m; aceptamos ambas variantes para no rechazar una
- * dirección válida por la versión del checksum.
+ * Verifica el checksum Bech32/Bech32m y, opcionalmente, el largo del payload.
+ * Sapling (zs1) usa Bech32 sobre 43 bytes; Unified (u1) usa Bech32m.
  */
-function hasValidBech32Checksum(address: string, expectedHrp: string): boolean {
+function hasValidBech32Checksum(
+  address: string,
+  expectedHrp: string,
+  expectedConst: number,
+  expectedPayloadBytes?: number,
+): boolean {
   const separator = address.lastIndexOf("1");
   if (separator < 1 || separator + 7 > address.length) return false;
 
@@ -101,23 +91,31 @@ function hasValidBech32Checksum(address: string, expectedHrp: string): boolean {
   if (hrp !== expectedHrp) return false;
 
   const dataPart = address.slice(separator + 1);
-  const data: number[] = [];
+  const values: number[] = [];
 
   for (const char of dataPart) {
     const value = BECH32_CHARSET.indexOf(char);
     if (value === -1) return false;
-    data.push(value);
+    values.push(value);
   }
 
-  const checksum = polymod([...hrpExpand(hrp), ...data]);
-  return checksum === BECH32_CONST || checksum === BECH32M_CONST;
+  if (polymod([...hrpExpand(hrp), ...values]) !== expectedConst) return false;
+
+  if (expectedPayloadBytes !== undefined) {
+    const payload = convertBits(values.slice(0, -6), 5, 8, false);
+    if (!payload || payload.length !== expectedPayloadBytes) return false;
+  }
+
+  return true;
 }
 
 /**
- * Valida una dirección de Zcash de mainnet.
- * - t1/t3: Base58Check con checksum real.
- * - zs1: Bech32 (Sapling).
- * - u1: Bech32m (Unified Address).
+ * Valida una dirección de Zcash de mainnet y acepta únicamente direcciones
+ * protegidas:
+ * - u1: Unified Address (Bech32m).
+ * - zs1: Sapling (Bech32).
+ *
+ * Se rechazan las transparentes (t1, t3, tex1), las Sprout (zc) y testnet.
  */
 export function validateZcashAddress(
   raw: string,
@@ -134,7 +132,7 @@ export function validateZcashAddress(
     return { ok: false, error: m.spaces };
   }
 
-  if (address.length > 200) {
+  if (address.length > 400) {
     return { ok: false, error: m.tooLong };
   }
 
@@ -146,65 +144,39 @@ export function validateZcashAddress(
     lower.startsWith("tm") ||
     lower.startsWith("t2")
   ) {
-    return {
-      ok: false,
-      error: m.testnet,
-    };
+    return { ok: false, error: m.testnet };
   }
 
   if (lower.startsWith("zc")) {
-    return {
-      ok: false,
-      error: m.sprout,
-    };
+    return { ok: false, error: m.sprout };
   }
 
-  if (lower.startsWith("t1") || lower.startsWith("t3")) {
-    if (address.length !== 35 || !hasValidBase58Check(address)) {
-      return {
-        ok: false,
-        error: m.transparent,
-      };
-    }
-
-    return { ok: true, kind: "transparent", address };
+  if (lower.startsWith("t1") || lower.startsWith("t3") || lower.startsWith("tex1")) {
+    return { ok: false, error: m.transparentForbidden };
   }
 
-  if (lower.startsWith("zs1")) {
-    if (!hasValidBech32Checksum(lower, "zs")) {
-      return {
-        ok: false,
-        error: m.sapling,
-      };
+  const isSapling = lower.startsWith("zs1");
+  const isUnified = lower.startsWith("u1");
+
+  if (!isSapling && !isUnified) {
+    return { ok: false, error: m.format };
+  }
+
+  if (address !== lower && address !== address.toUpperCase()) {
+    return { ok: false, error: m.mixedCase };
+  }
+
+  if (isSapling) {
+    if (!hasValidBech32Checksum(lower, "zs", BECH32_CONST, 43)) {
+      return { ok: false, error: m.sapling };
     }
 
     return { ok: true, kind: "sapling", address: lower };
   }
 
-  if (lower.startsWith("u1")) {
-    if (!hasValidBech32Checksum(lower, "u")) {
-      return {
-        ok: false,
-        error: m.unified,
-      };
-    }
-
-    return { ok: true, kind: "unified", address: lower };
+  if (!hasValidBech32Checksum(lower, "u", BECH32M_CONST)) {
+    return { ok: false, error: m.unified };
   }
 
-  return {
-    ok: false,
-    error: m.format,
-  };
-}
-
-export function addressKindLabel(kind: AddressKind): string {
-  switch (kind) {
-    case "unified":
-      return "Unificada";
-    case "sapling":
-      return "Sapling";
-    case "transparent":
-      return "Transparente";
-  }
+  return { ok: true, kind: "unified", address: lower };
 }

@@ -72,7 +72,7 @@ model Channel {
   bio          String?
   avatarKey    String?
   bannerKey    String?
-  // Dirección Zcash del creador (t1/t3/zs/u1...). Se usa para generar el QR.
+  // Dirección Zcash protegida del creador (zs1/u1...). Se usa para generar el QR.
   zcashAddress String?
   // JSON con enlaces sociales: [{ "label": "...", "url": "..." }]
   links        String?
