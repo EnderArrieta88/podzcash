@@ -144,4 +144,34 @@ test("el dashboard muestra descargas brutas, válidas y clientes únicos", async
   await expect(page.getByTestId("analytics-raw")).toHaveText("5");
   await expect(page.getByTestId("analytics-valid")).toHaveText("1");
   await expect(page.getByTestId("analytics-clients")).toHaveText("2");
+
+  const dailyStats = () => {
+    const db = new Database(ANALYTICS_DB, { readonly: true });
+
+    try {
+      return db
+        .prepare(
+          `SELECT day, episodeId, rawDownloads, validDownloads, starts, verifiedListens, uniqueClients, bytes
+           FROM daily_stats WHERE episodeId = ?`,
+        )
+        .all("e2e_analytics_episode") as Array<Record<string, unknown>>;
+    } finally {
+      db.close();
+    }
+  };
+
+  const first = dailyStats();
+  expect(first).toHaveLength(1);
+  expect(first[0]).toMatchObject({
+    episodeId: "e2e_analytics_episode",
+    rawDownloads: 5,
+    validDownloads: 1,
+    starts: 0,
+    verifiedListens: 0,
+    uniqueClients: 2,
+  });
+
+  await page.reload();
+  await expect(page.getByTestId("analytics-raw")).toHaveText("5");
+  expect(dailyStats()).toEqual(first);
 });

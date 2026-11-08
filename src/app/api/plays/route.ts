@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { recordListenStart } from "@/lib/analytics";
 import { take } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -33,10 +34,34 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  const episode = await prisma.episode.findFirst({
+    where: { id, status: "published" },
+    select: { channelId: true },
+  });
+
+  if (!episode) {
+    return NextResponse.json({ ok: false });
+  }
+
   const result = await prisma.episode.updateMany({
     where: { id, status: "published" },
     data: { playCount: { increment: 1 } },
   });
+
+  if (result.count > 0) {
+    recordListenStart({
+      episodeId: id,
+      channelId: episode.channelId,
+      ip: ip === "local" ? null : ip,
+      userAgent: requestHeaders.get("user-agent"),
+      referer: requestHeaders.get("referer"),
+      country:
+        requestHeaders.get("x-vercel-ip-country") ??
+        requestHeaders.get("cf-ipcountry") ??
+        requestHeaders.get("x-country-code") ??
+        null,
+    });
+  }
 
   return NextResponse.json({ ok: result.count > 0 });
 }

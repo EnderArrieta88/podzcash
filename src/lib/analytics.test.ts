@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  aggregateDay,
+  analyticsDay,
   analyticsRetentionDays,
   classifyUserAgent,
   isPrefetchRequest,
   summarizeMediaEvents,
   type AnalyticsEvent,
+  type ListenEvent,
 } from "./analytics";
 
 describe("classifyUserAgent", () => {
@@ -60,6 +63,22 @@ describe("retención", () => {
   });
 });
 
+describe("analyticsDay", () => {
+  it("agrupa según la zona horaria configurada", () => {
+    const original = process.env.ANALYTICS_TIMEZONE;
+    const date = new Date("2026-11-08T02:30:00.000Z");
+
+    process.env.ANALYTICS_TIMEZONE = "America/Argentina/Buenos_Aires";
+    expect(analyticsDay(date)).toBe("2026-11-07");
+
+    process.env.ANALYTICS_TIMEZONE = "UTC";
+    expect(analyticsDay(date)).toBe("2026-11-08");
+
+    if (original === undefined) delete process.env.ANALYTICS_TIMEZONE;
+    else process.env.ANALYTICS_TIMEZONE = original;
+  });
+});
+
 function event(overrides: Partial<AnalyticsEvent> = {}): AnalyticsEvent {
   return {
     requestId: "request",
@@ -110,5 +129,69 @@ describe("summarizeMediaEvents", () => {
     expect(stats.rawDownloads).toBe(2);
     expect(stats.validDownloads).toBe(1);
     expect(stats.uniqueClients).toBe(2);
+  });
+});
+
+describe("aggregateDay", () => {
+  it("combina descargas, inicios y escuchas verificadas", () => {
+    const media = [
+      { ...event({ requestId: "r1", bytes: 20_000 }), episodeId: "e1", channelId: "c1" },
+      { ...event({ requestId: "r2", bytes: 20_000 }), episodeId: "e1", channelId: "c1" },
+      {
+        ...event({ requestId: "r3", ipHash: "ip-short", uaHash: "ua-short", bytes: 5_000 }),
+        episodeId: "e1",
+        channelId: "c1",
+      },
+      {
+        ...event({ requestId: "r4", ipHash: "ip-bot", isBot: 1, bytes: 64_044 }),
+        episodeId: "e1",
+        channelId: "c1",
+      },
+      {
+        ...event({ requestId: "r5", ipHash: "ip-prefetch", isPrefetch: 1, bytes: 64_044 }),
+        episodeId: "e1",
+        channelId: "c1",
+      },
+    ];
+    const listens: ListenEvent[] = [
+      {
+        requestId: "s1",
+        episodeId: "e1",
+        channelId: "c1",
+        ipHash: "ip-a",
+        uaHash: "ua-a",
+        isBot: 0,
+      },
+      {
+        requestId: "s2",
+        episodeId: "e1",
+        channelId: "c1",
+        ipHash: "ip-short",
+        uaHash: "ua-short",
+        isBot: 0,
+      },
+      {
+        requestId: "s3",
+        episodeId: "e1",
+        channelId: "c1",
+        ipHash: "ip-bot",
+        uaHash: "ua-bot",
+        isBot: 1,
+      },
+    ];
+
+    expect(aggregateDay("2026-11-08", media, listens)).toEqual([
+      {
+        day: "2026-11-08",
+        episodeId: "e1",
+        channelId: "c1",
+        rawDownloads: 5,
+        validDownloads: 1,
+        starts: 2,
+        verifiedListens: 1,
+        uniqueClients: 2,
+        bytes: 173_088,
+      },
+    ]);
   });
 });

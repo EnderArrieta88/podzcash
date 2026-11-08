@@ -21,13 +21,23 @@ export function EpisodeAnalytics({
         <p className="mt-4 text-sm text-muted">{labels.empty}</p>
       ) : (
         <>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { key: "raw", label: labels.raw, value: String(stats.rawDownloads) },
               {
                 key: "valid",
                 label: labels.valid,
                 value: String(stats.validDownloads),
+              },
+              {
+                key: "starts",
+                label: labels.starts,
+                value: String(stats.starts),
+              },
+              {
+                key: "verified",
+                label: labels.verified,
+                value: String(stats.verifiedListens),
               },
               {
                 key: "clients",
