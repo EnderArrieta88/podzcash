@@ -36,6 +36,7 @@ export default defineConfig({
       DATABASE_URL: "file:./prisma/e2e.db",
       MEDIA_ROOT: "./.media-e2e",
       SEARCH_DB_PATH: "./.data-e2e/search.db",
+      ANALYTICS_DB_PATH: "./.data-e2e/analytics.db",
       AUTH_SECRET:
         "e2e-secret-0123456789abcdef0123456789abcdef0123456789abcdef",
       SITE_URL: BASE_URL,
