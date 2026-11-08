@@ -181,6 +181,22 @@ export default async function EpisodeAnalyticsPage({
           {labels.title}
         </h1>
         <p className="mt-2 text-sm text-muted">{episode.title}</p>
+        <p className="mt-2 flex flex-wrap gap-3 text-xs">
+          <a
+            href="https://github.com/EnderArrieta88/podzcash/blob/main/docs/analytics.md"
+            target="_blank"
+            rel="noreferrer"
+            className="text-brand transition-colors hover:underline"
+          >
+            {labels.docsLink}
+          </a>
+          <Link
+            href="/privacidad"
+            className="text-muted transition-colors hover:text-text"
+          >
+            {labels.privacyLink}
+          </Link>
+        </p>
       </div>
 
       <form

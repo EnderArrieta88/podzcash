@@ -251,6 +251,7 @@ function getDb(): Database.Database {
     ).toISOString();
     db.prepare(`DELETE FROM media_events WHERE createdAt < ?`).run(cutoff);
     db.prepare(`DELETE FROM listen_events WHERE createdAt < ?`).run(cutoff);
+    db.prepare(`DELETE FROM progress_events WHERE createdAt < ?`).run(cutoff);
   }
 
   globalForAnalytics.podzcashAnalyticsDb = db;
