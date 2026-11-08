@@ -16,8 +16,21 @@ type GlobalWithAnalytics = typeof globalThis & {
 
 const globalForAnalytics = globalThis as GlobalWithAnalytics;
 
-const BOT_PATTERN =
-  /(bot|crawler|spider|preview|facebookexternalhit|slackbot|twitterbot|discordbot|telegrambot|whatsapp|curl|wget|python-requests|go-http-client|headless|monitoring|uptime|pingdom|statuscake|semrush|ahrefs|mj12bot)/i;
+const BASE_BOT_PATTERN =
+  "bot|crawler|spider|preview|facebookexternalhit|slackbot|twitterbot|discordbot|telegrambot|whatsapp|curl|wget|python-requests|go-http-client|headless|monitoring|uptime|pingdom|statuscake|semrush|ahrefs|mj12bot";
+
+function botPattern(): RegExp {
+  const extra = (process.env.ANALYTICS_BOT_PATTERNS ?? "")
+    .split(",")
+    .map((pattern) => pattern.trim())
+    .filter(Boolean);
+
+  try {
+    return new RegExp([BASE_BOT_PATTERN, ...extra].join("|"), "i");
+  } catch {
+    return new RegExp(BASE_BOT_PATTERN, "i");
+  }
+}
 
 export type UserAgentInfo = {
   isBot: boolean;
@@ -29,7 +42,7 @@ export function classifyUserAgent(userAgent: string | null): UserAgentInfo {
   const ua = (userAgent ?? "").trim();
   const lower = ua.toLowerCase();
 
-  if (!ua || BOT_PATTERN.test(lower)) {
+  if (!ua || botPattern().test(lower)) {
     return {
       isBot: true,
       device: "unknown",
@@ -165,6 +178,97 @@ export type MediaEventInput = {
   country: string | null;
   isPrefetch: boolean;
 };
+
+export type AnalyticsEvent = {
+  requestId: string;
+  method: string;
+  bytes: number;
+  totalBytes: number;
+  durationSec: number | null;
+  ipHash: string | null;
+  uaHash: string | null;
+  isBot: number;
+  isPrefetch: number;
+};
+
+export type EpisodeStats = {
+  days: number;
+  rawDownloads: number;
+  validDownloads: number;
+  uniqueClients: number;
+  bytes: number;
+};
+
+export function summarizeMediaEvents(
+  events: AnalyticsEvent[],
+): Omit<EpisodeStats, "days"> {
+  const downloads = events.filter((event) => event.method === "GET");
+  const clients = new Map<
+    string,
+    {
+      bytes: number;
+      durationSec: number | null;
+      totalBytes: number;
+    }
+  >();
+
+  for (const event of downloads) {
+    if (event.isBot || event.isPrefetch) continue;
+
+    const client = `${event.ipHash ?? event.requestId}|${
+      event.uaHash ?? event.requestId
+    }`;
+    const current = clients.get(client) ?? {
+      bytes: 0,
+      durationSec: null,
+      totalBytes: 0,
+    };
+
+    current.bytes += event.bytes;
+    current.durationSec = current.durationSec ?? event.durationSec;
+    current.totalBytes = current.totalBytes || event.totalBytes;
+    clients.set(client, current);
+  }
+
+  let validDownloads = 0;
+
+  for (const client of clients.values()) {
+    const duration = client.durationSec ?? 0;
+    const totalBytes = client.totalBytes ?? 0;
+
+    const thresholdBytes =
+      duration > 0 && totalBytes > 0
+        ? totalBytes *
+          (Math.min(60, Math.max(1, duration * 0.1)) / duration)
+        : 1_048_576;
+
+    if (client.bytes >= thresholdBytes) validDownloads += 1;
+  }
+
+  return {
+    rawDownloads: downloads.length,
+    validDownloads,
+    uniqueClients: clients.size,
+    bytes: downloads.reduce((sum, event) => sum + event.bytes, 0),
+  };
+}
+
+export function getEpisodeStats(episodeId: string, days = 30): EpisodeStats {
+  const db = getDb();
+  const cutoff = new Date(Date.now() - days * 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+
+  const events = db
+    .prepare(
+      `SELECT requestId, method, bytes, totalBytes, durationSec, ipHash, uaHash, isBot, isPrefetch
+       FROM media_events
+       WHERE episodeId = ? AND day >= ?`,
+    )
+    .all(episodeId, cutoff) as AnalyticsEvent[];
+
+  return { days, ...summarizeMediaEvents(events) };
+}
 
 export function recordMediaEvent(input: MediaEventInput): void {
   const db = getDb();

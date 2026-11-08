@@ -3,6 +3,8 @@ import {
   analyticsRetentionDays,
   classifyUserAgent,
   isPrefetchRequest,
+  summarizeMediaEvents,
+  type AnalyticsEvent,
 } from "./analytics";
 
 describe("classifyUserAgent", () => {
@@ -55,5 +57,58 @@ describe("isPrefetchRequest", () => {
 describe("retención", () => {
   it("conserva los eventos crudos 90 días", () => {
     expect(analyticsRetentionDays).toBe(90);
+  });
+});
+
+function event(overrides: Partial<AnalyticsEvent> = {}): AnalyticsEvent {
+  return {
+    requestId: "request",
+    method: "GET",
+    bytes: 0,
+    totalBytes: 64_044,
+    durationSec: 4,
+    ipHash: "ip-a",
+    uaHash: "ua-a",
+    isBot: 0,
+    isPrefetch: 0,
+    ...overrides,
+  };
+}
+
+describe("summarizeMediaEvents", () => {
+  it("deduplica rangos del mismo cliente en una descarga válida", () => {
+    const stats = summarizeMediaEvents([
+      event({ requestId: "r1", bytes: 20_000 }),
+      event({ requestId: "r2", bytes: 20_000 }),
+    ]);
+
+    expect(stats.rawDownloads).toBe(2);
+    expect(stats.validDownloads).toBe(1);
+    expect(stats.uniqueClients).toBe(1);
+    expect(stats.bytes).toBe(40_000);
+  });
+
+  it("excluye bots, prefetch y HEAD de las descargas válidas", () => {
+    const stats = summarizeMediaEvents([
+      event({ ipHash: "ip-a", bytes: 64_044 }),
+      event({ ipHash: "ip-bot", isBot: 1, bytes: 64_044 }),
+      event({ ipHash: "ip-prefetch", isPrefetch: 1, bytes: 64_044 }),
+      event({ ipHash: "ip-head", method: "HEAD", bytes: 0 }),
+    ]);
+
+    expect(stats.rawDownloads).toBe(3);
+    expect(stats.validDownloads).toBe(1);
+    expect(stats.uniqueClients).toBe(1);
+  });
+
+  it("aplica el umbral de consumo mínimo", () => {
+    const stats = summarizeMediaEvents([
+      event({ ipHash: "ip-short", bytes: 5_000 }),
+      event({ ipHash: "ip-long", bytes: 64_044 }),
+    ]);
+
+    expect(stats.rawDownloads).toBe(2);
+    expect(stats.validDownloads).toBe(1);
+    expect(stats.uniqueClients).toBe(2);
   });
 });

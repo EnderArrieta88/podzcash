@@ -1,5 +1,15 @@
 # Analítica
 
+## Reglas de conteo
+
+- **Solicitud bruta**: cada GET a `/media/audio/...`. Incluye bots, prefetch y rangos. HEAD no cuenta como descarga.
+- **Cliente**: combinación de hash de IP + hash de user-agent. Si falta alguno, se usa el `requestId` para no agrupar clientes desconocidos.
+- **Descarga válida**: un cliente cuenta una sola vez por episodio y día si la suma de bytes de sus rangos supera el umbral de consumo. Se excluyen bots, prefetch y HEAD.
+- **Umbral**: `min(60 s, max(1 s, 10 % de la duración))`; se convierte a bytes con el tamaño total del episodio. Si faltan datos, se usa 1 MB.
+- **Clientes únicos**: clientes no bot/prefetch con al menos una petición, aunque no alcancen el umbral.
+
+La lista de bots se puede ampliar con `ANALYTICS_BOT_PATTERNS` (fragmentos de regex separados por coma).
+
 ## Qué se mide
 
 - **Descarga de servidor**: petición real a `/media/audio/...`, incluyendo peticiones por rango (206) y completas (200).

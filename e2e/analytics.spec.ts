@@ -1,10 +1,19 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import Database from "better-sqlite3";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
 const ANALYTICS_DB = path.join(process.cwd(), ".data-e2e", "analytics.db");
 const AUDIO = "/media/audio/e2e_channel/e2e.wav";
+const ANALYTICS_AUDIO = "/media/audio/e2e_channel/analytics.wav";
+
+async function login(page: Page) {
+  await page.goto("/entrar");
+  await page.fill("#email", "e2e@podzcash.local");
+  await page.fill("#password", "e2e-password-123");
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await page.waitForURL("**/estudio");
+}
 
 function eventFor(userAgent: string) {
   if (!existsSync(ANALYTICS_DB)) return undefined;
@@ -84,4 +93,55 @@ test("marca bots y prefetch sin contarlos como clientes", async ({
   expect(bot.app).toBe("Bot");
   expect(prefetch.isBot).toBe(0);
   expect(prefetch.isPrefetch).toBe(1);
+});
+
+test("el dashboard muestra descargas brutas, válidas y clientes únicos", async ({
+  request,
+  page,
+}) => {
+  const statsAgent = "E2E Stats Client";
+  const shortAgent = "E2E Stats Short";
+  const botAgent = "E2E Stats Bot/1.0 (Googlebot/2.1)";
+  const prefetchAgent = "E2E Stats Prefetch";
+
+  await request.get(ANALYTICS_AUDIO, {
+    headers: {
+      Range: "bytes=0-19999",
+      "user-agent": statsAgent,
+      "x-forwarded-for": "198.51.100.7",
+    },
+  });
+  await request.get(ANALYTICS_AUDIO, {
+    headers: {
+      Range: "bytes=20000-39999",
+      "user-agent": statsAgent,
+      "x-forwarded-for": "198.51.100.7",
+    },
+  });
+  await request.get(ANALYTICS_AUDIO, {
+    headers: {
+      Range: "bytes=0-999",
+      "user-agent": shortAgent,
+      "x-forwarded-for": "198.51.100.8",
+    },
+  });
+  await request.get(ANALYTICS_AUDIO, {
+    headers: { "user-agent": botAgent },
+  });
+  await request.get(ANALYTICS_AUDIO, {
+    headers: { "user-agent": prefetchAgent, purpose: "prefetch" },
+  });
+
+  for (const agent of [statsAgent, shortAgent, botAgent, prefetchAgent]) {
+    await expect
+      .poll(() => eventFor(agent), { timeout: 5_000 })
+      .toBeTruthy();
+  }
+
+  await login(page);
+  await page.goto("/estudio/episodios/e2e_analytics_episode");
+
+  await expect(page.getByTestId("analytics-raw")).toHaveText("5");
+  await expect(page.getByTestId("analytics-valid")).toHaveText("1");
+  await expect(page.getByTestId("analytics-clients")).toHaveText("2");
 });
