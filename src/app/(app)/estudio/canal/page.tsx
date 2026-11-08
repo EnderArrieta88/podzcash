@@ -43,6 +43,12 @@ export default async function ChannelSettingsPage() {
                     ? storage.url(channel.bannerKey)
                     : null,
                   zcashAddress: channel.zcashAddress,
+                  feedLanguage: channel.feedLanguage,
+                  feedCategory: channel.feedCategory,
+                  feedExplicit: channel.feedExplicit,
+                  ownerEmail: channel.ownerEmail,
+                  block: channel.block,
+                  newFeedUrl: channel.newFeedUrl,
                 }
               : null
           }

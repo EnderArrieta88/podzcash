@@ -43,6 +43,25 @@ const es = {
     uploadBanner: "Subir portada",
     bannerHint:
       "JPG, PNG o WebP. Máximo 4 MB. Se muestra arriba del canal, en formato panorámico.",
+    feedSection: "Feed y distribución",
+    feedSectionHint:
+      "Estos datos se usan en el RSS y en Apple Podcasts. Los valores por defecto funcionan para la mayoría de los canales.",
+    feedLanguage: "Idioma del feed",
+    feedLanguageHint: "Código de idioma, por ejemplo es, en o es-AR.",
+    feedCategory: "Categoría en Apple Podcasts",
+    feedCategoryHint: "Apple usa estas categorías para clasificar el podcast.",
+    feedExplicit: "Contenido explícito",
+    feedExplicitHint:
+      "Marca esta opción si el canal suele tener lenguaje explícito.",
+    ownerEmail: "Email del propietario",
+    ownerEmailHint:
+      "Opcional. Se publica en el feed para verificar la propiedad; si queda vacío se usa el email del proyecto.",
+    block: "Bloquear en Apple Podcasts",
+    blockHint:
+      "Oculta el feed de Apple Podcasts. Úsalo solo si el canal debe dejar de distribuirse.",
+    newFeedUrl: "URL nueva del feed",
+    newFeedUrlHint:
+      "Opcional. Solo para migrar el feed; Apple redirige a los suscriptores.",
   },
 };
 
@@ -90,6 +109,25 @@ const en: ChannelSettingsContent = {
     uploadBanner: "Upload cover",
     bannerHint:
       "JPG, PNG or WebP. Max 4 MB. Shown at the top of the channel in widescreen.",
+    feedSection: "Feed and distribution",
+    feedSectionHint:
+      "This data is used in RSS and Apple Podcasts. The defaults work for most channels.",
+    feedLanguage: "Feed language",
+    feedLanguageHint: "Language code, for example es, en or en-US.",
+    feedCategory: "Apple Podcasts category",
+    feedCategoryHint: "Apple uses these categories to classify the podcast.",
+    feedExplicit: "Explicit content",
+    feedExplicitHint:
+      "Check this if the channel often contains explicit language.",
+    ownerEmail: "Owner email",
+    ownerEmailHint:
+      "Optional. Published in the feed for ownership verification; if empty, the project email is used.",
+    block: "Block on Apple Podcasts",
+    blockHint:
+      "Hides the feed from Apple Podcasts. Use it only if the channel must stop being distributed.",
+    newFeedUrl: "New feed URL",
+    newFeedUrlHint:
+      "Optional. Only for feed migrations; Apple redirects subscribers.",
   },
 };
 

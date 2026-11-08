@@ -64,6 +64,17 @@ const audioFile = path.join(mediaRoot, audioPath);
 mkdirSync(path.dirname(audioFile), { recursive: true });
 writeFileSync(audioFile, audio);
 
+const coverPath = "covers/e2e_channel/cover.png";
+const coverFile = path.join(mediaRoot, coverPath);
+mkdirSync(path.dirname(coverFile), { recursive: true });
+writeFileSync(
+  coverFile,
+  Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+    "base64",
+  ),
+);
+
 const db = new Database(databaseFile);
 
 db.prepare(
@@ -95,8 +106,8 @@ db.prepare(
 );
 
 db.prepare(
-  `INSERT INTO "Episode" ("id", "channelId", "title", "slug", "description", "kind", "audioPath", "durationSec", "fileSize", "mimeType", "status", "publishedAt", "playCount", "createdAt", "updatedAt")
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  `INSERT INTO "Episode" ("id", "channelId", "title", "slug", "description", "kind", "audioPath", "coverKey", "durationSec", "fileSize", "mimeType", "status", "publishedAt", "playCount", "createdAt", "updatedAt")
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 ).run(
   episodeId,
   channelId,
@@ -105,6 +116,7 @@ db.prepare(
   "Episodio publicado por el smoke test.",
   "podcast",
   audioPath,
+  coverPath,
   4,
   audio.length,
   "audio/wav",

@@ -38,14 +38,23 @@ export async function saveChannelAction(
     handle: formData.get("handle"),
     bio: formData.get("bio") ?? "",
     zcashAddress: formData.get("zcashAddress") ?? "",
+    feedLanguage: formData.get("feedLanguage") ?? "es",
+    feedCategory: formData.get("feedCategory") ?? "Technology",
+    feedExplicit: formData.get("feedExplicit") === "on",
+    ownerEmail: formData.get("ownerEmail") ?? "",
+    block: formData.get("block") === "on",
+    newFeedUrl: formData.get("newFeedUrl") ?? "",
   });
 
   if (!parsed.success) {
     return { fields: toFieldErrors(parsed.error, locale) };
   }
 
-  const { displayName, handle } = parsed.data;
+  const { displayName, handle, feedLanguage, feedCategory, feedExplicit, block } =
+    parsed.data;
   const bio = parsed.data.bio || null;
+  const ownerEmail = parsed.data.ownerEmail?.trim() || null;
+  const newFeedUrl = parsed.data.newFeedUrl?.trim() || null;
 
   let zcashAddress: string | null = null;
   const addressInput = (parsed.data.zcashAddress ?? "").trim();
@@ -141,6 +150,12 @@ export async function saveChannelAction(
     handle,
     bio,
     zcashAddress,
+    feedLanguage,
+    feedCategory,
+    feedExplicit,
+    ownerEmail,
+    block,
+    newFeedUrl,
     links: linksJson,
     ...(newAvatarKey ? { avatarKey: newAvatarKey } : {}),
     ...(newBannerKey ? { bannerKey: newBannerKey } : {}),
@@ -241,13 +256,20 @@ export async function saveEpisodeAction(
     description: formData.get("description") ?? "",
     kind: formData.get("kind") ?? "podcast",
     tags: formData.get("tags") ?? "",
+    season: formData.get("season") ?? "",
+    episodeNumber: formData.get("episodeNumber") ?? "",
+    episodeType: formData.get("episodeType") ?? "full",
+    explicit: formData.get("explicit") ?? "",
   });
 
   if (!parsed.success) {
     return { fields: toFieldErrors(parsed.error, locale) };
   }
 
-  const { title, description, kind } = parsed.data;
+  const { title, description, kind, season, episodeType, explicit } =
+    parsed.data;
+  const requestedEpisodeNumber =
+    parsed.data.episodeNumber ?? null;
 
   const existing = episodeId
     ? await prisma.episode.findFirst({
@@ -257,6 +279,21 @@ export async function saveEpisodeAction(
 
   if (episodeId && !existing) {
     return { error: errors.episodeNotFound };
+  }
+
+  let episodeNumber: number;
+
+  if (requestedEpisodeNumber != null) {
+    episodeNumber = requestedEpisodeNumber;
+  } else if (existing?.episodeNumber != null) {
+    episodeNumber = existing.episodeNumber;
+  } else {
+    const max = await prisma.episode.aggregate({
+      where: { channelId: channel.id },
+      _max: { episodeNumber: true },
+    });
+
+    episodeNumber = (max._max.episodeNumber ?? 0) + 1;
   }
 
   const newAudioKey = String(formData.get("audioKey") ?? "").trim() || null;
@@ -322,6 +359,10 @@ export async function saveEpisodeAction(
         durationSec,
         fileSize,
         mimeType,
+        season: season ?? null,
+        episodeNumber: episodeNumber ?? null,
+        episodeType,
+        explicit: explicit ?? null,
       };
 
       const episode = existing

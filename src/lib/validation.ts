@@ -99,6 +99,35 @@ export const channelSchema = z.object({
   handle: handleSchema,
   bio: z.string().trim().max(500, "bioMax"),
   zcashAddress: z.string().trim().max(400, "zcashAddressMax").optional(),
+  feedLanguage: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(2, "feedLanguageInvalid")
+    .max(10, "feedLanguageInvalid")
+    .regex(/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/, "feedLanguageInvalid")
+    .default("es"),
+  feedCategory: z
+    .string()
+    .trim()
+    .min(1, "feedCategoryRequired")
+    .max(80, "feedCategoryMax")
+    .default("Technology"),
+  feedExplicit: z.boolean().default(false),
+  ownerEmail: z
+    .string()
+    .trim()
+    .max(254, "ownerEmailInvalid")
+    .email("ownerEmailInvalid")
+    .or(z.literal(""))
+    .optional(),
+  block: z.boolean().default(false),
+  newFeedUrl: z
+    .string()
+    .trim()
+    .url("newFeedUrlInvalid")
+    .or(z.literal(""))
+    .optional(),
 });
 
 export const episodeSchema = z.object({
@@ -115,6 +144,31 @@ export const episodeSchema = z.object({
     message: "kindRequired",
   }),
   tags: z.string().trim().max(240, "tagsMax").optional(),
+  season: z.preprocess(
+    (value) => (value === "" || value == null ? undefined : value),
+    z.coerce.number().int().min(0, "seasonInvalid").max(9999, "seasonInvalid").optional(),
+  ),
+  episodeNumber: z.preprocess(
+    (value) => (value === "" || value == null ? undefined : value),
+    z.coerce
+      .number()
+      .int()
+      .min(1, "episodeNumberInvalid")
+      .max(99999, "episodeNumberInvalid")
+      .optional(),
+  ),
+  episodeType: z
+    .enum(["full", "trailer", "bonus"], { message: "episodeTypeInvalid" })
+    .default("full"),
+  explicit: z.preprocess(
+    (value) => {
+      if (value === "" || value == null) return undefined;
+      if (value === "true") return true;
+      if (value === "false") return false;
+      return value;
+    },
+    z.boolean().optional(),
+  ),
 });
 
 export type EpisodeInput = z.infer<typeof episodeSchema>;

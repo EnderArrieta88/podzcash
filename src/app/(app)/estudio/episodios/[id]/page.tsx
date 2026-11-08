@@ -44,6 +44,10 @@ export default async function EditEpisodePage({
     description: episode.description,
     kind: episode.kind,
     tags: episode.tags.map(({ tag }) => tag.name).join(", "),
+    season: episode.season,
+    episodeNumber: episode.episodeNumber,
+    episodeType: episode.episodeType,
+    explicit: episode.explicit,
     audio: {
       key: episode.audioPath,
       size: episode.fileSize,
