@@ -17,8 +17,10 @@ import {
 } from "lucide-react";
 import { logoutAction } from "@/app/(app)/estudio/actions";
 import { cn } from "@/lib/utils";
+import type { Locale } from "@/lib/i18n/config";
 import type { ShellContent } from "@/lib/i18n/shell";
 import { channelPath, donatePath } from "@/lib/routes";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export type RailUser = {
   name: string;
@@ -35,11 +37,13 @@ export function SideRail({
   collapsed,
   onToggle,
   labels,
+  locale,
 }: {
   user: RailUser;
   collapsed: boolean;
   onToggle: () => void;
   labels: ShellContent;
+  locale: Locale;
 }) {
   const pathname = usePathname();
 
@@ -250,12 +254,24 @@ export function SideRail({
             {collapsed ? <LogIn size={16} /> : labels.enter}
           </Link>
         )}
+
+        {!collapsed && (
+          <div className="mt-1">
+            <LanguageSwitcher locale={locale} label={labels.language} />
+          </div>
+        )}
       </div>
     </aside>
   );
 }
 
-export function MobileNav({ labels }: { labels: ShellContent }) {
+export function MobileNav({
+  labels,
+  user,
+}: {
+  labels: ShellContent;
+  user?: RailUser;
+}) {
   const pathname = usePathname();
 
   const items = [
@@ -287,6 +303,26 @@ export function MobileNav({ labels }: { labels: ShellContent }) {
           </Link>
         );
       })}
+
+      {user ? (
+        <form action={logoutAction} className="ml-auto shrink-0">
+          <button
+            type="submit"
+            title={labels.logout}
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-muted transition-colors hover:text-text"
+          >
+            <LogOut size={14} />
+            {labels.logout}
+          </button>
+        </form>
+      ) : (
+        <Link
+          href="/entrar"
+          className="ml-auto shrink-0 rounded-full border border-border px-3 py-1.5 text-xs text-muted transition-colors hover:text-text"
+        >
+          {labels.enter}
+        </Link>
+      )}
     </nav>
   );
 }

@@ -14,6 +14,8 @@ import { channelPath, donatePath, episodePath, normalizeHandleParam } from "@/li
 import { episodeEmbedCode } from "@/lib/embed";
 import { EmbedCode } from "@/components/embed/embed-code";
 import { absoluteUrl, isoDuration, jsonLd, SITE_URL, socialMetadata } from "@/lib/seo";
+import { listEpisodeComments } from "@/lib/comments";
+import { EpisodeComments } from "@/components/comments/episode-comments";
 
 type PageProps = { params: Promise<{ handle: string; slug: string }> };
 
@@ -87,6 +89,11 @@ export default async function EpisodePage({ params }: PageProps) {
   const isOwner = viewer?.channel?.id === channel.id;
 
   if (episode.status !== "published" && !isOwner) notFound();
+
+  const comments =
+    episode.status === "published"
+      ? await listEpisodeComments(episode.id)
+      : [];
 
   const cover = episode.coverKey ? storage.url(episode.coverKey) : null;
   const audioUrl = storage.url(episode.audioPath);
@@ -213,6 +220,17 @@ export default async function EpisodePage({ params }: PageProps) {
             </span>
           ))}
         </div>
+      )}
+
+      {episode.status === "published" && (
+        <EpisodeComments
+          comments={comments}
+          viewerId={viewer?.id ?? null}
+          isAdmin={viewer?.role === "admin"}
+          episodeId={episode.id}
+          labels={content.comments}
+          locale={locale}
+        />
       )}
 
       <Link

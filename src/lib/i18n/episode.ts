@@ -15,6 +15,18 @@ const es = {
   helpBody: (name: string) =>
     `Apoya a ${name} directo en ZEC, sin intermediarios.`,
   support: "Apoyar con ZEC",
+  comments: {
+    title: "Comentarios",
+    empty: "Sé el primero: contá qué te pareció este episodio.",
+    placeholder: "¿Qué te pareció este episodio?",
+    submit: "Publicar comentario",
+    pending: "Publicando…",
+    loginPrompt: "Entra para comentar este episodio.",
+    loginLink: "Entrar",
+    delete: "Borrar comentario",
+    deleteConfirm: "¿Borrar este comentario?",
+    error: "No se pudo guardar el comentario. Inténtalo otra vez.",
+  },
 };
 
 type EpisodeContent = typeof es;
@@ -34,6 +46,18 @@ const en: EpisodeContent = {
   helpBody: (name: string) =>
     `Support ${name} directly in ZEC, no middlemen.`,
   support: "Support with ZEC",
+  comments: {
+    title: "Comments",
+    empty: "Be the first one: let us know what you thought of this episode.",
+    placeholder: "What did you think of this episode?",
+    submit: "Post comment",
+    pending: "Posting…",
+    loginPrompt: "Sign in to comment on this episode.",
+    loginLink: "Sign in",
+    delete: "Delete comment",
+    deleteConfirm: "Delete this comment?",
+    error: "Could not save the comment. Try again.",
+  },
 };
 
 export const episodeContent: Record<Locale, EpisodeContent> = { es, en };

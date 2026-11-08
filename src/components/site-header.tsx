@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { getCurrentUser } from "@/lib/auth/session";
 import { commonContent } from "@/lib/i18n/common";
 import { getLocale } from "@/lib/i18n/locale";
@@ -52,8 +51,6 @@ export async function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <LanguageSwitcher locale={locale} label={content.language} />
-
           {user ? (
             <Link
               href="/estudio"

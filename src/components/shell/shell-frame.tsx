@@ -55,6 +55,7 @@ export function ShellFrame({
         collapsed={collapsed}
         onToggle={() => setCollapsed((current) => !current)}
         labels={labels}
+        locale={locale}
       />
 
       <div
@@ -63,7 +64,7 @@ export function ShellFrame({
           collapsed ? "lg:pl-20" : "lg:pl-64",
         )}
       >
-        <TopBar user={user} locale={locale} labels={labels} />
+        <TopBar user={user} labels={labels} />
         <main className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6">
           {children}
         </main>
