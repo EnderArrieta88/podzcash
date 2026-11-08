@@ -175,3 +175,38 @@ test("el dashboard muestra descargas brutas, válidas y clientes únicos", async
   await expect(page.getByTestId("analytics-raw")).toHaveText("5");
   expect(dailyStats()).toEqual(first);
 });
+
+test("dashboard completo, retención y exportación CSV", async ({
+  request,
+  page,
+}) => {
+  const progressA = "E2E Progress A";
+  const progressB = "E2E Progress B";
+
+  await request.post("/api/analytics/progress", {
+    headers: { "user-agent": progressA, "x-forwarded-for": "198.51.100.30" },
+    data: { id: "e2e_analytics_episode", position: 2, duration: 4 },
+  });
+  await request.post("/api/analytics/progress", {
+    headers: { "user-agent": progressB, "x-forwarded-for": "198.51.100.31" },
+    data: { id: "e2e_analytics_episode", position: 4, duration: 4 },
+  });
+
+  await login(page);
+  await page.goto("/estudio/episodios/e2e_analytics_episode/analitica");
+
+  await expect(page.getByTestId("summary-raw")).toHaveText("5");
+  await expect(page.getByTestId("summary-valid")).toHaveText("1");
+  await expect(page.getByTestId("summary-clients")).toHaveText("2");
+  await expect(page.getByTestId("retention-50")).toHaveText("2");
+  await expect(page.getByTestId("retention-100")).toHaveText("1");
+
+  const csv = await page.request.get(
+    "/estudio/episodios/e2e_analytics_episode/analitica/export",
+  );
+  expect(csv.status()).toBe(200);
+  expect(csv.headers()["content-type"]).toContain("text/csv");
+  const body = await csv.text();
+  expect(body).toContain("day,rawDownloads");
+  expect(body).toContain("total");
+});

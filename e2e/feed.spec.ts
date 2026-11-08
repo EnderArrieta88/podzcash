@@ -30,7 +30,10 @@ test("el feed real valida y la página declara autodiscovery", async ({
   expect(channel["podcast:locked"]?.["@_owner"]).toBe("hola@podzcash.online");
   expect(channel["itunes:image"]?.["@_href"]).toContain("/media/");
 
-  const item = Array.isArray(channel.item) ? channel.item[0] : channel.item;
+  const items = Array.isArray(channel.item) ? channel.item : [channel.item];
+  const item = items.find(
+    (entry: { title?: string }) => entry.title === "Episodio de prueba E2E",
+  );
   expect(item?.enclosure?.["@_url"]).toContain("/media/audio/");
   expect(item?.["itunes:episode"]).toMatch(/^\d+$/);
   expect(item?.["itunes:episodeType"]).toBe("full");

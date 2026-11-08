@@ -47,6 +47,7 @@ const es = {
     clients: "Clientes únicos",
     bytes: "Bytes servidos",
     empty: "Todavía no hay descargas registradas.",
+    full: "Ver analítica completa",
     hint:
       "Cuenta descargas de servidor con deduplicación por cliente. Las escuchas en apps externas llegarán con la agregación diaria.",
   },
@@ -169,6 +170,7 @@ const en: StudioEpisodesContent = {
     clients: "Unique clients",
     bytes: "Bytes served",
     empty: "No downloads recorded yet.",
+    full: "View full analytics",
     hint:
       "Counts server downloads with per-client deduplication. External app listens will arrive with daily aggregation.",
   },

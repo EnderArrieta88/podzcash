@@ -1,0 +1,78 @@
+import type { Locale } from "./config";
+
+const es = {
+  title: "Analítica del episodio",
+  back: "Volver al episodio",
+  filters: "Filtros",
+  from: "Desde",
+  to: "Hasta",
+  country: "País",
+  device: "Dispositivo",
+  app: "Aplicación",
+  all: "Todos",
+  unknown: "Desconocido",
+  apply: "Aplicar",
+  reset: "Limpiar",
+  export: "Exportar CSV",
+  summary: "Resumen",
+  raw: "Solicitudes",
+  valid: "Descargas válidas",
+  starts: "Inicios",
+  verified: "Escuchas verificadas",
+  clients: "Clientes únicos",
+  bytes: "Bytes servidos",
+  daily: "Descargas por día",
+  countries: "Por país",
+  devices: "Por dispositivo",
+  apps: "Por aplicación",
+  requests: "solicitudes",
+  empty: "Todavía no hay datos para este rango.",
+  retention: "Retención",
+  retentionHint:
+    "Porcentaje de clientes que llegaron a cada punto del episodio. Se completa cuando el reproductor envía progreso.",
+  noRetention: "Todavía no hay datos de progreso.",
+  noBreakdown: "Sin datos en este rango.",
+  dateError: "El rango de fechas no es válido.",
+};
+
+export type StudioAnalyticsContent = typeof es;
+
+const en: StudioAnalyticsContent = {
+  title: "Episode analytics",
+  back: "Back to episode",
+  filters: "Filters",
+  from: "From",
+  to: "To",
+  country: "Country",
+  device: "Device",
+  app: "App",
+  all: "All",
+  unknown: "Unknown",
+  apply: "Apply",
+  reset: "Clear",
+  export: "Export CSV",
+  summary: "Summary",
+  raw: "Requests",
+  valid: "Valid downloads",
+  starts: "Starts",
+  verified: "Verified listens",
+  clients: "Unique clients",
+  bytes: "Bytes served",
+  daily: "Downloads per day",
+  countries: "By country",
+  devices: "By device",
+  apps: "By app",
+  requests: "requests",
+  empty: "No data for this range yet.",
+  retention: "Retention",
+  retentionHint:
+    "Share of clients that reached each point of the episode. It fills in as the player sends progress.",
+  noRetention: "No progress data yet.",
+  noBreakdown: "No data in this range.",
+  dateError: "The date range is not valid.",
+};
+
+export const studioAnalyticsContent: Record<Locale, StudioAnalyticsContent> = {
+  es,
+  en,
+};

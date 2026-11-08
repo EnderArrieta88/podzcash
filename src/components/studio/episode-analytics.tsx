@@ -1,5 +1,6 @@
 import { getEpisodeStats } from "@/lib/analytics";
 import { formatBytes } from "@/lib/format";
+import Link from "next/link";
 import type { StudioEpisodesContent } from "@/lib/i18n/studio-episodes";
 
 export function EpisodeAnalytics({
@@ -16,6 +17,13 @@ export function EpisodeAnalytics({
       <h2 className="font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">
         {labels.title}
       </h2>
+
+      <Link
+        href={`/estudio/episodios/${episodeId}/analitica`}
+        className="mt-2 inline-flex text-sm text-brand transition-colors hover:underline"
+      >
+        {labels.full}
+      </Link>
 
       {stats.rawDownloads === 0 ? (
         <p className="mt-4 text-sm text-muted">{labels.empty}</p>

@@ -161,6 +161,8 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
   Ver [docs/email.md](docs/email.md).
 - **Feed:** campos de canal/episodio, defaults y migración puente. Ver
   [docs/feed.md](docs/feed.md).
+- **Analítica:** descargas, agregados diarios, retención y privacidad. Ver
+  [docs/analytics.md](docs/analytics.md).
 - **Staging:** pendiente de un segundo hosting/base de datos.
 
 ## Seguridad
