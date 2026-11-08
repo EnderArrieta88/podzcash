@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { validateArtwork } from "./artwork";
+import sharp from "sharp";
+import { deriveArtwork, validateArtwork } from "./artwork";
 
 const PNG_SIGNATURE = Buffer.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
@@ -106,5 +107,69 @@ describe("validateArtwork", () => {
       ok: false,
       error: "artworkColor",
     });
+  });
+});
+
+describe("deriveArtwork", () => {
+  it("convierte a JPEG cuadrado sin ampliar imágenes menores de 3000 px", async () => {
+    const source = await sharp({
+      create: {
+        width: 1500,
+        height: 1500,
+        channels: 3,
+        background: { r: 220, g: 40, b: 40 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const result = await deriveArtwork(source);
+    const metadata = await sharp(result.data).metadata();
+
+    expect(result.mimeType).toBe("image/jpeg");
+    expect(result.width).toBe(1500);
+    expect(metadata.format).toBe("jpeg");
+    expect(metadata.width).toBe(1500);
+    expect(metadata.height).toBe(1500);
+    expect(metadata.hasAlpha).toBe(false);
+  });
+
+  it("reduce a 3000×3000 las imágenes más grandes", async () => {
+    const source = await sharp({
+      create: {
+        width: 3500,
+        height: 3500,
+        channels: 3,
+        background: { r: 30, g: 120, b: 220 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const result = await deriveArtwork(source);
+    const metadata = await sharp(result.data).metadata();
+
+    expect(result.width).toBe(3000);
+    expect(metadata.width).toBe(3000);
+    expect(metadata.height).toBe(3000);
+  });
+
+  it("elimina la transparencia al aplanar la imagen", async () => {
+    const source = await sharp({
+      create: {
+        width: 1400,
+        height: 1400,
+        channels: 4,
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const result = await deriveArtwork(source);
+    const metadata = await sharp(result.data).metadata();
+
+    expect(metadata.hasAlpha).toBe(false);
+    expect(metadata.channels).toBe(3);
   });
 });

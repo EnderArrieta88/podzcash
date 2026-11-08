@@ -15,8 +15,12 @@ const nextConfig: NextConfig = {
   output: "standalone",
   // No revelar el framework en las respuestas.
   poweredByHeader: false,
-  // better-sqlite3 es un módulo nativo: no debe pasar por el bundler.
-  serverExternalPackages: ["better-sqlite3", "@prisma/adapter-better-sqlite3"],
+  // better-sqlite3 y sharp son módulos nativos: no deben pasar por el bundler.
+  serverExternalPackages: [
+    "better-sqlite3",
+    "@prisma/adapter-better-sqlite3",
+    "sharp",
+  ],
   // Sin el indicador flotante de Next en desarrollo: estorba en las capturas.
   devIndicators: false,
   experimental: {

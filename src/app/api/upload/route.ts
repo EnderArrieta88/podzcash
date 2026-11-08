@@ -7,7 +7,7 @@ import {
   MAX_AUDIO_BYTES,
   MAX_IMAGE_BYTES,
 } from "@/lib/media-types";
-import { validateArtwork } from "@/lib/artwork";
+import { validateArtwork, deriveArtwork } from "@/lib/artwork";
 import { storage } from "@/lib/storage";
 
 export const runtime = "nodejs";
@@ -84,9 +84,16 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: artwork.error }, { status: 415 });
       }
 
-      await storage.put(key, data);
+      const derived = await deriveArtwork(data);
+      const coverKey = `covers/${user.id}/${randomUUID()}.jpg`;
 
-      return NextResponse.json({ key, size: data.length, mimeType });
+      await storage.put(coverKey, derived.data);
+
+      return NextResponse.json({
+        key: coverKey,
+        size: derived.data.length,
+        mimeType: derived.mimeType,
+      });
     }
 
     const size = await storage.putStream(key, request.body);

@@ -64,11 +64,11 @@ export async function generateMetadata({
 
   const description =
     channel.bio ?? content.metaDescription(channel.displayName);
-  const image = channel.bannerKey
-    ? storage.url(channel.bannerKey)
-    : channel.avatarKey
-      ? storage.url(channel.avatarKey)
-      : null;
+  const latestCover = [...channel.episodes]
+    .reverse()
+    .find((episode) => episode.coverKey)?.coverKey;
+  const imageKey = latestCover ?? channel.avatarKey;
+  const image = imageKey ? storage.url(imageKey) : null;
 
   const social = socialMetadata({
     title: channel.displayName,
@@ -104,11 +104,11 @@ export default async function ChannelPage({ params }: PageProps) {
   const viewer = await getCurrentUser();
   const isOwner = viewer?.channel?.id === channel.id;
 
-  const image = channel.bannerKey
-    ? storage.url(channel.bannerKey)
-    : channel.avatarKey
-      ? storage.url(channel.avatarKey)
-      : null;
+  const latestCover = [...channel.episodes]
+    .reverse()
+    .find((episode) => episode.coverKey)?.coverKey;
+  const imageKey = latestCover ?? channel.avatarKey;
+  const image = imageKey ? storage.url(imageKey) : null;
 
   const seriesLd = {
     "@context": "https://schema.org",
