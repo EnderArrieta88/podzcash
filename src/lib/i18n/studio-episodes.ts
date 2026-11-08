@@ -38,6 +38,16 @@ const es = {
     copy: "Copiar código",
     copied: "Copiado",
   },
+  analytics: {
+    title: "Analítica · últimos 30 días",
+    raw: "Solicitudes",
+    valid: "Descargas válidas",
+    clients: "Clientes únicos",
+    bytes: "Bytes servidos",
+    empty: "Todavía no hay descargas registradas.",
+    hint:
+      "Cuenta descargas de servidor con deduplicación por cliente. Las escuchas en apps externas llegarán con la agregación diaria.",
+  },
   form: {
     audio: "Audio",
     removeAudio: "Quitar audio",
@@ -147,6 +157,16 @@ const en: StudioEpisodesContent = {
     embedHint: "Paste this code on your site or in a blog post.",
     copy: "Copy code",
     copied: "Copied",
+  },
+  analytics: {
+    title: "Analytics · last 30 days",
+    raw: "Requests",
+    valid: "Valid downloads",
+    clients: "Unique clients",
+    bytes: "Bytes served",
+    empty: "No downloads recorded yet.",
+    hint:
+      "Counts server downloads with per-client deduplication. External app listens will arrive with daily aggregation.",
   },
   form: {
     audio: "Audio",

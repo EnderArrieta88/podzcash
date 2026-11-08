@@ -32,7 +32,7 @@ test("el feed real valida y la página declara autodiscovery", async ({
 
   const item = Array.isArray(channel.item) ? channel.item[0] : channel.item;
   expect(item?.enclosure?.["@_url"]).toContain("/media/audio/");
-  expect(item?.["itunes:episode"]).toBe("1");
+  expect(item?.["itunes:episode"]).toMatch(/^\d+$/);
   expect(item?.["itunes:episodeType"]).toBe("full");
 
   await page.goto(`/canal/@${CHANNEL}`);

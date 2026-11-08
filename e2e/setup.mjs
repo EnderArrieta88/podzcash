@@ -64,6 +64,10 @@ const audioFile = path.join(mediaRoot, audioPath);
 mkdirSync(path.dirname(audioFile), { recursive: true });
 writeFileSync(audioFile, audio);
 
+const analyticsAudioPath = "audio/e2e_channel/analytics.wav";
+const analyticsAudioFile = path.join(mediaRoot, analyticsAudioPath);
+writeFileSync(analyticsAudioFile, audio);
+
 const coverPath = "covers/e2e_channel/cover.png";
 const coverFile = path.join(mediaRoot, coverPath);
 mkdirSync(path.dirname(coverFile), { recursive: true });
@@ -122,6 +126,28 @@ db.prepare(
   "audio/wav",
   "published",
   now,
+  0,
+  now,
+  now,
+);
+
+db.prepare(
+  `INSERT INTO "Episode" ("id", "channelId", "title", "slug", "description", "kind", "audioPath", "coverKey", "durationSec", "fileSize", "mimeType", "status", "publishedAt", "playCount", "createdAt", "updatedAt")
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+).run(
+  "e2e_analytics_episode",
+  channelId,
+  "Episodio de analítica E2E",
+  "analitica-e2e",
+  "Episodio en borrador para probar métricas.",
+  "podcast",
+  analyticsAudioPath,
+  null,
+  4,
+  audio.length,
+  "audio/wav",
+  "draft",
+  null,
   0,
   now,
   now,

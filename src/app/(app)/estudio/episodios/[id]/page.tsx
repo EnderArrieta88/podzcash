@@ -7,6 +7,7 @@ import {
   EpisodeForm,
   type EpisodeFormValues,
 } from "@/components/studio/episode-form";
+import { EpisodeAnalytics } from "@/components/studio/episode-analytics";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioEpisodesContent } from "@/lib/i18n/studio-episodes";
 import { episodeEmbedCode } from "@/lib/embed";
@@ -71,6 +72,8 @@ export default async function EditEpisodePage({
       <div className="rounded-xl border border-border bg-surface p-6">
         <EpisodeForm episode={values} labels={content.form} />
       </div>
+
+      <EpisodeAnalytics episodeId={episode.id} labels={content.analytics} />
 
       {episode.status === "published" && (
         <EmbedCode
