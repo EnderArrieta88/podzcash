@@ -29,7 +29,7 @@ const es = {
     zcashAddress: "Dirección Zcash",
     zcashPlaceholder: "u1… · zs1… · t1… · t3…",
     zcashHint:
-      "Activa las donaciones de tu canal. Validamos el checksum al guardar. Ideal una dirección unificada (u1) o Sapling (zs1) para que el monto y el memo queden protegidos.",
+      "Activa las donaciones de tu canal. Solo aceptamos direcciones protegidas: unificada (u1…) o Sapling (zs1…). Validamos el checksum al guardar y rechazamos las transparentes (t1, t3).",
     save: "Guardar cambios",
     create: "Crear canal",
     saving: "Guardando…",
@@ -76,7 +76,7 @@ const en: ChannelSettingsContent = {
     zcashAddress: "Zcash address",
     zcashPlaceholder: "u1… · zs1… · t1… · t3…",
     zcashHint:
-      "Enables donations for your channel. We validate the checksum on save. A unified (u1) or Sapling (zs1) address is best so amount and memo stay shielded.",
+      "Enables donations for your channel. We only accept shielded addresses: unified (u1…) or Sapling (zs1…). We validate the checksum on save and reject transparent addresses (t1, t3).",
     save: "Save changes",
     create: "Create channel",
     saving: "Saving…",

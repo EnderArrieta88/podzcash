@@ -98,7 +98,7 @@ export const channelSchema = z.object({
     .max(60, "channelNameMax"),
   handle: handleSchema,
   bio: z.string().trim().max(500, "bioMax"),
-  zcashAddress: z.string().trim().max(200, "zcashAddressMax").optional(),
+  zcashAddress: z.string().trim().max(400, "zcashAddressMax").optional(),
 });
 
 export const episodeSchema = z.object({

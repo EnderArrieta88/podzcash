@@ -7,11 +7,14 @@ const es = {
   testnet: "Esa dirección es de testnet. Usa una de mainnet.",
   sprout:
     "Las direcciones Sprout (zc…) están obsoletas. Usa una unificada (u1…) o Sapling (zs1…).",
-  transparent:
-    "La dirección transparente no es válida (checksum incorrecto).",
+  transparentForbidden:
+    "No se aceptan direcciones transparentes (t1, t3, tex1): son públicas. Usa una unificada (u1…) o Sapling (zs1…).",
   sapling: "La dirección Sapling no es válida (checksum incorrecto).",
   unified: "La dirección unificada no es válida (checksum incorrecto).",
-  format: "No reconozco el formato. Debe empezar con u1, zs1, t1 o t3.",
+  mixedCase:
+    "La dirección mezcla mayúsculas y minúsculas. Cópiala tal cual la genera tu wallet.",
+  format:
+    "No reconozco el formato. Debe ser una dirección unificada (u1…) o Sapling (zs1…).",
 };
 
 export type AddressMessages = typeof es;
@@ -23,10 +26,14 @@ const en: AddressMessages = {
   testnet: "That is a testnet address. Use a mainnet one.",
   sprout:
     "Sprout addresses (zc…) are deprecated. Use a unified (u1…) or Sapling (zs1…) address.",
-  transparent: "The transparent address is invalid (bad checksum).",
+  transparentForbidden:
+    "Transparent addresses (t1, t3, tex1) are not allowed because they are public. Use a unified (u1…) or Sapling (zs1…) address.",
   sapling: "The Sapling address is invalid (bad checksum).",
   unified: "The unified address is invalid (bad checksum).",
-  format: "Unrecognized format. It must start with u1, zs1, t1 or t3.",
+  mixedCase:
+    "The address mixes uppercase and lowercase. Paste it exactly as your wallet generates it.",
+  format:
+    "Unrecognized format. It must be a unified (u1…) or Sapling (zs1…) address.",
 };
 
 export const addressMessages: Record<Locale, AddressMessages> = { es, en };
