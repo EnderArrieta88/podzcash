@@ -1,18 +1,14 @@
 import Link from "next/link";
 import { Search, ShieldCheck, Upload } from "lucide-react";
 import { MobileNav, type RailUser } from "@/components/shell/side-rail";
-import { LanguageSwitcher } from "@/components/language-switcher";
-import type { Locale } from "@/lib/i18n/config";
 import type { ShellContent } from "@/lib/i18n/shell";
 import { channelPath } from "@/lib/routes";
 
 export function TopBar({
   user,
-  locale,
   labels,
 }: {
   user: RailUser;
-  locale: Locale;
   labels: ShellContent;
 }) {
   return (
@@ -49,8 +45,6 @@ export function TopBar({
         </form>
 
         <div className="ml-auto flex items-center gap-2">
-          <LanguageSwitcher locale={locale} label={labels.language} />
-
           <span className="hidden whitespace-nowrap items-center gap-1.5 rounded-full border border-jade/25 bg-jade-soft px-3 py-1.5 text-[11px] text-jade-bright xl:flex">
             <ShieldCheck size={13} />
             {labels.nonCustodial}
@@ -94,7 +88,7 @@ export function TopBar({
         </div>
       </div>
 
-      <MobileNav labels={labels} />
+      <MobileNav labels={labels} user={user} />
     </header>
   );
 }

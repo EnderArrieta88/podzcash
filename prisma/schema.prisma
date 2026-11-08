@@ -31,6 +31,7 @@ model User {
   invitesCreated Invite[]  @relation("InvitesCreated")
   inviteUsed     Invite?   @relation("InviteUsed")
   reportsResolved Report[] @relation("ReportsResolved")
+  comments       EpisodeComment[]
 }
 
 model Session {
@@ -104,8 +105,9 @@ model Episode {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  channel Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channel Channel        @relation(fields: [channelId], references: [id], onDelete: Cascade)
   tags    EpisodeTag[]
+  comments EpisodeComment[]
 
   @@unique([channelId, slug])
   @@index([status, publishedAt])
@@ -161,4 +163,20 @@ model WaitlistEntry {
   role      String   @default("podcast")
   note      String?
   createdAt DateTime @default(now())
+}
+
+// Comentarios de los usuarios sobre un episodio. Se crea la tabla sola
+// en la primera escritura (SQLite en producción) para no depender del
+// historial de migraciones.
+model EpisodeComment {
+  id        String   @id @default(cuid())
+  episodeId String
+  episode   Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([episodeId, createdAt])
+  @@index([userId])
 }
