@@ -1,0 +1,46 @@
+name: Reiniciar aplicacion
+
+# Operacion manual para reiniciar Passenger sin volver a subir el build.
+# Util cuando la app queda en mal estado tras un deploy.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Escribe "restart" para confirmar'
+        required: true
+        default: ""
+
+concurrency:
+  group: production-restart
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  restart:
+    if: github.ref == 'refs/heads/main' && github.event.inputs.confirm == 'restart'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+
+    steps:
+      - name: Instalar lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: Reiniciar Passenger
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          set -euo pipefail
+          echo "restart $(date -u +%s)" > restart.txt
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          put restart.txt -o "$REMOTE_DIR/tmp/restart.txt"
+          bye
+          EOF
