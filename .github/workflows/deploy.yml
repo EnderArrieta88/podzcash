@@ -53,6 +53,9 @@ jobs:
           cp -a .next/standalone/. deploy/
           cp -a .next/static deploy/.next/static
           if [ -d public ]; then cp -a public deploy/public; fi
+          # Vigía de despliegues: el cron del hosting lo ejecuta cada minuto.
+          mkdir -p deploy/scripts
+          cp scripts/deploy-watch.sh deploy/scripts/deploy-watch.sh
           # Next crea alias de paquetes externos como enlaces simbólicos
           # dentro de .next/node_modules. FTP no puede subirlos, así que los
           # materializamos como carpetas reales antes de transferir.
@@ -284,9 +287,54 @@ jobs:
           fi
 
 
-      - name: Instrucciones
+      - name: Solicitar reinicio y verificar
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
         run: |
-          echo "Build subido."
-          echo "Ahora, en cPanel -> Setup Node.js App:"
-          echo "1) Start App (la app debe estar detenida antes del deploy)."
-          echo "2) Ejecutar el workflow \"Verificar produccion\"."
+          set -euo pipefail
+
+          token="$(date -u +%s)-${RANDOM}"
+          printf '%s\n' "$token" > restart-request.txt
+
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          put restart-request.txt -o "$REMOTE_DIR/tmp/deploy-restart"
+          bye
+          EOF
+
+          # El cron del hosting ejecuta scripts/deploy-watch.sh cada minuto.
+          # Espera a que el vigia confirme el reinicio con el mismo token.
+          restarted=0
+          for i in $(seq 1 36); do
+            rm -f deploy-done.txt
+            if lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF2 > /dev/null 2>&1
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          get "$REMOTE_DIR/tmp/deploy-done" -o deploy-done.txt
+          bye
+          EOF2
+            then
+              if [ -f deploy-done.txt ] && [ "$(tr -d '\r\n' < deploy-done.txt)" = "$token" ]; then
+                restarted=1
+                break
+              fi
+            fi
+            sleep 10
+          done
+
+          if [ "$restarted" != "1" ]; then
+            echo "::error::La app no confirmo el reinicio. Revisa que el cron de deploy-watch.sh este instalado."
+            exit 1
+          fi
+
+          home=$(curl -fsS --max-time 20 https://podzcash.online/)
+          if ! printf '%s' "$home" | grep -q "Escucha a quien"; then
+            echo "::error::El inicio no muestra el contenido nuevo."
+            exit 1
+          fi
+
+          echo "Sitio verificado"
