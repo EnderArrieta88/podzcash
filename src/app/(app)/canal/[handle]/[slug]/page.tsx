@@ -8,9 +8,11 @@ import { formatDate, formatDuration } from "@/lib/format";
 import { storage } from "@/lib/storage";
 import { PlayButton } from "@/components/player/play-button";
 import { DownloadButton } from "@/components/player/download-button";
+import { QueueButton } from "@/components/player/queue-button";
 import { getLocale } from "@/lib/i18n/locale";
 import { episodeContent } from "@/lib/i18n/episode";
 import { offlineAudioContent } from "@/lib/i18n/offline-audio";
+import { playerContent } from "@/lib/i18n/player";
 import { sharedLabels } from "@/lib/i18n/shared";
 import { channelPath, donatePath, episodePath, feedPath, normalizeHandleParam } from "@/lib/routes";
 import { episodeEmbedCode } from "@/lib/embed";
@@ -93,6 +95,7 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
   const locale = await getLocale();
   const content = episodeContent[locale];
   const download = offlineAudioContent[locale];
+  const player = playerContent[locale];
   const kind = sharedLabels[locale];
   const data = await load(handle, slug);
 
@@ -213,6 +216,18 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
 
           {episode.status === "published" && (
             <div className="mt-4 flex flex-wrap items-center gap-3">
+              <QueueButton
+                track={{
+                  id: episode.id,
+                  title: episode.title,
+                  channelName: channel.displayName,
+                  channelHandle: channel.handle,
+                  coverUrl: cover,
+                  src: audioUrl,
+                  durationSec: episode.durationSec,
+                }}
+                labels={player}
+              />
               <DownloadButton
                 download={{
                   id: episode.id,
