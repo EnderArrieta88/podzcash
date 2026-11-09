@@ -148,7 +148,10 @@ export function AccountMenu({
           </div>
 
           <div className="border-t border-border pt-1">
-            <form action={logoutAction}>
+            <form
+              action={logoutAction}
+              onClick={(event) => event.stopPropagation()}
+            >
               <button
                 type="submit"
                 role="menuitem"
