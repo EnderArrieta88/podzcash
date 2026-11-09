@@ -1,0 +1,41 @@
+name: Diagnostico build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+
+    steps:
+      - name: Instalar lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: Listar alias y mover log
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          set -uo pipefail
+
+          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF || true
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          mv "$REMOTE_DIR/stderr.log" "$REMOTE_DIR/tmp/diag.log"
+          cls -1 "$REMOTE_DIR/.next/node_modules"
+          echo "--- @prisma"
+          cls -1 "$REMOTE_DIR/.next/node_modules/@prisma"
+          echo "--- adapter alias"
+          cls -1 "$REMOTE_DIR/.next/node_modules/@prisma/adapter-better-sqlite3-da039dd0f7229020"
+          echo "--- better-sqlite3 alias"
+          cls -1 "$REMOTE_DIR/.next/node_modules/better-sqlite3-90e2652d1716b047"
+          bye
+          EOF
