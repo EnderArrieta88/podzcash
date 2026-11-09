@@ -203,6 +203,8 @@ hosting puede terminar las instancias huérfanas y decir cuántas había.
   [docs/analytics.md](docs/analytics.md).
 - **Comentarios:** paginación, reportes, cola de moderación y avisos. Ver
   [docs/comentarios.md](docs/comentarios.md).
+- **Rate limiting:** persistente en SQLite, claves hasheadas y métricas. Ver
+  [docs/rate-limit.md](docs/rate-limit.md).
 - **PWA:** app instalable, service worker, pantalla offline y descargas de audio.
   Ver [docs/pwa.md](docs/pwa.md).
 - **App nativa / CarPlay:** ADR con opciones, costes y recomendación. Ver

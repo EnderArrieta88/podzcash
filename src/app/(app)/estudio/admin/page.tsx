@@ -4,6 +4,7 @@ import { AlertTriangle, Flag, HardDrive, ShieldAlert, UserPlus } from "lucide-re
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
 import { findOrphans } from "@/lib/media-cleanup";
+import { getRateLimitMetrics } from "@/lib/rate-limit";
 import { formatBytes, formatDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
 import { adminContent } from "@/lib/i18n/admin";
@@ -43,6 +44,7 @@ export default async function AdminPage({
     getLocale(),
   ]);
   const content = adminContent[locale];
+  const rateLimit = getRateLimitMetrics();
   const reasonLabels = new Map(
     reportContent[locale].reasons.map((reason) => [reason.value, reason.label]),
   );
@@ -159,6 +161,12 @@ export default async function AdminPage({
     { label: content.stats.published, value: publishedCount },
     { label: content.stats.openReports, value: reports.length },
     { label: content.stats.waitlist, value: waiting },
+    {
+      label: rateLimit.persistent
+        ? content.stats.rateLimited
+        : content.stats.rateLimitedMemory,
+      value: rateLimit.blockedToday,
+    },
   ];
 
   return (
