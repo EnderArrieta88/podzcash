@@ -29,6 +29,7 @@ jobs:
           lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF || true
           set ssl:verify-certificate no
           set ftp:ssl-allow yes
-          mv "$REMOTE_DIR/stderr.log" "$REMOTE_DIR/tmp/diag.txt"
+          mv "$REMOTE_DIR/tmp/diag.log" "$REMOTE_DIR/tmp/diag.txt"
+          mv "$REMOTE_DIR/stderr.log" "$REMOTE_DIR/tmp/diag2.txt"
           bye
           EOF
