@@ -150,20 +150,36 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
 `FTP_PASSWORD`, `FTP_SERVER_DIR`). El deploy excluye `prisma/dev.db`, `.media`,
 `.data`, `.env` y `.htaccess`; los datos de producción no se versionan.
 
-### Reinicios y procesos huérfanos
+### Deploy automático con vigía
 
-El plan del hosting limita la cuenta a **100 procesos/hilos** y cada instancia
-de `next-server` usa unos 11. Passenger puede dejar viva la instancia anterior
-al reiniciar con `tmp/restart.txt`; si se encadenan deploys, las instancias
-huérfanas consumen el límite y la app deja de arrancar
-(`fork: Resource temporarily unavailable`).
+El hosting no permite SSH desde fuera, así que el reinicio se hace con un
+**cron vigía** instalado una sola vez:
 
-Antes de cada deploy:
+```
+* * * * * /bin/bash /home/hydeonemagazine/podzcash-app/scripts/deploy-watch.sh >/dev/null 2>&1
+```
 
-1. cPanel → **Setup Node.js App** → **Stop App**.
-2. Ejecutar el deploy (solo sube el build; ya no reinicia ni verifica).
-3. **Start App**.
-4. Ejecutar el workflow **Verificar produccion** de GitHub Actions.
+Flujo:
+
+1. El deploy sube el build y verifica su integridad.
+2. Deja `tmp/deploy-restart` con un token único.
+3. El cron (cada minuto) ejecuta `scripts/deploy-watch.sh`:
+   - mata las instancias de `next-server` de la app,
+   - despierta a Passenger,
+   - escribe `tmp/deploy-done` con el token.
+4. El deploy espera ese token y verifica home.
+
+Si el cron no está instalado, el deploy falla con un mensaje explícito. El
+script se sube con cada deploy (`scripts/deploy-watch.sh`).
+
+El plan limita la cuenta a **100 procesos/hilos** y cada `next-server` usa
+unos 11. El vigía deja una sola instancia; además, `UV_THREADPOOL_SIZE=2` en
+las variables de entorno reduce hilos por instancia.
+
+### Reinicio manual (alternativa)
+
+Sin cron, el orden es: cPanel → Setup Node.js App → **Stop App**, ejecutar el
+deploy, **Start App** y correr el workflow **Verificar produccion**.
 
 El reinicio automático con `tmp/restart.txt` se retiró a propósito: era lo que
 dejaba instancias huérfanas.
