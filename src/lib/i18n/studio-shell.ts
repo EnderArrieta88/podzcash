@@ -6,6 +6,7 @@ const es = {
   nav: {
     overview: "Resumen",
     episodes: "Episodios",
+    comments: "Comentarios",
     channel: "Mi canal",
     distribution: "Distribución",
     account: "Cuenta",
@@ -45,6 +46,7 @@ const en: StudioShellContent = {
   nav: {
     overview: "Overview",
     episodes: "Episodes",
+    comments: "Comments",
     channel: "My channel",
     distribution: "Distribution",
     account: "Account",

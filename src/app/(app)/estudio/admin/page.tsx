@@ -8,6 +8,7 @@ import { formatBytes, formatDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
 import { adminContent } from "@/lib/i18n/admin";
 import { reportContent } from "@/lib/i18n/report";
+import { commentReportContent } from "@/lib/i18n/comment-report";
 import { waitlistContent } from "@/lib/i18n/waitlist";
 import { countWaitlist, listWaitlist } from "@/lib/waitlist";
 import { episodePath } from "@/lib/routes";
@@ -45,6 +46,12 @@ export default async function AdminPage({
   const reasonLabels = new Map(
     reportContent[locale].reasons.map((reason) => [reason.value, reason.label]),
   );
+
+  for (const reason of commentReportContent[locale].reasons) {
+    if (!reasonLabels.has(reason.value)) {
+      reasonLabels.set(reason.value, reason.label);
+    }
+  }
   const waitlistRoleLabels: Record<string, string> =
     waitlistContent[locale].roles;
 
@@ -102,6 +109,48 @@ export default async function AdminPage({
         },
       })
     ).map((episode) => [episode.id, episode]),
+  );
+
+  const commentIds = reports
+    .filter((report) => report.targetType === "comment")
+    .map((report) => report.targetId);
+
+  const reportedComments = new Map(
+    (
+      await prisma.episodeComment.findMany({
+        where: { id: { in: commentIds } },
+        select: {
+          id: true,
+          body: true,
+          user: { select: { name: true } },
+          episode: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              channel: { select: { handle: true } },
+            },
+          },
+        },
+      })
+    ).map((comment) => [comment.id, comment]),
+  );
+
+  const reporterIds = [
+    ...new Set(
+      reports
+        .map((report) => report.reporterId)
+        .filter((value): value is string => Boolean(value)),
+    ),
+  ];
+
+  const reporters = new Map(
+    (
+      await prisma.user.findMany({
+        where: { id: { in: reporterIds } },
+        select: { id: true, name: true },
+      })
+    ).map((user) => [user.id, user.name]),
   );
 
   const stats = [
@@ -224,34 +273,64 @@ export default async function AdminPage({
         ) : (
           <ul className="divide-y divide-border">
             {reports.map((report) => {
-              const episode =
+              const episodeReport =
                 report.targetType === "episode"
                   ? reportedEpisodes.get(report.targetId)
                   : undefined;
+              const comment =
+                report.targetType === "comment"
+                  ? reportedComments.get(report.targetId)
+                  : undefined;
+              const target = episodeReport ?? comment?.episode;
+              const reporter = report.reporterId
+                ? reporters.get(report.reporterId)
+                : null;
 
               return (
                 <li key={report.id} className="px-5 py-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-sm font-medium">
-                        {episode
-                          ? episode.title
-                          : content.reports.unavailable}
+                        {comment
+                          ? content.reports.commentBy(comment.user.name)
+                          : target
+                            ? target.title
+                            : content.reports.unavailable}
                       </p>
                       <p className="mt-0.5 font-mono text-[11px] text-subtle">
+                        {comment
+                          ? target
+                            ? target.title
+                            : content.reports.commentDeleted
+                          : null}
+                        {comment && target ? " · " : null}
                         {reasonLabels.get(report.reason) ?? report.reason} ·{" "}
                         {formatDate(report.createdAt, locale)}
                       </p>
+
+                      {comment && (
+                        <p className="mt-2 max-w-xl whitespace-pre-line text-sm text-muted">
+                          {comment.body}
+                        </p>
+                      )}
+
                       {report.details && (
                         <p className="mt-2 max-w-xl text-sm text-muted">
                           {report.details}
                         </p>
                       )}
-                      {episode && (
+
+                      {reporter && (
+                        <p className="mt-1 font-mono text-[11px] text-subtle">
+                          {content.reports.reportedBy(reporter)}
+                        </p>
+                      )}
+
+                      {target && (
                         <Link
                           href={episodePath(
-                            episode.channel.handle,
-                            episode.slug,
+                            target.channel.handle,
+                            target.slug,
                           )}
                           className="mt-1 inline-block text-xs text-brand hover:underline"
                         >
@@ -261,7 +340,7 @@ export default async function AdminPage({
                     </div>
 
                     <div className="flex shrink-0 gap-2">
-                      {episode && (
+                      {(episodeReport || comment) && (
                         <form action={resolveReportAction}>
                           <input type="hidden" name="id" value={report.id} />
                           <input type="hidden" name="decision" value="hide" />
@@ -269,7 +348,9 @@ export default async function AdminPage({
                             type="submit"
                             className="inline-flex h-8 items-center rounded-lg border border-danger/40 bg-danger/10 px-3 text-xs text-danger transition-colors hover:bg-danger/20"
                           >
-                            {content.reports.hide}
+                            {comment
+                              ? content.reports.deleteComment
+                              : content.reports.hide}
                           </button>
                         </form>
                       )}

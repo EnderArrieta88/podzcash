@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import {
   inviteEmailContent,
+  commentEmailContent,
   resetEmailContent,
   verificationEmailContent,
   type EmailCopy,
@@ -244,6 +245,49 @@ export async function sendWaitlistNotificationEmail({
   return sendEmail({
     to,
     subject: "Nueva solicitud en la lista de espera",
+    text,
+    html,
+  });
+}
+
+export async function sendCommentNotificationEmail({
+  to,
+  authorName,
+  episodeTitle,
+  body,
+  url,
+  locale,
+}: {
+  to: string;
+  authorName: string;
+  episodeTitle: string;
+  body: string;
+  url: string;
+  locale: Locale;
+}): Promise<boolean> {
+  if (!isEmailConfigured()) return false;
+
+  const content = commentEmailContent[locale];
+  const preview = body.length > 280 ? `${body.slice(0, 280)}…` : body;
+  const text = `${content.intro(authorName, episodeTitle)}\n\n${preview}\n\n${url}\n\n${content.manage}\n\n${content.footer}`;
+  const html = `<!doctype html>
+<html lang="${locale}">
+  <body style="margin:0;padding:24px;background:#0b0d11;color:#e6e7ec;font-family:Arial,sans-serif">
+    <div style="max-width:560px;margin:0 auto;background:#14171d;border:1px solid #2a2f39;border-radius:16px;padding:28px">
+      <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#c7ccd6">${escapeHtml(content.intro(authorName, episodeTitle))}</p>
+      <blockquote style="margin:0 0 24px;padding:12px 16px;border-left:3px solid #f4b728;background:#0f1217;border-radius:8px;font-size:14px;line-height:1.6;color:#e6e7ec">${escapeHtml(preview)}</blockquote>
+      <p style="margin:0 0 24px">
+        <a href="${escapeHtml(url)}" style="display:inline-block;background:#f4b728;color:#17130a;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:10px">${escapeHtml(content.button)}</a>
+      </p>
+      <p style="margin:0;font-size:12px;line-height:1.6;color:#9aa3b2">${escapeHtml(content.manage)}</p>
+      <p style="margin:24px 0 0;font-size:11px;color:#6b7484">${escapeHtml(content.footer)}</p>
+    </div>
+  </body>
+</html>`;
+
+  return sendEmail({
+    to,
+    subject: content.subject(episodeTitle),
     text,
     html,
   });

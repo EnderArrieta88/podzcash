@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { requireUser } from "@/lib/auth/guards";
+import { countUnreadChannelComments } from "@/lib/comments";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioShellContent } from "@/lib/i18n/studio-shell";
 import { channelPath } from "@/lib/routes";
@@ -13,6 +14,9 @@ export default async function StudioLayout({
 }) {
   const [user, locale] = await Promise.all([requireUser(), getLocale()]);
   const content = studioShellContent[locale];
+  const unreadComments = user.channel
+    ? await countUnreadChannelComments(user.channel)
+    : 0;
 
   return (
     <div className="mx-auto w-full max-w-5xl">
@@ -38,7 +42,11 @@ export default async function StudioLayout({
         )}
       </div>
 
-      <StudioNav isAdmin={user.role === "admin"} labels={content.nav} />
+      <StudioNav
+        isAdmin={user.role === "admin"}
+        unreadComments={unreadComments}
+        labels={content.nav}
+      />
 
       <div className="mt-6">{children}</div>
     </div>

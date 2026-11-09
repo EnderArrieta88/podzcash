@@ -25,6 +25,11 @@ const es = {
     loginLink: "Entrar",
     delete: "Borrar comentario",
     deleteConfirm: "¿Borrar este comentario?",
+    report: "Reportar",
+    newest: "Más recientes",
+    oldest: "Más antiguos",
+    pagination: (page: number, total: number) =>
+      `Página ${page} de ${total}`,
     error: "No se pudo guardar el comentario. Inténtalo otra vez.",
   },
 };
@@ -56,6 +61,10 @@ const en: EpisodeContent = {
     loginLink: "Sign in",
     delete: "Delete comment",
     deleteConfirm: "Delete this comment?",
+    report: "Report",
+    newest: "Newest",
+    oldest: "Oldest",
+    pagination: (page: number, total: number) => `Page ${page} of ${total}`,
     error: "Could not save the comment. Try again.",
   },
 };

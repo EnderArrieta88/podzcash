@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   ListMusic,
   LogOut,
+  MessageSquare,
   Radio,
   Rss,
   Ticket,
@@ -54,6 +55,11 @@ export function AccountMenu({
   const studioItems = [
     { href: "/estudio", label: studio.nav.overview, icon: LayoutDashboard },
     { href: "/estudio/episodios", label: studio.nav.episodes, icon: ListMusic },
+    {
+      href: "/estudio/comentarios",
+      label: studio.nav.comments,
+      icon: MessageSquare,
+    },
     { href: "/estudio/canal", label: studio.nav.channel, icon: Radio },
     { href: "/estudio/distribucion", label: studio.nav.distribution, icon: Rss },
     ...(user.role === "admin"

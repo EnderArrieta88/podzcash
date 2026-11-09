@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
 import { indexEpisode } from "@/lib/search-index";
 import { deleteOrphans } from "@/lib/media-cleanup";
+import { deleteEpisodeComment } from "@/lib/comments";
 import { channelPath, episodePath } from "@/lib/routes";
 import { formatInviteCode, generateInviteCode } from "@/lib/links";
 import { getSiteOrigin } from "@/lib/origin";
@@ -77,6 +78,30 @@ export async function resolveReportAction(formData: FormData): Promise<void> {
       revalidatePath(channelPath(episode.channel.handle));
       revalidatePath(episodePath(episode.channel.handle, episode.slug));
     }
+  }
+
+  if (decision === "hide" && report.targetType === "comment") {
+    const comment = await prisma.episodeComment
+      .findUnique({
+        where: { id: report.targetId },
+        select: {
+          episode: {
+            select: { slug: true, channel: { select: { handle: true } } },
+          },
+        },
+      })
+      .catch(() => null);
+
+    // Borra el comentario y cierra sus reportes abiertos.
+    await deleteEpisodeComment(report.targetId, admin.id);
+
+    if (comment) {
+      revalidatePath(
+        episodePath(comment.episode.channel.handle, comment.episode.slug),
+      );
+    }
+
+    revalidatePath("/estudio/comentarios");
   }
 
   await prisma.report.update({

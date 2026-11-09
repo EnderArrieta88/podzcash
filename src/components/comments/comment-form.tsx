@@ -8,12 +8,19 @@ import { Textarea } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { episodeContent } from "@/lib/i18n/episode";
 
+/**
+ * Solo recibe textos: el objeto completo de etiquetas incluye funciones
+ * (paginación) que no se pueden serializar hacia un componente cliente.
+ */
 export function CommentForm({
   episodeId,
   labels,
 }: {
   episodeId: string;
-  labels: typeof episodeContent["es"]["comments"];
+  labels: Pick<
+    typeof episodeContent["es"]["comments"],
+    "placeholder" | "submit" | "pending"
+  >;
 }) {
   const [state, action] = useActionState(addEpisodeCommentAction, null);
 
