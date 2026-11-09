@@ -1,0 +1,56 @@
+name: Probar SSH
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Preparar clave
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keygen -l -f ~/.ssh/deploy_key
+
+      - name: Conectar y revisar
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o ConnectTimeout=20 \
+            -o BatchMode=yes \
+            "$SSH_USER@$SSH_HOST" 'bash -s' <<'EOF'
+          set +e
+          echo "user=$(whoami) host=$(hostname) pwd=$(pwd)"
+
+          echo "--- procesos next-server"
+          pgrep -af '[n]ext-server'
+
+          echo "--- detalle"
+          ps -u "$(whoami)" -o pid,etime,nlwp,args | grep -E '[n]ext-server|[n]ode' | grep -v grep
+
+          echo "--- cwd de cada instancia"
+          for pid in $(pgrep -f '[n]ext-server'); do
+            echo "PID $pid -> $(readlink /proc/$pid/cwd)"
+          done
+
+          echo "--- disco"
+          df -h ~ | tail -1
+          df -i ~ | tail -1
+
+          echo "--- tmp de la app"
+          ls -la ~/podzcash.online/tmp 2>/dev/null | head
+          EOF
