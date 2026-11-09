@@ -1,0 +1,39 @@
+name: Verificar produccion
+
+# Comprueba el sitio ya arrancado. Se ejecuta a mano despues de
+# "Stop App" -> deploy -> "Start App" en cPanel.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Health
+        run: |
+          set -euo pipefail
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://podzcash.online/api/health)
+          echo "health=$code"
+          [ "$code" = "200" ]
+
+      - name: Home, proyecto y assets
+        run: |
+          set -euo pipefail
+
+          home=$(curl -fsS --max-time 25 https://podzcash.online/)
+          printf '%s' "$home" | grep -q "Escucha a quien"
+
+          code=$(curl -s --max-time 20 -o /dev/null -w '%{http_code}' https://podzcash.online/proyecto)
+          echo "proyecto=$code"
+          [ "$code" = "200" ]
+
+          code=$(curl -s --max-time 20 -o /dev/null -w '%{http_code}' https://podzcash.online/manifest.webmanifest)
+          echo "manifest=$code"
+          [ "$code" = "200" ]
+
+          echo "Sitio verificado"

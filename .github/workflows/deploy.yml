@@ -283,91 +283,10 @@ jobs:
             echo "::warning::No se pudo listar .next/node_modules por FTP; se omite la verificacion de alias."
           fi
 
-      # Passenger reinicia la app cuando cambia tmp/restart.txt.
-      # Antes de desplegar, detener la app desde cPanel (Setup Node.js App →
-      # Stop App) evita que queden instancias huérfanas consumiendo el límite
-      # de procesos/hilos de la cuenta.
-      - name: Reiniciar la aplicación
-        env:
-          FTP_HOST: ${{ secrets.FTP_SERVER }}
-          FTP_USER: ${{ secrets.FTP_USERNAME }}
-          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
-          REMOTE_DIR: ${{ secrets.FTP_SERVER_DIR }}
+
+      - name: Instrucciones
         run: |
-          echo "restart $(date -u +%s)" > restart.txt
-          lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF
-          set ssl:verify-certificate no
-          set ftp:ssl-allow yes
-          put restart.txt -o "$REMOTE_DIR/tmp/restart.txt"
-          bye
-          EOF
-
-      - name: Verificar el sitio
-        run: |
-          # Passenger y el hosting tardan en reflejar el build nuevo.
-          healthy=0
-          for i in $(seq 1 40); do
-            if curl -fsS --max-time 15 https://podzcash.online/api/health > /dev/null 2>&1; then
-              healthy=1
-              break
-            fi
-            sleep 5
-          done
-          if [ "$healthy" != "1" ]; then
-            echo "::error::La aplicacion no responde en /api/health."
-            exit 1
-          fi
-
-          # Si el destino FTP fuera el directorio publico, estos archivos
-          # estarian accesibles: se aborta el deploy con alerta. Durante el
-          # reinicio de Passenger el sitio puede devolver 502/503: se reintenta.
-          code="000"
-          for attempt in $(seq 1 12); do
-            code=$(curl -s --max-time 15 -o /dev/null -w '%{http_code}' https://podzcash.online/server.js)
-            case "$code" in
-              404|200) break ;;
-            esac
-            sleep 10
-          done
-          if [ "$code" != "404" ]; then
-            echo "::error::Los archivos internos estan expuestos ($code). Revisa FTP_SERVER_DIR."
-            exit 1
-          fi
-
-          # Verificar cada archivo del build da falsos negativos: el cache del
-          # hosting responde 404 mientras propaga. Se comprueba que las paginas
-          # nuevas se sirvan y que sus assets respondan.
-          home=$(curl -fsS --max-time 20 https://podzcash.online/)
-          if ! printf '%s' "$home" | grep -q "Escucha a quien"; then
-            echo "::error::El inicio no muestra el contenido nuevo."
-            exit 1
-          fi
-
-          proyecto=$(curl -s --max-time 20 -o /dev/null -w '%{http_code}' https://podzcash.online/proyecto)
-          if [ "$proyecto" != "200" ]; then
-            echo "::error::/proyecto responde $proyecto."
-            exit 1
-          fi
-
-          assets=$(printf '%s' "$home" | grep -oE '/_next/static/[^"]+\.(css|js)' | head -n 4)
-          assets="$assets /landing/app.jpg"
-
-          missing=0
-          for url in $assets; do
-            status="000"
-            for attempt in $(seq 1 8); do
-              status=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' "https://podzcash.online$url")
-              [ "$status" = "200" ] && break
-              sleep 10
-            done
-            if [ "$status" != "200" ]; then
-              echo "::error::Falta $url ($status)"
-              missing=$((missing + 1))
-            fi
-          done
-          if [ "$missing" -ne 0 ]; then
-            echo "::error::$missing recursos del inicio no se sirven."
-            exit 1
-          fi
-
-          echo "Sitio verificado"
+          echo "Build subido."
+          echo "Ahora, en cPanel -> Setup Node.js App:"
+          echo "1) Start App (la app debe estar detenida antes del deploy)."
+          echo "2) Ejecutar el workflow \"Verificar produccion\"."
