@@ -43,9 +43,8 @@ describe("service worker", () => {
     expect(source).toContain("/icons/maskable-512.png");
   });
 
-  it("nunca cachea API, media ni embed", () => {
+  it("nunca cachea API ni embed", () => {
     expect(source).toContain('"/api/"');
-    expect(source).toContain('"/media/"');
     expect(source).toContain('"/embed/"');
   });
 

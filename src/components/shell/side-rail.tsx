@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Compass,
+  Download,
   LayoutDashboard,
   ListMusic,
   LogIn,
@@ -47,6 +48,12 @@ export function SideRail({
   const items = [
     { href: "/", label: labels.nav.home, icon: LayoutDashboard, exact: true },
     { href: "/explorar", label: labels.nav.explore, icon: Compass, exact: false },
+    {
+      href: "/descargas",
+      label: labels.nav.downloads,
+      icon: Download,
+      exact: true,
+    },
     { href: "/estudio", label: labels.nav.studio, icon: ListMusic, exact: false },
     ...(user?.channel
       ? [

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  Download,
   LayoutDashboard,
   ListMusic,
   LogOut,
@@ -135,6 +136,14 @@ export function AccountMenu({
             >
               <UserRound size={15} />
               {labels.myAccount}
+            </Link>
+            <Link
+              href="/descargas"
+              role="menuitem"
+              className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted transition-colors hover:bg-surface-3 hover:text-text"
+            >
+              <Download size={15} />
+              {labels.nav.downloads}
             </Link>
           </div>
 

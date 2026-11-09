@@ -26,16 +26,38 @@ pantalla útil cuando no hay conexión. No hay app nativa todavía.
 |---|---|
 | Navegaciones (HTML) | network-first; sin red responde `/offline`. El HTML **no** se cachea. |
 | `/_next/static/`, `/icons/`, `/landing/` | cache-first con actualización en segundo plano. |
-| `/api/`, `/media/`, `/embed/` | siempre red. Nunca se cachean. |
-| `/offline`, manifest e iconos | precacheados en la instalación. |
+| `/media/audio/...` | cache-first si el episodio está descargado (incluye rangos 206); si no, red. |
+| `/api/`, `/embed/` | siempre red. Nunca se cachean. |
+| `/offline`, manifest, iconos | precacheados en la instalación, junto con los chunks de la pantalla offline. |
 
 Decisiones:
 
 - **No se cachea HTML** porque incluye el estado de sesión y contenido
   personalizado (estudio, canal, menú de cuenta). Servir una copia vieja podría
   mostrar una sesión cerrada o datos de otra visita.
-- El audio (`/media`) y la analítica (`/api`) siempre van a la red: el modo
-  offline de audio es parte de #64.
+- El audio descargado sí se cachea: es contenido público y el usuario lo pidió
+  explícitamente. El streaming normal (sin descarga) sigue yendo a la red.
+
+## Descargas offline
+
+- Cada episodio publicado tiene un botón **Descargar** con progreso. El audio
+  completo se guarda en Cache Storage (`podzcash-audio-v1`) y los metadatos en
+  `localStorage` (`podzcash:downloads`).
+- **Cuota por dispositivo:** `NEXT_PUBLIC_OFFLINE_AUDIO_QUOTA_MB` (1024 MB por
+  defecto). Se compila en el bundle: cambiarla requiere rebuild. Se valida antes
+  de descargar, con el `Content-Length` real y con `navigator.storage.estimate()`;
+  cerca del 85 % se muestra un aviso.
+- **Sin duplicados:** un guard por episodio en memoria, la comprobación de la
+  caché y el botón deshabilitado mientras descarga.
+- **`/descargas`:** lista las descargas con espacio usado, reproducir, borrar
+  una o todas. Enlaces en el menú lateral, el menú móvil y el menú de cuenta.
+- **Pantalla `/offline`:** además del aviso, lista las descargas y las reproduce.
+  Al instalar el service worker se precachean su HTML y sus chunks, así que
+  funciona en un arranque en frío sin red.
+- **Rangos:** el service worker responde `206 Partial Content` desde la caché
+  para que el reproductor pueda buscar dentro del episodio sin conexión.
+- Las descargas sobreviven a actualizaciones del service worker: la caché de
+  audio es independiente y no se borra con el versionado del shell.
 - El shell offline es la pantalla `/offline` más los assets estáticos
   precacheados.
 
@@ -60,7 +82,6 @@ Decisiones:
 
 ## Alcance pendiente (épica #62)
 
-- #64: descarga de audio para escucha offline.
 - #65: cola de reproducción y sleep timer.
 - #66: sincronización de posición entre dispositivos.
 - #67: spike de app nativa y CarPlay/Android Auto.
