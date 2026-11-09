@@ -12,6 +12,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { activeHref } from "@/lib/nav";
 import type { StudioShellContent } from "@/lib/i18n/studio-shell";
 
 type NavItem = {
@@ -54,17 +55,18 @@ export function StudioNav({
       ]
     : baseItems;
 
+  const activeItem = activeHref(pathname, links);
+
   return (
     <nav className="hidden items-center gap-1 overflow-x-auto border-b border-border lg:flex">
       {links.map((item) => {
-        const active = item.exact
-          ? pathname === item.href
-          : pathname.startsWith(item.href);
+        const active = item.href === activeItem;
 
         return (
           <Link
             key={item.href}
             href={item.href}
+            aria-current={active ? "page" : undefined}
             className={cn(
               "relative flex shrink-0 items-center gap-2 px-3 py-2.5 text-sm transition-colors",
               active
