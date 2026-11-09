@@ -10,6 +10,8 @@ const es = {
     published: "Episodios publicados",
     openReports: "Reportes abiertos",
     waitlist: "En espera",
+    rateLimited: "Límites alcanzados hoy",
+    rateLimitedMemory: "Límites hoy (memoria)",
   },
   waitlist: {
     title: "Lista de espera",
@@ -84,6 +86,8 @@ const en: AdminContent = {
     published: "Published episodes",
     openReports: "Open reports",
     waitlist: "Waiting",
+    rateLimited: "Rate limits hit today",
+    rateLimitedMemory: "Rate limits today (memory)",
   },
   waitlist: {
     title: "Waitlist",
