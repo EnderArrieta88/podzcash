@@ -40,15 +40,6 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: "frame-ancestors *" },
         ],
       },
-      {
-        // El service worker no debe quedar cacheado por el navegador ni por
-        // proxies: cada deploy tiene que poder actualizarlo.
-        source: "/sw.js",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
-          { key: "Service-Worker-Allowed", value: "/" },
-        ],
-      },
     ];
   },
   async redirects() {
