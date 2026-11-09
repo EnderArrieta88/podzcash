@@ -161,8 +161,12 @@ huérfanas consumen el límite y la app deja de arrancar
 Antes de cada deploy:
 
 1. cPanel → **Setup Node.js App** → **Stop App**.
-2. Ejecutar el deploy.
-3. **Start App** si la app no arrancó sola.
+2. Ejecutar el deploy (solo sube el build; ya no reinicia ni verifica).
+3. **Start App**.
+4. Ejecutar el workflow **Verificar produccion** de GitHub Actions.
+
+El reinicio automático con `tmp/restart.txt` se retiró a propósito: era lo que
+dejaba instancias huérfanas.
 
 Además, en las variables de entorno de la app conviene `UV_THREADPOOL_SIZE=2`
 para reducir hilos por instancia. Si la cuenta vuelve a toparse, soporte del
