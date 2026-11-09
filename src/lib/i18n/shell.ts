@@ -4,6 +4,7 @@ const es = {
   nav: {
     home: "Inicio",
     explore: "Explorar",
+    downloads: "Descargas",
     studio: "Mi estudio",
     myChannel: "Mi canal",
     admin: "Administración",
@@ -36,6 +37,7 @@ const en: ShellContent = {
   nav: {
     home: "Home",
     explore: "Explore",
+    downloads: "Downloads",
     studio: "My studio",
     myChannel: "My channel",
     admin: "Administration",

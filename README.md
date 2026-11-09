@@ -165,8 +165,8 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
   [docs/analytics.md](docs/analytics.md).
 - **Comentarios:** paginación, reportes, cola de moderación y avisos. Ver
   [docs/comentarios.md](docs/comentarios.md).
-- **PWA:** app instalable, service worker y pantalla offline. Ver
-  [docs/pwa.md](docs/pwa.md).
+- **PWA:** app instalable, service worker, pantalla offline y descargas de audio.
+  Ver [docs/pwa.md](docs/pwa.md).
 - **Staging:** pendiente de un segundo hosting/base de datos.
 
 ## Seguridad
