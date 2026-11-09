@@ -1,13 +1,19 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  ChevronDown,
+  ChevronUp,
+  ListMusic,
   Music2,
   Pause,
   Play,
   RotateCcw,
   RotateCw,
+  SkipBack,
+  SkipForward,
+  Timer,
   X,
 } from "lucide-react";
 import {
@@ -18,6 +24,7 @@ import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 import { playerContent, type PlayerContent } from "@/lib/i18n/player";
 import { channelPath } from "@/lib/routes";
+import { formatSleepTimer, SLEEP_TIMER_OPTIONS } from "@/lib/sleep-timer";
 
 const SEGMENTS = 64;
 
@@ -101,6 +108,183 @@ function Scrubber({ labels }: { labels: PlayerContent }) {
   );
 }
 
+function QueuePanel({
+  labels,
+  onClose,
+}: {
+  labels: PlayerContent;
+  onClose: () => void;
+}) {
+  const { track, queue, play, dequeue, moveQueue, clearQueue } = usePlayer();
+
+  return (
+    <div
+      role="dialog"
+      aria-label={labels.queueTitle}
+      className="absolute bottom-full right-0 z-50 mb-2 w-80 max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-surface-2 p-3 shadow-xl"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold">{labels.queueTitle}</p>
+        <div className="flex items-center gap-1">
+          {queue.length > 0 && (
+            <button
+              type="button"
+              onClick={clearQueue}
+              className="rounded-lg px-2 py-1 text-xs text-subtle transition-colors hover:text-danger"
+            >
+              {labels.queueClear}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-surface-3 hover:text-text"
+            aria-label={labels.close}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      </div>
+
+      {queue.length === 0 ? (
+        <div className="mt-3 rounded-lg border border-dashed border-border px-3 py-4 text-center">
+          <p className="text-xs text-muted">{labels.queueEmpty}</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-subtle">
+            {labels.queueEmptyHint}
+          </p>
+        </div>
+      ) : (
+        <ul className="mt-2 max-h-72 divide-y divide-border overflow-y-auto">
+          {queue.map((item, index) => {
+            const current = item.id === track?.id;
+
+            return (
+              <li key={item.id} className="flex items-center gap-1 py-2">
+                <button
+                  type="button"
+                  onClick={() => play(item)}
+                  aria-label={`${labels.queuePlay}: ${item.title}`}
+                  className="min-w-0 flex-1 rounded-lg px-1 py-0.5 text-left transition-colors hover:text-brand"
+                >
+                  <p
+                    className={cn(
+                      "truncate text-xs",
+                      current ? "font-semibold text-brand" : "text-text",
+                    )}
+                  >
+                    {current ? "▸ " : ""}
+                    {item.title}
+                  </p>
+                  <p className="truncate text-[11px] text-subtle">
+                    {item.channelName}
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => moveQueue(item.id, -1)}
+                  disabled={index === 0}
+                  aria-label={labels.queueUp}
+                  className="inline-flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-surface-3 hover:text-text disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <ChevronUp size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveQueue(item.id, 1)}
+                  disabled={index === queue.length - 1}
+                  aria-label={labels.queueDown}
+                  className="inline-flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-surface-3 hover:text-text disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <ChevronDown size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => dequeue(item.id)}
+                  aria-label={labels.queueRemove}
+                  className="inline-flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-surface-3 hover:text-danger"
+                >
+                  <X size={14} />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function SleepPanel({
+  labels,
+  onClose,
+}: {
+  labels: PlayerContent;
+  onClose: () => void;
+}) {
+  const {
+    sleepTimerActive,
+    sleepRemainingMs,
+    startSleepTimer,
+    cancelSleepTimer,
+  } = usePlayer();
+
+  return (
+    <div
+      role="dialog"
+      aria-label={labels.sleep}
+      className="absolute bottom-full right-0 z-50 mb-2 w-64 max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-surface-2 p-3 shadow-xl"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold">{labels.sleepTitle}</p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex size-7 items-center justify-center rounded-lg text-subtle transition-colors hover:bg-surface-3 hover:text-text"
+          aria-label={labels.close}
+        >
+          <X size={14} />
+        </button>
+      </div>
+
+      {sleepTimerActive && (
+        <p className="mt-1 font-mono text-xs text-brand">
+          {formatSleepTimer(sleepRemainingMs ?? 0)}
+        </p>
+      )}
+
+      <div className="mt-2 grid grid-cols-3 gap-1.5">
+        {SLEEP_TIMER_OPTIONS.map((minutes) => (
+          <button
+            key={minutes}
+            type="button"
+            onClick={() => {
+              startSleepTimer(minutes);
+              onClose();
+            }}
+            className="rounded-lg border border-border bg-surface px-2 py-2 text-xs text-muted transition-colors hover:border-border-strong hover:text-text"
+          >
+            {minutes} {labels.sleepMinutes}
+          </button>
+        ))}
+      </div>
+
+      {sleepTimerActive && (
+        <button
+          type="button"
+          onClick={() => {
+            cancelSleepTimer();
+            onClose();
+          }}
+          className="mt-2 w-full rounded-lg border border-danger/30 bg-danger/10 px-2 py-2 text-xs text-danger transition-colors hover:bg-danger/20"
+        >
+          {labels.sleepCancel}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function PlayerBar({ locale }: { locale: Locale }) {
   const {
     track,
@@ -112,9 +296,43 @@ export function PlayerBar({ locale }: { locale: Locale }) {
     skip,
     changeRate,
     close,
+    queue,
+    sleepTimerActive,
+    sleepRemainingMs,
+    canGoNext,
+    canGoPrevious,
+    playNext,
+    playPrevious,
   } = usePlayer();
 
   const labels = playerContent[locale];
+  const [panel, setPanel] = useState<"queue" | "sleep" | null>(null);
+  const controlsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!panel) return;
+
+    function onPointerDown(event: PointerEvent) {
+      if (
+        controlsRef.current &&
+        !controlsRef.current.contains(event.target as Node)
+      ) {
+        setPanel(null);
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setPanel(null);
+    }
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [panel]);
 
   if (!track) return null;
 
@@ -159,6 +377,16 @@ export function PlayerBar({ locale }: { locale: Locale }) {
 
             <button
               type="button"
+              onClick={playPrevious}
+              disabled={!canGoPrevious}
+              className="inline-flex size-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent"
+              aria-label={labels.previous}
+            >
+              <SkipBack size={16} />
+            </button>
+
+            <button
+              type="button"
               onClick={toggle}
               className="inline-flex size-11 items-center justify-center rounded-full bg-brand text-[#17130a] transition-colors hover:bg-brand-strong"
               aria-label={playing ? labels.pause : labels.play}
@@ -172,6 +400,16 @@ export function PlayerBar({ locale }: { locale: Locale }) {
 
             <button
               type="button"
+              onClick={playNext}
+              disabled={!canGoNext}
+              className="inline-flex size-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent"
+              aria-label={labels.next}
+            >
+              <SkipForward size={16} />
+            </button>
+
+            <button
+              type="button"
               onClick={() => skip(15)}
               className="hidden size-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-text sm:inline-flex"
               aria-label={labels.forward}
@@ -180,7 +418,10 @@ export function PlayerBar({ locale }: { locale: Locale }) {
             </button>
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center gap-1">
+          <div
+            ref={controlsRef}
+            className="relative ml-auto flex shrink-0 items-center gap-1"
+          >
             <button
               type="button"
               onClick={() => {
@@ -189,10 +430,53 @@ export function PlayerBar({ locale }: { locale: Locale }) {
                 );
                 changeRate(PLAYBACK_RATES[(index + 1) % PLAYBACK_RATES.length]);
               }}
-              className="inline-flex h-8 min-w-11 items-center justify-center rounded-full border border-border px-2 font-mono text-xs tabular text-muted transition-colors hover:border-border-strong hover:text-text"
+              className="hidden h-8 min-w-11 items-center justify-center rounded-full border border-border px-2 font-mono text-xs tabular text-muted transition-colors hover:border-border-strong hover:text-text sm:inline-flex"
               aria-label={labels.speed}
             >
               {rate}×
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPanel(panel === "queue" ? null : "queue")}
+              aria-expanded={panel === "queue"}
+              aria-label={`${labels.queue} (${queue.length})`}
+              title={labels.queue}
+              className={cn(
+                "relative inline-flex size-8 items-center justify-center rounded-full transition-colors",
+                panel === "queue"
+                  ? "bg-surface-2 text-brand"
+                  : "text-muted hover:bg-surface-2 hover:text-text",
+              )}
+            >
+              <ListMusic size={16} />
+              {queue.length > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-4 items-center justify-center rounded-full bg-brand px-1 font-mono text-[9px] font-semibold text-[#17130a]">
+                  {queue.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPanel(panel === "sleep" ? null : "sleep")}
+              aria-expanded={panel === "sleep"}
+              aria-label={labels.sleep}
+              title={labels.sleep}
+              className={cn(
+                "inline-flex h-8 items-center justify-center gap-1 rounded-full px-2 transition-colors",
+                sleepTimerActive
+                  ? "bg-surface-2 text-brand"
+                  : "text-muted hover:bg-surface-2 hover:text-text",
+              )}
+            >
+              {sleepTimerActive ? (
+                <span className="font-mono text-[11px] tabular">
+                  {formatSleepTimer(sleepRemainingMs ?? 0)}
+                </span>
+              ) : (
+                <Timer size={16} />
+              )}
             </button>
 
             <button
@@ -203,6 +487,13 @@ export function PlayerBar({ locale }: { locale: Locale }) {
             >
               <X size={16} />
             </button>
+
+            {panel === "queue" && (
+              <QueuePanel labels={labels} onClose={() => setPanel(null)} />
+            )}
+            {panel === "sleep" && (
+              <SleepPanel labels={labels} onClose={() => setPanel(null)} />
+            )}
           </div>
         </div>
 

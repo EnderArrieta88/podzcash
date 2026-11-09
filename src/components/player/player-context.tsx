@@ -9,6 +9,20 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  addToQueue,
+  canGoNext,
+  moveQueueItem,
+  nextTrack,
+  parseQueue,
+  previousTrack,
+  removeFromQueue,
+} from "@/lib/player-queue";
+import {
+  isSleepTimerDone,
+  sleepTimerEnd,
+  sleepTimerRemaining,
+} from "@/lib/sleep-timer";
 
 export type PlayerTrack = {
   id: string;
@@ -26,16 +40,31 @@ type PlayerState = {
   time: number;
   duration: number;
   rate: number;
+  queue: PlayerTrack[];
+  sleepRemainingMs: number | null;
+  sleepTimerActive: boolean;
+  canGoNext: boolean;
+  canGoPrevious: boolean;
   play: (track: PlayerTrack) => void;
   toggle: () => void;
   seek: (seconds: number) => void;
   skip: (delta: number) => void;
   changeRate: (rate: number) => void;
   close: () => void;
+  enqueue: (track: PlayerTrack) => void;
+  dequeue: (id: string) => void;
+  moveQueue: (id: string, direction: -1 | 1) => void;
+  clearQueue: () => void;
+  playNext: () => void;
+  playPrevious: () => void;
+  startSleepTimer: (minutes: number) => void;
+  cancelSleepTimer: () => void;
 };
 
 const PlayerContext = createContext<PlayerState | null>(null);
 const STORAGE_KEY = "podzcash:player";
+const QUEUE_KEY = "podzcash:queue";
+const SLEEP_KEY = "podzcash:sleep";
 export const PLAYBACK_RATES = [1, 1.25, 1.5, 2, 0.8] as const;
 
 export function usePlayer(): PlayerState {
@@ -59,33 +88,70 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [rate, setRate] = useState(1);
+  const [queue, setQueue] = useState<PlayerTrack[]>([]);
+  const [sleepEndsAt, setSleepEndsAt] = useState<number | null>(null);
+  const [sleepRemainingMs, setSleepRemainingMs] = useState<number | null>(null);
 
-  // Restaura la última sesión (sin autoplay: el navegador lo bloquearía).
+  // Restaura la última sesión, la cola y el temporizador (sin autoplay: el
+  // navegador lo bloquearía).
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
+      const savedQueue = parseQueue(window.localStorage.getItem(QUEUE_KEY));
+      const rawSleep = window.localStorage.getItem(SLEEP_KEY);
 
-      const saved = JSON.parse(raw) as {
-        track?: PlayerTrack;
-        time?: number;
-        rate?: number;
-      };
+      let savedTrack: PlayerTrack | undefined;
+      let savedTime = 0;
+      let savedRate = 1;
 
-      if (saved.track?.src) {
-        pendingSeek.current = saved.time ?? 0;
+      if (raw) {
+        const saved = JSON.parse(raw) as {
+          track?: PlayerTrack;
+          time?: number;
+          rate?: number;
+        };
 
-        // Se aplica en un microtask: leer localStorage al montar es una
-        // sincronización con un sistema externo y así no provoca un render
-        // en cascada dentro del efecto.
-        queueMicrotask(() => {
-          if (saved.rate && PLAYBACK_RATES.includes(saved.rate as never)) {
-            setRate(saved.rate);
-          }
-          setTime(saved.time ?? 0);
-          setTrack(saved.track ?? null);
-        });
+        if (saved.track?.src) {
+          savedTrack = saved.track;
+          savedTime = saved.time ?? 0;
+          savedRate = saved.rate ?? 1;
+        }
       }
+
+      let savedSleep: number | null = null;
+
+      if (rawSleep) {
+        const parsed = JSON.parse(rawSleep) as { endsAt?: number };
+
+        if (typeof parsed.endsAt === "number" && !isSleepTimerDone(parsed.endsAt)) {
+          savedSleep = parsed.endsAt;
+        } else {
+          window.localStorage.removeItem(SLEEP_KEY);
+        }
+      }
+
+      // Se aplica en un microtask: leer localStorage al montar es una
+      // sincronización con un sistema externo y así no provoca un render
+      // en cascada dentro del efecto.
+      queueMicrotask(() => {
+        if (savedQueue.length > 0) setQueue(savedQueue as PlayerTrack[]);
+
+        if (savedSleep) {
+          setSleepEndsAt(savedSleep);
+          setSleepRemainingMs(sleepTimerRemaining(savedSleep));
+        }
+
+        if (savedTrack) {
+          pendingSeek.current = savedTime;
+
+          if (PLAYBACK_RATES.includes(savedRate as never)) {
+            setRate(savedRate);
+          }
+
+          setTime(savedTime);
+          setTrack(savedTrack);
+        }
+      });
     } catch {
       // Sesión corrupta: se ignora.
     }
@@ -123,6 +189,52 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     snapshot.current = { track, time, rate };
   }, [track, time, rate]);
+
+  // La cola y el temporizador se guardan aparte del estado de reproducción.
+  useEffect(() => {
+    try {
+      if (queue.length === 0) window.localStorage.removeItem(QUEUE_KEY);
+      else window.localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    } catch {
+      // Modo privado o sin espacio: la cola sigue en memoria.
+    }
+  }, [queue]);
+
+  useEffect(() => {
+    try {
+      if (sleepEndsAt == null) window.localStorage.removeItem(SLEEP_KEY);
+      else
+        window.localStorage.setItem(
+          SLEEP_KEY,
+          JSON.stringify({ endsAt: sleepEndsAt }),
+        );
+    } catch {
+      // Modo privado o sin espacio: el temporizador sigue en memoria.
+    }
+  }, [sleepEndsAt]);
+
+  // Cuenta atrás del temporizador. Usa la marca de tiempo para sobrevivir a
+  // recargas y a que el navegador ralentice los intervals en segundo plano.
+  useEffect(() => {
+    if (sleepEndsAt == null) return;
+
+    const tick = () => {
+      const remaining = sleepTimerRemaining(sleepEndsAt);
+
+      if (remaining <= 0) {
+        audioRef.current?.pause();
+        setSleepEndsAt(null);
+        setSleepRemainingMs(null);
+        return;
+      }
+
+      setSleepRemainingMs(remaining);
+    };
+
+    const interval = window.setInterval(tick, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [sleepEndsAt]);
 
   const counted = useRef<Set<string>>(new Set());
 
@@ -176,6 +288,17 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const startTrack = useCallback(
+    (next: PlayerTrack) => {
+      recordPlay(next.id);
+      shouldAutoplay.current = true;
+      pendingSeek.current = 0;
+      setTime(0);
+      setTrack(next);
+    },
+    [recordPlay],
+  );
+
   const toggle = useCallback(() => {
     const audio = audioRef.current;
     if (!audio || !track) return;
@@ -195,13 +318,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      recordPlay(next.id);
-      shouldAutoplay.current = true;
-      pendingSeek.current = 0;
-      setTime(0);
-      setTrack(next);
+      startTrack(next);
     },
-    [track, toggle, recordPlay],
+    [track, toggle, startTrack],
   );
 
   const seek = useCallback((seconds: number) => {
@@ -227,12 +346,60 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     setRate(next);
   }, []);
 
+  const enqueue = useCallback((next: PlayerTrack) => {
+    setQueue((current) => addToQueue(current, next));
+  }, []);
+
+  const dequeue = useCallback((id: string) => {
+    setQueue((current) => removeFromQueue(current, id));
+  }, []);
+
+  const moveQueue = useCallback((id: string, direction: -1 | 1) => {
+    setQueue((current) => moveQueueItem(current, id, direction));
+  }, []);
+
+  const clearQueue = useCallback(() => {
+    setQueue([]);
+  }, []);
+
+  const playNext = useCallback(() => {
+    const next = nextTrack(queue, track?.id ?? null);
+    if (next) startTrack(next);
+  }, [queue, track, startTrack]);
+
+  const playPrevious = useCallback(() => {
+    const audio = audioRef.current;
+
+    // Si ya avanzó, "anterior" reinicia el episodio actual.
+    if (audio && audio.currentTime > 3) {
+      audio.currentTime = 0;
+      setTime(0);
+      return;
+    }
+
+    const previous = previousTrack(queue, track?.id ?? null);
+    if (previous) startTrack(previous);
+  }, [queue, track, startTrack]);
+
+  const startSleepTimer = useCallback((minutes: number) => {
+    const endsAt = sleepTimerEnd(minutes);
+    setSleepEndsAt(endsAt);
+    setSleepRemainingMs(minutes * 60_000);
+  }, []);
+
+  const cancelSleepTimer = useCallback(() => {
+    setSleepEndsAt(null);
+    setSleepRemainingMs(null);
+  }, []);
+
   const close = useCallback(() => {
     audioRef.current?.pause();
     setTrack(null);
     setPlaying(false);
     setTime(0);
     setDuration(0);
+    setSleepEndsAt(null);
+    setSleepRemainingMs(null);
     snapshot.current = { track: null, time: 0, rate: 1 };
 
     try {
@@ -294,7 +461,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     });
     navigator.mediaSession.setActionHandler("seekbackward", () => skip(-15));
     navigator.mediaSession.setActionHandler("seekforward", () => skip(15));
-  }, [track, skip, recordPlay]);
+
+    try {
+      navigator.mediaSession.setActionHandler("nexttrack", () => playNext());
+      navigator.mediaSession.setActionHandler("previoustrack", () =>
+        playPrevious(),
+      );
+    } catch {
+      // El navegador puede no soportar estas acciones.
+    }
+  }, [track, skip, recordPlay, playNext, playPrevious]);
 
   const value = useMemo<PlayerState>(
     () => ({
@@ -303,12 +479,26 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       time,
       duration: duration || track?.durationSec || 0,
       rate,
+      queue,
+      sleepRemainingMs,
+      sleepTimerActive: sleepEndsAt != null,
+      canGoNext: canGoNext(queue, track?.id ?? null),
+      canGoPrevious:
+        time > 3 || previousTrack(queue, track?.id ?? null) !== null,
       play,
       toggle,
       seek,
       skip,
       changeRate,
       close,
+      enqueue,
+      dequeue,
+      moveQueue,
+      clearQueue,
+      playNext,
+      playPrevious,
+      startSleepTimer,
+      cancelSleepTimer,
     }),
     [
       track,
@@ -316,12 +506,23 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       time,
       duration,
       rate,
+      queue,
+      sleepRemainingMs,
+      sleepEndsAt,
       play,
       toggle,
       seek,
       skip,
       changeRate,
       close,
+      enqueue,
+      dequeue,
+      moveQueue,
+      clearQueue,
+      playNext,
+      playPrevious,
+      startSleepTimer,
+      cancelSleepTimer,
     ],
   );
 
@@ -386,8 +587,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={() => {
-          setPlaying(false);
           setTime(0);
+
+          const next = nextTrack(queue, track?.id ?? null);
+
+          if (next) startTrack(next);
+          else setPlaying(false);
         }}
         className="hidden"
       />

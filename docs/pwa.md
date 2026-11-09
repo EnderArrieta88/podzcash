@@ -82,6 +82,5 @@ Decisiones:
 
 ## Alcance pendiente (épica #62)
 
-- #65: cola de reproducción y sleep timer.
 - #66: sincronización de posición entre dispositivos.
 - #67: spike de app nativa y CarPlay/Android Auto.
