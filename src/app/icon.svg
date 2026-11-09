@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="PodZcash">
+  <rect width="512" height="512" rx="112" fill="#f4b728"/>
+  <g fill="#17130a">
+    <rect x="112" y="228" width="56" height="112" rx="28"/>
+    <rect x="228" y="140" width="56" height="288" rx="28"/>
+    <rect x="344" y="196" width="56" height="176" rx="28"/>
+  </g>
+</svg>
