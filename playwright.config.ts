@@ -38,6 +38,7 @@ export default defineConfig({
       SEARCH_DB_PATH: "./.data-e2e/search.db",
       ANALYTICS_DB_PATH: "./.data-e2e/analytics.db",
       RATE_LIMIT_DB_PATH: "./.data-e2e/rate-limit.db",
+      CSP_MODE: "enforce",
       AUTH_SECRET:
         "e2e-secret-0123456789abcdef0123456789abcdef0123456789abcdef",
       SITE_URL: BASE_URL,

@@ -45,6 +45,7 @@ jobs:
         run: npm run build
         env:
           DATABASE_URL: "file:./prisma/dev.db"
+          CSP_MODE: ${{ vars.CSP_MODE || 'enforce' }}
 
       - name: Armar el bundle
         run: |
