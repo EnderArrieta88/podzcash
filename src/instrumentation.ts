@@ -6,4 +6,9 @@ export async function register() {
 
   const { ensureCommentsSchema } = await import("./lib/comments-migration");
   ensureCommentsSchema();
+
+  const { ensurePlaybackProgressSchema } = await import(
+    "./lib/progress-migration"
+  );
+  ensurePlaybackProgressSchema();
 }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/guards";
 import { Input, Label } from "@/components/ui/field";
-import { changePasswordAction } from "../actions";
+import { ConfirmButton } from "@/components/ui/confirm-button";
+import { changePasswordAction, clearPlaybackHistoryAction } from "../actions";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioAccountContent } from "@/lib/i18n/studio-account";
 
@@ -14,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AccountPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ok?: string; error?: string }>;
+  searchParams: Promise<{ ok?: string; error?: string; historial?: string }>;
 }) {
   const [user, locale, params] = await Promise.all([
     requireUser(),
@@ -103,6 +104,29 @@ export default async function AccountPage({
               {content.submit}
             </button>
           </div>
+        </form>
+      </div>
+
+      <div className="mt-6 rounded-xl border border-border bg-surface p-6">
+        <h2 className="font-heading text-sm font-semibold">
+          {content.historyTitle}
+        </h2>
+        <p className="mt-1 text-xs leading-relaxed text-muted">
+          {content.historyBody}
+        </p>
+
+        {params.historial === "1" && (
+          <p className="mt-4 rounded-xl border border-jade/30 bg-jade-soft px-4 py-2.5 text-sm text-jade-bright">
+            {content.historyCleared}
+          </p>
+        )}
+
+        <form action={clearPlaybackHistoryAction} className="mt-4">
+          <ConfirmButton
+            label={content.historyClear}
+            confirmLabel={content.historyConfirm}
+            className="inline-flex h-10 items-center justify-center rounded-full border border-danger/40 bg-danger/10 px-5 text-sm text-danger transition-colors hover:bg-danger/20"
+          />
         </form>
       </div>
     </div>

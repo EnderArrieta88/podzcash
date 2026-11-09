@@ -19,6 +19,12 @@ import {
   removeFromQueue,
 } from "@/lib/player-queue";
 import {
+  isResumable,
+  isValidProgress,
+  pickLatestProgress,
+  type ProgressPoint,
+} from "@/lib/playback-progress";
+import {
   isSleepTimerDone,
   sleepTimerEnd,
   sleepTimerRemaining,
@@ -77,11 +83,19 @@ export function usePlayer(): PlayerState {
   return context;
 }
 
-export function PlayerProvider({ children }: { children: React.ReactNode }) {
+export function PlayerProvider({
+  children,
+  signedIn = false,
+}: {
+  children: React.ReactNode;
+  signedIn?: boolean;
+}) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const shouldAutoplay = useRef(false);
   const pendingSeek = useRef(0);
   const progressMilestones = useRef<Map<string, Set<number>>>(new Map());
+  // Último progreso conocido de la pista actual en este dispositivo.
+  const localProgress = useRef<ProgressPoint | null>(null);
 
   const [track, setTrack] = useState<PlayerTrack | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -103,19 +117,30 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       let savedTrack: PlayerTrack | undefined;
       let savedTime = 0;
       let savedRate = 1;
+      let savedAt = 0;
 
       if (raw) {
         const saved = JSON.parse(raw) as {
           track?: PlayerTrack;
           time?: number;
           rate?: number;
+          savedAt?: number;
         };
 
         if (saved.track?.src) {
           savedTrack = saved.track;
           savedTime = saved.time ?? 0;
           savedRate = saved.rate ?? 1;
+          savedAt = saved.savedAt ?? 0;
         }
+      }
+
+      if (savedTrack) {
+        localProgress.current = {
+          positionSec: savedTime,
+          durationSec: savedTrack.durationSec,
+          updatedAt: savedAt,
+        };
       }
 
       let savedSleep: number | null = null;
@@ -260,6 +285,100 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  /**
+   * Progreso guardado en el servidor para un episodio (solo con sesión).
+   * Devuelve null si no hay sesión, no hay datos o la respuesta no es válida.
+   */
+  const fetchServerProgress = useCallback(
+    async (episodeId: string): Promise<ProgressPoint | null> => {
+      if (!signedIn) return null;
+
+      try {
+        const response = await fetch(
+          `/api/progress?episodeId=${encodeURIComponent(episodeId)}`,
+          { cache: "no-store" },
+        );
+
+        if (!response.ok) return null;
+
+        const data: unknown = await response.json();
+
+        if (!data || typeof data !== "object") return null;
+
+        const record = data as Record<string, unknown>;
+        const updatedAt = Date.parse(String(record.updatedAt ?? ""));
+        const point: ProgressPoint = {
+          positionSec: Number(record.positionSec),
+          durationSec:
+            record.durationSec == null ? null : Number(record.durationSec),
+          updatedAt: Number.isFinite(updatedAt) ? updatedAt : 0,
+        };
+
+        return isValidProgress(point) ? point : null;
+      } catch {
+        return null;
+      }
+    },
+    [signedIn],
+  );
+
+  const applyProgress = useCallback((point: ProgressPoint) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // No se interrumpe una reproducción ya avanzada en este dispositivo.
+    if (!audio.paused && audio.currentTime > 3) return;
+
+    if (audio.readyState >= 1) {
+      audio.currentTime = point.positionSec;
+      setTime(point.positionSec);
+    } else {
+      pendingSeek.current = point.positionSec;
+      setTime(point.positionSec);
+    }
+
+    localProgress.current = point;
+  }, []);
+
+  /**
+   * Envía la posición actual al servidor. Best-effort: si falla, la
+   * reproducción sigue y el próximo guardado lo reintenta.
+   */
+  const syncProgress = useCallback(
+    (force = false) => {
+      if (!signedIn) return;
+
+      const audio = audioRef.current;
+      const current = snapshot.current.track;
+
+      if (!audio || !current) return;
+
+      const position = audio.currentTime;
+
+      if (!Number.isFinite(position) || position < 3) return;
+      if (!force && audio.paused) return;
+
+      const duration =
+        Number.isFinite(audio.duration) && audio.duration > 0
+          ? Math.round(audio.duration)
+          : current.durationSec;
+
+      void fetch("/api/progress", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          episodeId: current.id,
+          positionSec: Math.round(position),
+          durationSec: duration,
+        }),
+        keepalive: true,
+      }).catch(() => {
+        // El guardado es best-effort: no interrumpe la reproducción.
+      });
+    },
+    [signedIn],
+  );
+
   // Guarda cada 2 s y al cerrar la página. No se puede usar un debounce por
   // `time`: mientras suena, el tiempo cambia más rápido que el debounce y el
   // temporizador nunca llegaría a dispararse.
@@ -273,7 +392,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+        window.localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ ...current, savedAt: Date.now() }),
+        );
       } catch {
         // Sin espacio o modo privado: no es crítico.
       }
@@ -288,15 +410,69 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Al cargar una pista con sesión, busca su progreso en el servidor y
+  // reanuda si es la posición más reciente.
+  useEffect(() => {
+    if (!signedIn || !track) return;
+
+    let active = true;
+
+    void fetchServerProgress(track.id).then((remote) => {
+      if (!active || !remote) return;
+
+      const { point, source } = pickLatestProgress(
+        localProgress.current,
+        remote,
+      );
+
+      if (!point || source !== "remote") return;
+      if (
+        !isResumable(point.positionSec, point.durationSec ?? track.durationSec)
+      ) {
+        return;
+      }
+
+      applyProgress(point);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [track, signedIn, fetchServerProgress, applyProgress]);
+
+  // Guarda la posición en el servidor cada 10 s y al cerrar la página.
+  useEffect(() => {
+    if (!signedIn) return;
+
+    const interval = window.setInterval(() => syncProgress(), 10_000);
+    const onHide = () => syncProgress(true);
+
+    window.addEventListener("pagehide", onHide);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("pagehide", onHide);
+    };
+  }, [signedIn, syncProgress]);
+
   const startTrack = useCallback(
     (next: PlayerTrack) => {
+      // Guarda la posición del episodio que se deja antes de cambiar.
+      syncProgress(true);
+
       recordPlay(next.id);
       shouldAutoplay.current = true;
       pendingSeek.current = 0;
+      // Pista nueva: el servidor puede tener una posición más reciente.
+      localProgress.current = {
+        positionSec: 0,
+        durationSec: next.durationSec,
+        updatedAt: 0,
+      };
       setTime(0);
       setTrack(next);
     },
-    [recordPlay],
+    [recordPlay, syncProgress],
   );
 
   const toggle = useCallback(() => {
@@ -393,6 +569,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const close = useCallback(() => {
+    // Guarda la última posición antes de descartar la pista.
+    syncProgress(true);
+
     audioRef.current?.pause();
     setTrack(null);
     setPlaying(false);
@@ -400,6 +579,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     setDuration(0);
     setSleepEndsAt(null);
     setSleepRemainingMs(null);
+    localProgress.current = null;
     snapshot.current = { track: null, time: 0, rate: 1 };
 
     try {
@@ -407,7 +587,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Modo privado: nada que limpiar.
     }
-  }, []);
+  }, [syncProgress]);
 
   // Atajos de teclado globales (se ignoran al escribir en un formulario).
   useEffect(() => {
@@ -585,7 +765,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
           pendingSeek.current = 0;
         }}
         onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
+        onPause={() => {
+          setPlaying(false);
+          // Guarda al pausar: es el momento típico en que el oyente se va.
+          syncProgress(true);
+        }}
         onEnded={() => {
           setTime(0);
 
