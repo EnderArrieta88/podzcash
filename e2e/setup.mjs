@@ -81,19 +81,16 @@ writeFileSync(
 
 const db = new Database(databaseFile);
 
-db.prepare(
-  `INSERT INTO "User" ("id", "email", "passwordHash", "name", "role", "status", "createdAt", "updatedAt")
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-).run(
-  userId,
-  "e2e@podzcash.local",
-  passwordHash,
-  "E2E Tester",
-  "creator",
-  "active",
-  now,
-  now,
-);
+function insertUser(id, email, name, role) {
+  db.prepare(
+    `INSERT INTO "User" ("id", "email", "passwordHash", "name", "role", "status", "createdAt", "updatedAt")
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).run(id, email, passwordHash, name, role, "active", now, now);
+}
+
+insertUser(userId, "e2e@podzcash.local", "E2E Tester", "creator");
+insertUser("e2e_author", "e2e-author@podzcash.local", "E2E Author", "creator");
+insertUser("e2e_admin", "e2e-admin@podzcash.local", "Admin E2E", "admin");
 
 db.prepare(
   `INSERT INTO "Channel" ("id", "handle", "displayName", "bio", "zcashAddress", "userId", "createdAt", "updatedAt")
@@ -152,6 +149,23 @@ db.prepare(
   now,
   now,
 );
+
+const insertComment = db.prepare(
+  `INSERT INTO "EpisodeComment" ("id", "episodeId", "userId", "body", "createdAt")
+   VALUES (?, ?, ?, ?, ?)`,
+);
+
+for (let index = 1; index <= 25; index += 1) {
+  const label = String(index).padStart(2, "0");
+
+  insertComment.run(
+    `e2e_comment_${label}`,
+    episodeId,
+    "e2e_author",
+    `Comentario de prueba ${label}`,
+    new Date(new Date(now).getTime() - (26 - index) * 60_000).toISOString(),
+  );
+}
 
 db.close();
 

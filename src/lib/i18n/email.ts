@@ -82,3 +82,29 @@ export const inviteEmailContent: Record<Locale, EmailCopy> = {
   es: inviteEs,
   en: inviteEn,
 };
+
+export type CommentEmailCopy = {
+  subject: (episode: string) => string;
+  intro: (author: string, episode: string) => string;
+  button: string;
+  manage: string;
+  footer: string;
+};
+
+export const commentEmailContent: Record<Locale, CommentEmailCopy> = {
+  es: {
+    subject: (episode) => `Nuevo comentario en ${episode}`,
+    intro: (author, episode) =>
+      `${author} comentó en tu episodio «${episode}».`,
+    button: "Ver el comentario",
+    manage: "Puedes cambiar o desactivar estos avisos en Estudio → Comentarios.",
+    footer: "PodZcash · Audio para Zcash",
+  },
+  en: {
+    subject: (episode) => `New comment on ${episode}`,
+    intro: (author, episode) => `${author} commented on your episode “${episode}”.`,
+    button: "View the comment",
+    manage: "You can change or turn off these notifications in Studio → Comments.",
+    footer: "PodZcash · Audio for Zcash",
+  },
+};

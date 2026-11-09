@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   ListMusic,
+  MessageSquare,
   Radio,
   Rss,
   Ticket,
@@ -18,13 +19,16 @@ type NavItem = {
   label: string;
   icon: typeof LayoutDashboard;
   exact?: boolean;
+  badge?: number;
 };
 
 export function StudioNav({
   isAdmin,
+  unreadComments,
   labels,
 }: {
   isAdmin: boolean;
+  unreadComments: number;
   labels: StudioShellContent["nav"];
 }) {
   const pathname = usePathname();
@@ -32,6 +36,12 @@ export function StudioNav({
   const baseItems: NavItem[] = [
     { href: "/estudio", label: labels.overview, icon: LayoutDashboard, exact: true },
     { href: "/estudio/episodios", label: labels.episodes, icon: ListMusic },
+    {
+      href: "/estudio/comentarios",
+      label: labels.comments,
+      icon: MessageSquare,
+      badge: unreadComments,
+    },
     { href: "/estudio/canal", label: labels.channel, icon: Radio },
     { href: "/estudio/distribucion", label: labels.distribution, icon: Rss },
     { href: "/estudio/cuenta", label: labels.account, icon: UserRound },
@@ -64,6 +74,11 @@ export function StudioNav({
           >
             <item.icon size={15} strokeWidth={1.8} />
             {item.label}
+            {item.badge ? (
+              <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-brand px-1.5 py-px font-mono text-[10px] font-semibold text-[#17130a]">
+                {item.badge > 99 ? "99+" : item.badge}
+              </span>
+            ) : null}
             {active && (
               <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-brand" />
             )}

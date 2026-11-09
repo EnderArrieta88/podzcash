@@ -29,6 +29,10 @@ const es = {
     view: "Ver episodio",
     hide: "Ocultar episodio",
     dismiss: "Descartar",
+    commentBy: (name: string) => `Comentario de ${name}`,
+    commentDeleted: "Comentario eliminado",
+    deleteComment: "Eliminar comentario",
+    reportedBy: (name: string) => `Reportado por ${name}`,
   },
   orphans: {
     title: "Medios huérfanos",
@@ -98,6 +102,10 @@ const en: AdminContent = {
     view: "View episode",
     hide: "Hide episode",
     dismiss: "Dismiss",
+    commentBy: (name: string) => `Comment by ${name}`,
+    commentDeleted: "Comment deleted",
+    deleteComment: "Delete comment",
+    reportedBy: (name: string) => `Reported by ${name}`,
   },
   orphans: {
     title: "Orphaned media",

@@ -2,13 +2,21 @@
 
 import type { ActionState } from "@/lib/action-state";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
-import { addEpisodeComment, deleteEpisodeComment } from "@/lib/comments";
+import {
+  addEpisodeComment,
+  canModerateComment,
+  deleteEpisodeComment,
+  ensureEpisodeCommentsTable,
+} from "@/lib/comments";
 import { clearLimit, take } from "@/lib/rate-limit";
 import { episodePath } from "@/lib/routes";
 import { getLocale } from "@/lib/i18n/locale";
 import { episodeContent } from "@/lib/i18n/episode";
+import { sendCommentNotificationEmail } from "@/lib/email";
+import { getSiteOrigin } from "@/lib/origin";
 
 export async function addEpisodeCommentAction(
   _previous: ActionState,
@@ -32,9 +40,20 @@ export async function addEpisodeCommentAction(
   const draft = await prisma.episode.findUnique({
     where: { id: episodeId },
     select: {
+      title: true,
       slug: true,
       status: true,
-      channel: { select: { handle: true } },
+      channel: {
+        select: {
+          id: true,
+          handle: true,
+          ownerEmail: true,
+          commentNotify: true,
+          feedLanguage: true,
+          userId: true,
+          user: { select: { email: true } },
+        },
+      },
     },
   });
 
@@ -49,7 +68,31 @@ export async function addEpisodeCommentAction(
   }
 
   revalidatePath(episodePath(draft.channel.handle, draft.slug));
-  return { ok: true };
+  revalidatePath("/estudio/comentarios");
+
+  // Vuelve a la primera página para que el autor vea su comentario, que es
+  // el más reciente. En páginas antiguas quedaría fuera de la vista.
+  if (draft.channel.commentNotify === "email" && draft.channel.userId !== user.id) {
+    const to = draft.channel.ownerEmail ?? draft.channel.user.email;
+
+    try {
+      const origin = await getSiteOrigin();
+
+      await sendCommentNotificationEmail({
+        to,
+        authorName: user.name,
+        episodeTitle: draft.title,
+        body,
+        url: `${origin}${episodePath(draft.channel.handle, draft.slug)}#comentarios`,
+        locale: draft.channel.feedLanguage === "en" ? "en" : "es",
+      });
+    } catch (error) {
+      // El aviso es best-effort: el comentario ya quedó publicado.
+      console.error("[comments] No se pudo enviar el aviso:", error);
+    }
+  }
+
+  redirect(`${episodePath(draft.channel.handle, draft.slug)}#comentarios`);
 }
 
 export async function deleteEpisodeCommentAction(
@@ -61,19 +104,31 @@ export async function deleteEpisodeCommentAction(
 
   if (!user || !id) return;
 
+  await ensureEpisodeCommentsTable();
+
   const comment = await prisma.episodeComment.findUnique({
     where: { id },
-    select: { userId: true },
+    select: { userId: true, episode: { select: { channelId: true } } },
   });
 
   if (!comment) return;
-  if (comment.userId !== user.id && user.role !== "admin") return;
+
+  const allowed = canModerateComment({
+    commentUserId: comment.userId,
+    viewerId: user.id,
+    viewerRole: user.role,
+    viewerChannelId: user.channel?.id ?? null,
+    episodeChannelId: comment.episode.channelId,
+  });
+
+  if (!allowed) return;
 
   try {
-    await deleteEpisodeComment(id);
+    await deleteEpisodeComment(id, user.id);
   } catch (error) {
     console.error("[comments] No se pudo borrar el comentario:", error);
   }
 
   revalidatePath(path || "/");
+  revalidatePath("/estudio/comentarios");
 }

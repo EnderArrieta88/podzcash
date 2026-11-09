@@ -14,10 +14,14 @@ import { channelPath, donatePath, episodePath, feedPath, normalizeHandleParam } 
 import { episodeEmbedCode } from "@/lib/embed";
 import { EmbedCode } from "@/components/embed/embed-code";
 import { absoluteUrl, isoDuration, jsonLd, SITE_URL, socialMetadata } from "@/lib/seo";
+import { pageParam } from "@/lib/pagination";
 import { listEpisodeComments } from "@/lib/comments";
 import { EpisodeComments } from "@/components/comments/episode-comments";
 
-type PageProps = { params: Promise<{ handle: string; slug: string }> };
+type PageProps = {
+  params: Promise<{ handle: string; slug: string }>;
+  searchParams: Promise<{ comentarios?: string | string[] }>;
+};
 
 async function load(handle: string, slug: string) {
   const channel = await prisma.channel.findUnique({
@@ -82,8 +86,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function EpisodePage({ params }: PageProps) {
-  const { handle, slug } = await params;
+export default async function EpisodePage({ params, searchParams }: PageProps) {
+  const [{ handle, slug }, query] = await Promise.all([params, searchParams]);
   const locale = await getLocale();
   const content = episodeContent[locale];
   const kind = sharedLabels[locale];
@@ -100,8 +104,8 @@ export default async function EpisodePage({ params }: PageProps) {
 
   const comments =
     episode.status === "published"
-      ? await listEpisodeComments(episode.id)
-      : [];
+      ? await listEpisodeComments(episode.id, pageParam(query.comentarios))
+      : null;
 
   const cover = episode.coverKey ? storage.url(episode.coverKey) : null;
   const audioUrl = storage.url(episode.audioPath);
@@ -230,10 +234,16 @@ export default async function EpisodePage({ params }: PageProps) {
         </div>
       )}
 
-      {episode.status === "published" && (
+      {episode.status === "published" && comments && (
         <EpisodeComments
-          comments={comments}
+          comments={comments.items}
+          total={comments.total}
+          page={comments.page}
+          pageCount={comments.pageCount}
+          episodePath={episodePath(channel.handle, episode.slug)}
+          episodeChannelId={channel.id}
           viewerId={viewer?.id ?? null}
+          viewerChannelId={viewer?.channel?.id ?? null}
           isAdmin={viewer?.role === "admin"}
           episodeId={episode.id}
           labels={content.comments}

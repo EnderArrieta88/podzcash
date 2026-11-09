@@ -3,4 +3,7 @@ export async function register() {
 
   const { ensureFeedSchema } = await import("./lib/feed-migration");
   ensureFeedSchema();
+
+  const { ensureCommentsSchema } = await import("./lib/comments-migration");
+  ensureCommentsSchema();
 }
