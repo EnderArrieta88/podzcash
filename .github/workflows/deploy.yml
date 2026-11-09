@@ -284,6 +284,9 @@ jobs:
           fi
 
       # Passenger reinicia la app cuando cambia tmp/restart.txt.
+      # Antes de desplegar, detener la app desde cPanel (Setup Node.js App →
+      # Stop App) evita que queden instancias huérfanas consumiendo el límite
+      # de procesos/hilos de la cuenta.
       - name: Reiniciar la aplicación
         env:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
