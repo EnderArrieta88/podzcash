@@ -205,6 +205,8 @@ hosting puede terminar las instancias huérfanas y decir cuántas había.
   [docs/comentarios.md](docs/comentarios.md).
 - **Rate limiting:** persistente en SQLite, claves hasheadas y métricas. Ver
   [docs/rate-limit.md](docs/rate-limit.md).
+- **CSP y HSTS:** política global con nonce, reportes y HSTS endurecido. Ver
+  [docs/csp.md](docs/csp.md).
 - **PWA:** app instalable, service worker, pantalla offline y descargas de audio.
   Ver [docs/pwa.md](docs/pwa.md).
 - **App nativa / CarPlay:** ADR con opciones, costes y recomendación. Ver
