@@ -39,5 +39,11 @@ export function addMissingColumns(
 export function openDatabase(): Database.Database | null {
   const file = databasePath();
   if (!file || !existsSync(file)) return null;
-  return new Database(file);
+
+  const db = new Database(file);
+  // Si otro proceso está escribiendo (Passenger puede arrancar más de uno),
+  // espera en lugar de fallar con SQLITE_BUSY.
+  db.pragma("busy_timeout = 5000");
+
+  return db;
 }

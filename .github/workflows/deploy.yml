@@ -22,7 +22,7 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main' && github.event.inputs.confirm == 'deploy'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     environment:
       name: production
       url: https://podzcash.online
@@ -160,6 +160,10 @@ jobs:
           set mirror:parallel-transfer-count 2
           rm -rf "$REMOTE_DIR/.next"
           mirror -R --no-perms --verbose ./deploy/.next "$REMOTE_DIR/.next"
+          # Segunda pasada solo para los alias de paquetes externos: son
+          # críticos (Prisma, better-sqlite3, sharp) y el FTP puede omitir
+          # archivos en rutas largas cuando la conexión va lenta.
+          mirror -R --no-perms --verbose ./deploy/.next/node_modules "$REMOTE_DIR/.next/node_modules"
           bye
           EOF
 
@@ -215,6 +219,14 @@ jobs:
           EOF
           )
 
+          remote_alias_list=$(lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF || true
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          find "$REMOTE_DIR/.next/node_modules"
+          bye
+          EOF
+          )
+
           echo "BUILD_ID local: $local_build / remoto: $remote_build"
           echo "Next local: $local_next / remoto: $remote_next"
           echo "estáticos locales: $local_static / remotos: $remote_static"
@@ -243,6 +255,25 @@ jobs:
 
           if [ "$local_aliases" -gt 0 ] && [ "$remote_aliases" -lt "$local_aliases" ]; then
             echo "::error::Faltan los alias de paquetes externos ($local_aliases locales vs $remote_aliases remotos)."
+            exit 1
+          fi
+
+          # Cada alias materializado debe estar completo: sin su package.json,
+          # Node no resuelve el paquete externo y la app no arranca.
+          missing_aliases=0
+          while IFS= read -r alias_dir; do
+            rel=${alias_dir#deploy/.next/node_modules/}
+
+            if ! printf '%s\n' "$remote_alias_list" | grep -q "/$rel$"; then
+              echo "::error::Falta el alias .next/node_modules/$rel"
+              missing_aliases=$((missing_aliases + 1))
+            elif ! printf '%s\n' "$remote_alias_list" | grep -q "/$rel/package.json$"; then
+              echo "::error::El alias .next/node_modules/$rel no tiene package.json"
+              missing_aliases=$((missing_aliases + 1))
+            fi
+          done < <(find deploy/.next/node_modules -mindepth 1 -maxdepth 2 -type d 2>/dev/null | sort)
+
+          if [ "$missing_aliases" -ne 0 ]; then
             exit 1
           fi
 

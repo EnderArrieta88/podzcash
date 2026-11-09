@@ -96,6 +96,8 @@ export function PlayerProvider({
   const progressMilestones = useRef<Map<string, Set<number>>>(new Map());
   // Último progreso conocido de la pista actual en este dispositivo.
   const localProgress = useRef<ProgressPoint | null>(null);
+  // Se desactiva si el servidor responde 401 (cookie vencida o inválida).
+  const syncEnabled = useRef(signedIn);
 
   const [track, setTrack] = useState<PlayerTrack | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -299,7 +301,12 @@ export function PlayerProvider({
           { cache: "no-store" },
         );
 
-        if (!response.ok) return null;
+        if (!response.ok) {
+          if (response.status === 401) syncEnabled.current = false;
+          return null;
+        }
+
+        syncEnabled.current = true;
 
         const data: unknown = await response.json();
 
@@ -346,7 +353,7 @@ export function PlayerProvider({
    */
   const syncProgress = useCallback(
     (force = false) => {
-      if (!signedIn) return;
+      if (!signedIn || !syncEnabled.current) return;
 
       const audio = audioRef.current;
       const current = snapshot.current.track;
