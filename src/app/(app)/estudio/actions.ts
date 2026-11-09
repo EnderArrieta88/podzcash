@@ -439,6 +439,15 @@ export async function deleteEpisodeAction(formData: FormData): Promise<void> {
 // Cuenta
 // ---------------------------------------------------------------------------
 
+export async function clearPlaybackHistoryAction(): Promise<void> {
+  const user = await requireUser();
+
+  await prisma.playbackProgress.deleteMany({ where: { userId: user.id } });
+
+  revalidatePath("/estudio/cuenta");
+  redirect("/estudio/cuenta?historial=1");
+}
+
 export async function changePasswordAction(formData: FormData): Promise<void> {
   const user = await requireUser();
 

@@ -68,6 +68,12 @@ const analyticsAudioPath = "audio/e2e_channel/analytics.wav";
 const analyticsAudioFile = path.join(mediaRoot, analyticsAudioPath);
 writeFileSync(analyticsAudioFile, audio);
 
+// Audio más largo para probar la sincronización de posición entre dispositivos.
+const syncAudio = makeWav(30);
+const syncAudioPath = "audio/e2e_channel/sync.wav";
+const syncAudioFile = path.join(mediaRoot, syncAudioPath);
+writeFileSync(syncAudioFile, syncAudio);
+
 const coverPath = "covers/e2e_channel/cover.png";
 const coverFile = path.join(mediaRoot, coverPath);
 mkdirSync(path.dirname(coverFile), { recursive: true });
@@ -142,6 +148,28 @@ db.prepare(
   null,
   4,
   audio.length,
+  "audio/wav",
+  "published",
+  now,
+  0,
+  now,
+  now,
+);
+
+db.prepare(
+  `INSERT INTO "Episode" ("id", "channelId", "title", "slug", "description", "kind", "audioPath", "coverKey", "durationSec", "fileSize", "mimeType", "status", "publishedAt", "playCount", "createdAt", "updatedAt")
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+).run(
+  "e2e_sync_episode",
+  channelId,
+  "Episodio de sincronización E2E",
+  "sincronizacion-e2e",
+  "Episodio de 30 segundos para probar el progreso entre dispositivos.",
+  "podcast",
+  syncAudioPath,
+  null,
+  30,
+  syncAudio.length,
   "audio/wav",
   "published",
   now,

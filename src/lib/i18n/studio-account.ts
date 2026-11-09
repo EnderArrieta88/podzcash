@@ -18,6 +18,12 @@ const es = {
   newPassword: "Nueva contraseña",
   confirmPassword: "Repetir la nueva contraseña",
   submit: "Cambiar contraseña",
+  historyTitle: "Historial de reproducción",
+  historyBody:
+    "Guardamos la posición de tus episodios para que puedas continuar en otro dispositivo. Podés borrar ese historial cuando quieras; no borra audios ni comentarios.",
+  historyClear: "Borrar historial",
+  historyConfirm: "¿Borrar tu historial de reproducción?",
+  historyCleared: "Historial de reproducción borrado.",
 };
 
 type StudioAccountContent = typeof es;
@@ -40,6 +46,12 @@ const en: StudioAccountContent = {
   newPassword: "New password",
   confirmPassword: "Repeat the new password",
   submit: "Change password",
+  historyTitle: "Listening history",
+  historyBody:
+    "We save your episode position so you can continue on another device. You can delete that history anytime; it does not delete audio or comments.",
+  historyClear: "Delete history",
+  historyConfirm: "Delete your listening history?",
+  historyCleared: "Listening history deleted.",
 };
 
 export const studioAccountContent: Record<Locale, StudioAccountContent> = {

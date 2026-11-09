@@ -32,6 +32,7 @@ model User {
   inviteUsed     Invite?   @relation("InviteUsed")
   reportsResolved Report[] @relation("ReportsResolved")
   comments       EpisodeComment[]
+  playbackProgress PlaybackProgress[]
 }
 
 model Session {
@@ -128,6 +129,7 @@ model Episode {
   channel Channel        @relation(fields: [channelId], references: [id], onDelete: Cascade)
   tags    EpisodeTag[]
   comments EpisodeComment[]
+  playbackProgress PlaybackProgress[]
 
   @@unique([channelId, slug])
   @@index([status, publishedAt])
@@ -201,4 +203,21 @@ model EpisodeComment {
 
   @@index([episodeId, createdAt])
   @@index([userId])
+}
+
+// Progreso de reproducción por usuario y episodio, para continuar en otro
+// dispositivo. La política de conflicto está en `src/lib/playback-progress.ts`.
+model PlaybackProgress {
+  userId      String
+  episodeId   String
+  positionSec Float    @default(0)
+  durationSec Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  episode Episode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@id([userId, episodeId])
+  @@index([userId, updatedAt])
 }

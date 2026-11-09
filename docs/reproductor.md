@@ -29,11 +29,30 @@ El reproductor vive en la barra inferior y se comparte entre todas las páginas
   intervals en segundo plano. Un temporizador vencido no se restaura.
 - Cerrar el reproductor cancela el temporizador.
 
+## Sincronización entre dispositivos
+
+- Con sesión iniciada, la posición se guarda en el servidor (tabla
+  `PlaybackProgress`: usuario + episodio) cada **10 segundos**, al pausar, al
+  cerrar el reproductor y al cambiar de episodio. Es best-effort: si falla la
+  red, la reproducción sigue.
+- Al cargar una pista, el reproductor consulta
+  `GET /api/progress?episodeId=...` y aplica la posición **más reciente**. En
+  empate gana el servidor.
+- No se reanuda si hay menos de 3 segundos escuchados o si está a menos de 5
+  segundos del final (se considera terminado).
+- Sin sesión, la posición sigue solo en `localStorage` y no se llama a la API.
+- Privacidad: se guardan posición y duración, nada más. El historial se borra
+  desde **Cuenta → Historial de reproducción** (o `DELETE /api/progress` para
+  la sesión actual).
+- Límite: 120 guardados cada 10 minutos por usuario.
+- La tabla se crea con la migración de Prisma y con la migración puente que
+  corre al arrancar (`src/lib/progress-migration.ts`).
+
 ## Persistencia
 
 | Clave | Contenido |
 |---|---|
-| `podzcash:player` | Pista actual, posición y velocidad (se guarda cada 2 s y al cerrar). |
+| `podzcash:player` | Pista actual, posición, velocidad y `savedAt` (se guarda cada 2 s y al cerrar). |
 | `podzcash:queue` | Lista ordenada de pistas de la cola. |
 | `podzcash:sleep` | Marca de tiempo del temporizador activo. |
 
@@ -50,3 +69,5 @@ El reproductor vive en la barra inferior y se comparte entre todas las páginas
 - `src/lib/sleep-timer.test.ts`: opciones, final, restante, vencimiento y formato.
 - `e2e/queue.spec.ts`: agregar, reordenar, persistir tras recarga, navegar con
   siguiente/anterior y temporizador con persistencia y cancelación.
+- `e2e/progress-sync.spec.ts`: dos contextos (dos “dispositivos”), borrado del
+  historial y uso anónimo con localStorage.
