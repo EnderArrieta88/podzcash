@@ -207,6 +207,8 @@ hosting puede terminar las instancias huérfanas y decir cuántas había.
   [docs/rate-limit.md](docs/rate-limit.md).
 - **CSP y HSTS:** política global con nonce, reportes y HSTS endurecido. Ver
   [docs/csp.md](docs/csp.md).
+- **Cuenta:** exportación de datos y eliminación con reautenticación. Ver
+  [docs/cuenta.md](docs/cuenta.md).
 - **PWA:** app instalable, service worker, pantalla offline y descargas de audio.
   Ver [docs/pwa.md](docs/pwa.md).
 - **App nativa / CarPlay:** ADR con opciones, costes y recomendación. Ver

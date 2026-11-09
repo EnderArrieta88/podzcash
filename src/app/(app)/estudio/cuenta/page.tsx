@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Download } from "lucide-react";
 import { requireUser } from "@/lib/auth/guards";
 import { Input, Label } from "@/components/ui/field";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { DeleteAccountForm } from "@/components/studio/delete-account-form";
 import { changePasswordAction, clearPlaybackHistoryAction } from "../actions";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioAccountContent } from "@/lib/i18n/studio-account";
@@ -109,6 +111,23 @@ export default async function AccountPage({
 
       <div className="mt-6 rounded-xl border border-border bg-surface p-6">
         <h2 className="font-heading text-sm font-semibold">
+          {content.exportTitle}
+        </h2>
+        <p className="mt-1 text-xs leading-relaxed text-muted">
+          {content.exportBody}
+        </p>
+
+        <a
+          href="/estudio/cuenta/exportar"
+          className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-full border border-border bg-surface-2 px-5 text-sm text-text transition-colors hover:bg-surface-3"
+        >
+          <Download size={14} />
+          {content.exportButton}
+        </a>
+      </div>
+
+      <div className="mt-6 rounded-xl border border-border bg-surface p-6">
+        <h2 className="font-heading text-sm font-semibold">
           {content.historyTitle}
         </h2>
         <p className="mt-1 text-xs leading-relaxed text-muted">
@@ -128,6 +147,20 @@ export default async function AccountPage({
             className="inline-flex h-10 items-center justify-center rounded-full border border-danger/40 bg-danger/10 px-5 text-sm text-danger transition-colors hover:bg-danger/20"
           />
         </form>
+      </div>
+
+      <div className="mt-6 rounded-xl border border-danger/30 bg-danger/5 p-6">
+        <h2 className="font-heading text-sm font-semibold text-danger">
+          {content.deleteTitle}
+        </h2>
+        <p className="mt-1 text-xs leading-relaxed text-muted">
+          {content.deleteBody}
+        </p>
+        <p className="mt-2 text-xs leading-relaxed text-subtle">
+          {content.deleteWarning}
+        </p>
+
+        <DeleteAccountForm email={user.email} labels={content.delete} />
       </div>
     </div>
   );

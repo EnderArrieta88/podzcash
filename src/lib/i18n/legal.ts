@@ -193,6 +193,7 @@ const es: SiteLegalContent = {
         title: "9. Tus derechos",
         paragraphs: [
           "Puedes solicitar acceso, rectificación, eliminación, portabilidad u oposición al tratamiento de tus datos, y retirar un consentimiento cuando sea la base jurídica. Escríbenos a hola@podzcash.online.",
+          "También puedes exportar tus datos y eliminar tu cuenta desde Estudio → Cuenta. Al eliminarla se borran cuenta, canal, episodios, comentarios, progreso y archivos; los reportes enviados se conservan anonimizados. Las copias de seguridad cifradas se sobrescriben en el ciclo habitual y las donaciones en ZEC ya enviadas no se pueden borrar.",
           "También puedes presentar una reclamación ante la autoridad de protección de datos que corresponda en tu jurisdicción.",
         ],
       },
@@ -461,6 +462,7 @@ const en: SiteLegalContent = {
         title: "9. Your rights",
         paragraphs: [
           "You can request access, rectification, deletion, portability or objection to processing, and withdraw consent where that is the legal basis. Write to hola@podzcash.online.",
+          "You can also export your data and delete your account from Studio → Account. Deleting it removes your account, channel, episodes, comments, progress and files; reports you sent are kept anonymized. Encrypted backups are overwritten in their usual cycle and ZEC donations already sent cannot be deleted.",
           "You may also file a complaint with the data protection authority that applies in your jurisdiction.",
         ],
       },
