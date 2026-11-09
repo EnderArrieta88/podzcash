@@ -74,6 +74,12 @@ const syncAudioPath = "audio/e2e_channel/sync.wav";
 const syncAudioFile = path.join(mediaRoot, syncAudioPath);
 writeFileSync(syncAudioFile, syncAudio);
 
+// Audio del usuario que se elimina en el test de cuenta.
+const deleteAudioPath = "audio/e2e_delete/delete.wav";
+const deleteAudioFile = path.join(mediaRoot, deleteAudioPath);
+mkdirSync(path.dirname(deleteAudioFile), { recursive: true });
+writeFileSync(deleteAudioFile, audio);
+
 const coverPath = "covers/e2e_channel/cover.png";
 const coverFile = path.join(mediaRoot, coverPath);
 mkdirSync(path.dirname(coverFile), { recursive: true });
@@ -97,6 +103,12 @@ function insertUser(id, email, name, role) {
 insertUser(userId, "e2e@podzcash.local", "E2E Tester", "creator");
 insertUser("e2e_author", "e2e-author@podzcash.local", "E2E Author", "creator");
 insertUser("e2e_admin", "e2e-admin@podzcash.local", "Admin E2E", "admin");
+insertUser(
+  "e2e_delete_user",
+  "e2e-delete@podzcash.local",
+  "E2E Delete",
+  "creator",
+);
 
 db.prepare(
   `INSERT INTO "Channel" ("id", "handle", "displayName", "bio", "zcashAddress", "userId", "createdAt", "updatedAt")
@@ -108,6 +120,19 @@ db.prepare(
   "Canal creado por el smoke test.",
   zcashAddress,
   userId,
+  now,
+  now,
+);
+
+db.prepare(
+  `INSERT INTO "Channel" ("id", "handle", "displayName", "bio", "userId", "createdAt", "updatedAt")
+   VALUES (?, ?, ?, ?, ?, ?, ?)`,
+).run(
+  "e2e_delete_channel",
+  "e2e-borrar",
+  "Canal a borrar",
+  "Canal de prueba para eliminar la cuenta.",
+  "e2e_delete_user",
   now,
   now,
 );
@@ -178,6 +203,28 @@ db.prepare(
   now,
 );
 
+db.prepare(
+  `INSERT INTO "Episode" ("id", "channelId", "title", "slug", "description", "kind", "audioPath", "coverKey", "durationSec", "fileSize", "mimeType", "status", "publishedAt", "playCount", "createdAt", "updatedAt")
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+).run(
+  "e2e_delete_episode",
+  "e2e_delete_channel",
+  "Episodio a borrar",
+  "borrar-cuenta-e2e",
+  "Episodio de prueba para eliminar la cuenta.",
+  "podcast",
+  deleteAudioPath,
+  null,
+  4,
+  audio.length,
+  "audio/wav",
+  "published",
+  now,
+  0,
+  now,
+  now,
+);
+
 const insertComment = db.prepare(
   `INSERT INTO "EpisodeComment" ("id", "episodeId", "userId", "body", "createdAt")
    VALUES (?, ?, ?, ?, ?)`,
@@ -194,6 +241,65 @@ for (let index = 1; index <= 25; index += 1) {
     new Date(new Date(now).getTime() - (26 - index) * 60_000).toISOString(),
   );
 }
+
+// Datos del usuario que se elimina en el test de cuenta.
+insertComment.run(
+  "e2e_delete_comment",
+  "e2e_delete_episode",
+  "e2e_delete_user",
+  "Comentario a borrar",
+  now,
+);
+
+db.prepare(
+  `INSERT INTO "PlaybackProgress" ("userId", "episodeId", "positionSec", "durationSec", "createdAt", "updatedAt")
+   VALUES (?, ?, ?, ?, ?, ?)`,
+).run("e2e_delete_user", "e2e_delete_episode", 2, 4, now, now);
+
+db.prepare(
+  `INSERT INTO "Report" ("id", "targetType", "targetId", "reason", "details", "reporterId", "reporterEmail", "status", "createdAt")
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+).run(
+  "e2e_delete_report",
+  "episode",
+  "e2e_episode",
+  "spam",
+  "Reporte de prueba",
+  "e2e_delete_user",
+  "e2e-delete@podzcash.local",
+  "open",
+  now,
+);
+
+db.prepare(
+  `INSERT INTO "Invite" ("id", "code", "note", "createdById", "createdAt")
+   VALUES (?, ?, ?, ?, ?)`,
+).run("e2e_delete_invite", "E2EDELETE01", "Invitación de prueba", "e2e_delete_user", now);
+
+db.prepare(
+  `INSERT INTO "Invite" ("id", "code", "note", "createdById", "usedById", "usedAt", "createdAt")
+   VALUES (?, ?, ?, ?, ?, ?, ?)`,
+).run(
+  "e2e_delete_invite_used",
+  "E2EDELETE02",
+  null,
+  "e2e_delete_user",
+  "e2e_delete_user",
+  now,
+  now,
+);
+
+db.prepare(
+  `INSERT INTO "WaitlistEntry" ("id", "email", "name", "role", "note", "createdAt")
+   VALUES (?, ?, ?, ?, ?, ?)`,
+).run(
+  "e2e_delete_waitlist",
+  "e2e-delete@podzcash.local",
+  "E2E Delete",
+  "podcast",
+  null,
+  now,
+);
 
 db.close();
 

@@ -13,6 +13,14 @@ const es = {
     current: "La contraseña actual no es correcta.",
     same: "La nueva contraseña debe ser distinta de la actual.",
     generic: "No se pudo cambiar la contraseña.",
+    deletePassword: "La contraseña no es correcta.",
+    deleteConfirmation:
+      "Escribe tu email exactamente y confirma que entiendes la acción.",
+    deleteAdmin:
+      "Las cuentas de administración no se pueden eliminar desde aquí.",
+    deleteLimit: "Demasiados intentos. Espera unos minutos.",
+    deleteGeneric:
+      "No se pudo eliminar la cuenta. Inténtalo de nuevo o escríbenos.",
   },
   currentPassword: "Contraseña actual",
   newPassword: "Nueva contraseña",
@@ -24,9 +32,26 @@ const es = {
   historyClear: "Borrar historial",
   historyConfirm: "¿Borrar tu historial de reproducción?",
   historyCleared: "Historial de reproducción borrado.",
+  exportTitle: "Exportar mis datos",
+  exportBody:
+    "Descarga un JSON con tu cuenta, canal, episodios, comentarios, progreso e invitaciones.",
+  exportButton: "Descargar JSON",
+  deleteTitle: "Eliminar cuenta",
+  deleteBody:
+    "Se eliminarán tu cuenta, canal, episodios, comentarios, progreso y archivos. No se puede deshacer.",
+  deleteWarning:
+    "Las copias de seguridad cifradas se sobrescriben en su ciclo habitual. Las donaciones ya enviadas en ZEC no se pueden borrar.",
+  delete: {
+    password: "Contraseña actual",
+    confirmation: "Escribe tu email para confirmar",
+    confirmationHint: "Escribe exactamente",
+    acknowledge: "Entiendo que esta acción es permanente.",
+    submit: "Eliminar mi cuenta",
+    pending: "Eliminando…",
+  },
 };
 
-type StudioAccountContent = typeof es;
+export type StudioAccountContent = typeof es;
 
 const en: StudioAccountContent = {
   metaTitle: "Account",
@@ -41,6 +66,13 @@ const en: StudioAccountContent = {
     current: "The current password is incorrect.",
     same: "The new password must be different from the current one.",
     generic: "Could not change the password.",
+    deletePassword: "The password is not correct.",
+    deleteConfirmation:
+      "Type your email exactly and confirm that you understand the action.",
+    deleteAdmin: "Administrator accounts cannot be deleted here.",
+    deleteLimit: "Too many attempts. Wait a few minutes.",
+    deleteGeneric:
+      "Could not delete the account. Try again or contact us.",
   },
   currentPassword: "Current password",
   newPassword: "New password",
@@ -52,6 +84,23 @@ const en: StudioAccountContent = {
   historyClear: "Delete history",
   historyConfirm: "Delete your listening history?",
   historyCleared: "Listening history deleted.",
+  exportTitle: "Export my data",
+  exportBody:
+    "Download a JSON with your account, channel, episodes, comments, progress and invitations.",
+  exportButton: "Download JSON",
+  deleteTitle: "Delete account",
+  deleteBody:
+    "Your account, channel, episodes, comments, progress and files will be deleted. This cannot be undone.",
+  deleteWarning:
+    "Encrypted backups are overwritten in their usual cycle. ZEC donations already sent cannot be deleted.",
+  delete: {
+    password: "Current password",
+    confirmation: "Type your email to confirm",
+    confirmationHint: "Type exactly",
+    acknowledge: "I understand this action is permanent.",
+    submit: "Delete my account",
+    pending: "Deleting…",
+  },
 };
 
 export const studioAccountContent: Record<Locale, StudioAccountContent> = {

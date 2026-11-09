@@ -596,8 +596,7 @@ export function reconcileDay(day: string): Array<{
   return differences;
 }
 
-export function getEpisodeStats(episodeId: string, days = 30): EpisodeStats {
-  const db = getDb();
+export function getEpisodeStats(episodeId: string, days = 30): EpisodeStats {  const db = getDb();
   const daysList = dayRange(days);
 
   for (const day of daysList) ensureDay(day);
@@ -1006,3 +1005,29 @@ export function recordProgress(input: ProgressEventInput): void {
 }
 
 export const analyticsRetentionDays = RETENTION_DAYS;
+
+/**
+ * Borra los eventos y agregados de una lista de episodios. Se usa al eliminar
+ * una cuenta: los datos analíticos de sus episodios no deben quedar huérfanos.
+ */
+export function purgeEpisodes(episodeIds: string[]): void {
+  if (episodeIds.length === 0) return;
+
+  const db = getDb();
+  const placeholders = episodeIds.map(() => "?").join(", ");
+
+  const transaction = db.transaction(() => {
+    for (const table of [
+      "media_events",
+      "listen_events",
+      "progress_events",
+      "daily_stats",
+    ]) {
+      db.prepare(
+        `DELETE FROM ${table} WHERE episodeId IN (${placeholders})`,
+      ).run(...episodeIds);
+    }
+  });
+
+  transaction();
+}
