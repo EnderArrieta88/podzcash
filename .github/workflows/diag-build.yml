@@ -9,7 +9,7 @@ permissions:
 jobs:
   diag:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     environment:
       name: production
 
@@ -17,7 +17,7 @@ jobs:
       - name: Instalar lftp
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
 
-      - name: Listar alias y mover log
+      - name: Leer log del servidor
         env:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
           FTP_USER: ${{ secrets.FTP_USERNAME }}
@@ -29,7 +29,19 @@ jobs:
           lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF || true
           set ssl:verify-certificate no
           set ftp:ssl-allow yes
-          mv "$REMOTE_DIR/tmp/diag.log" "$REMOTE_DIR/tmp/diag.txt"
-          mv "$REMOTE_DIR/stderr.log" "$REMOTE_DIR/tmp/diag2.txt"
+          get "$REMOTE_DIR/stderr.log" -o stderr.log
           bye
           EOF
+
+          if [ ! -f stderr.log ]; then
+            echo "No se pudo descargar stderr.log"
+            exit 0
+          fi
+
+          echo "=== tamaño: $(wc -c < stderr.log) bytes ==="
+          echo "=== paquetes no encontrados ==="
+          grep -oE "Cannot find (module|package) '[^']+'" stderr.log | sort -u | head -n 20 || true
+          echo "=== ultimas lineas sin ruido de fork ==="
+          grep -vE "fork: (retry: )?Resource temporarily unavailable" stderr.log \
+            | tail -n 150 \
+            | sed -E 's/[A-Za-z0-9+/=_-]{50,}/[redactado]/g'
