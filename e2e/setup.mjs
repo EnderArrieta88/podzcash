@@ -225,6 +225,30 @@ db.prepare(
   now,
 );
 
+db.prepare(
+  `INSERT INTO "Tag" ("id", "name", "slug") VALUES (?, ?, ?)`,
+).run("e2e_tag_privacidad", "privacidad", "privacidad");
+
+db.prepare(
+  `INSERT INTO "Tag" ("id", "name", "slug") VALUES (?, ?, ?)`,
+).run("e2e_tag_zcash", "zcash", "zcash");
+
+db.prepare(
+  `INSERT INTO "Tag" ("id", "name", "slug") VALUES (?, ?, ?)`,
+).run("e2e_tag_seguridad", "seguridad", "seguridad");
+
+db.prepare(
+  `INSERT INTO "EpisodeTag" ("episodeId", "tagId") VALUES (?, ?)`,
+).run(episodeId, "e2e_tag_privacidad");
+
+db.prepare(
+  `INSERT INTO "EpisodeTag" ("episodeId", "tagId") VALUES (?, ?)`,
+).run(episodeId, "e2e_tag_zcash");
+
+db.prepare(
+  `INSERT INTO "EpisodeTag" ("episodeId", "tagId") VALUES (?, ?)`,
+).run(episodeId, "e2e_tag_seguridad");
+
 const insertComment = db.prepare(
   `INSERT INTO "EpisodeComment" ("id", "episodeId", "userId", "body", "createdAt")
    VALUES (?, ?, ?, ?, ?)`,
