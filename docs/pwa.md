@@ -45,8 +45,10 @@ Decisiones:
   `podzcash-static-v1`). Al cambiarla, `activate` borra las cachés anteriores.
 - El service worker hace `skipWaiting()` y `clients.claim()`: la versión nueva
   toma el control sin pedir confirmación.
-- `/sw.js` se sirve con `Cache-Control: max-age=0, must-revalidate` y
-  `Service-Worker-Allowed: /` (`next.config.ts`).
+- `public/sw.js` se sirve como archivo estático desde el hosting. El navegador
+  revalida el script del service worker al actualizarlo (por especificación,
+  salteando la caché HTTP), así que un deploy nuevo se detecta sin cabeceras
+  extra. El scope `/` es el predeterminado porque el archivo está en la raíz.
 
 ## Instalación
 

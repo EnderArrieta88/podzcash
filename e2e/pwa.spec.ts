@@ -26,7 +26,7 @@ test("expone manifest, iconos y service worker instalable", async ({
 
   const worker = await request.get("/sw.js");
   expect(worker.status()).toBe(200);
-  expect(worker.headers()["service-worker-allowed"]).toBe("/");
+  expect(worker.headers()["content-type"]).toContain("javascript");
 
   const offline = await request.get("/offline");
   expect(offline.status()).toBe(200);
@@ -55,10 +55,14 @@ test("muestra la pantalla offline cuando no hay conexión", async ({
 
   const scriptUrl = await page.evaluate(async () => {
     const registration = await navigator.serviceWorker.ready;
-    return registration.active?.scriptURL ?? null;
+    return {
+      scriptURL: registration.active?.scriptURL ?? null,
+      scope: registration.scope,
+    };
   });
 
-  expect(scriptUrl).toContain("/sw.js");
+  expect(scriptUrl.scriptURL).toContain("/sw.js");
+  expect(scriptUrl.scope).toBe(`${new URL(page.url()).origin}/`);
 
   // La primera visita no está controlada por el service worker: recarga para
   // que intercepte las navegaciones.
