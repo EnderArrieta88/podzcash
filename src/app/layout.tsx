@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Instrument_Serif,
   Inter,
@@ -7,8 +7,10 @@ import {
 } from "next/font/google";
 import { PlayerProvider } from "@/components/player/player-context";
 import { PlayerBar } from "@/components/player/player-bar";
+import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { getLocale } from "@/lib/i18n/locale";
 import { commonContent } from "@/lib/i18n/common";
+import { PWA_THEME_COLOR } from "@/lib/pwa";
 import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
@@ -38,6 +40,14 @@ const mono = Space_Mono({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  colorScheme: "dark",
+  themeColor: PWA_THEME_COLOR,
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
 
@@ -48,6 +58,26 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s · PodZcash",
     },
     description: commonContent[locale].siteDescription,
+    applicationName: "PodZcash",
+    icons: {
+      icon: [
+        { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
+      apple: [
+        {
+          url: "/icons/apple-touch-icon.png",
+          sizes: "180x180",
+          type: "image/png",
+        },
+      ],
+    },
+    appleWebApp: {
+      capable: true,
+      title: "PodZcash",
+      statusBarStyle: "black-translucent",
+    },
+    formatDetection: { telephone: false, email: false, address: false },
   };
 }
 
@@ -67,6 +97,7 @@ export default async function RootLayout({
           <PlayerBar locale={locale} />
           {children}
         </PlayerProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
