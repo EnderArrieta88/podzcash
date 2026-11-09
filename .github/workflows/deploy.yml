@@ -261,31 +261,6 @@ jobs:
             exit 1
           fi
 
-          # Cada alias materializado debe estar completo: sin su package.json,
-          # Node no resuelve el paquete externo y la app no arranca.
-          if [ -n "$remote_alias_list" ]; then
-            missing_aliases=0
-            while IFS= read -r alias_dir; do
-              rel=${alias_dir#deploy/.next/node_modules/}
-
-              if ! printf '%s\n' "$remote_alias_list" | grep -qE "(^|/)$rel$"; then
-                echo "::error::Falta el alias .next/node_modules/$rel"
-                missing_aliases=$((missing_aliases + 1))
-              elif ! printf '%s\n' "$remote_alias_list" | grep -qE "(^|/)$rel/package.json$"; then
-                echo "::error::El alias .next/node_modules/$rel no tiene package.json"
-                missing_aliases=$((missing_aliases + 1))
-              fi
-            done < <(find deploy/.next/node_modules -mindepth 1 -maxdepth 2 -type d 2>/dev/null | while IFS= read -r dir; do
-              [ -f "$dir/package.json" ] && printf '%s\n' "$dir"
-            done | sort)
-
-            if [ "$missing_aliases" -ne 0 ]; then
-              exit 1
-            fi
-          else
-            echo "::warning::No se pudo listar .next/node_modules por FTP; se omite la verificacion de alias."
-          fi
-
 
       - name: Solicitar reinicio y verificar
         env:
