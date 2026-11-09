@@ -150,6 +150,24 @@ Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
 `FTP_PASSWORD`, `FTP_SERVER_DIR`). El deploy excluye `prisma/dev.db`, `.media`,
 `.data`, `.env` y `.htaccess`; los datos de producción no se versionan.
 
+### Reinicios y procesos huérfanos
+
+El plan del hosting limita la cuenta a **100 procesos/hilos** y cada instancia
+de `next-server` usa unos 11. Passenger puede dejar viva la instancia anterior
+al reiniciar con `tmp/restart.txt`; si se encadenan deploys, las instancias
+huérfanas consumen el límite y la app deja de arrancar
+(`fork: Resource temporarily unavailable`).
+
+Antes de cada deploy:
+
+1. cPanel → **Setup Node.js App** → **Stop App**.
+2. Ejecutar el deploy.
+3. **Start App** si la app no arrancó sola.
+
+Además, en las variables de entorno de la app conviene `UV_THREADPOOL_SIZE=2`
+para reducir hilos por instancia. Si la cuenta vuelve a toparse, soporte del
+hosting puede terminar las instancias huérfanas y decir cuántas había.
+
 ## Operación
 
 - **Backups:** diarios, cifrados y con verificación de SQLite. Ver
