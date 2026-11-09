@@ -43,6 +43,16 @@ export async function destroySession(): Promise<void> {
   store.delete(COOKIE_NAME);
 }
 
+/**
+ * ¿Hay una cookie de sesión? No valida la sesión (eso lo hace `getCurrentUser`),
+ * pero sirve para decidir en el layout si el reproductor intenta sincronizar
+ * sin consultar la base en cada página.
+ */
+export async function hasSessionCookie(): Promise<boolean> {
+  const store = await cookies();
+  return store.has(COOKIE_NAME);
+}
+
 export type CurrentUser = NonNullable<Awaited<ReturnType<typeof loadUser>>>;
 
 async function loadUser() {

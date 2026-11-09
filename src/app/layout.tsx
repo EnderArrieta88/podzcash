@@ -8,7 +8,7 @@ import {
 import { PlayerProvider } from "@/components/player/player-context";
 import { PlayerBar } from "@/components/player/player-bar";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
-import { getCurrentUser } from "@/lib/auth/session";
+import { hasSessionCookie } from "@/lib/auth/session";
 import { getLocale } from "@/lib/i18n/locale";
 import { commonContent } from "@/lib/i18n/common";
 import { PWA_THEME_COLOR } from "@/lib/pwa";
@@ -87,14 +87,17 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [locale, user] = await Promise.all([getLocale(), getCurrentUser()]);
+  const [locale, signedIn] = await Promise.all([
+    getLocale(),
+    hasSessionCookie(),
+  ]);
 
   return (
     <html lang={locale}>
       <body
         className={`${display.variable} ${sans.variable} ${heading.variable} ${mono.variable} min-h-dvh antialiased`}
       >
-        <PlayerProvider signedIn={Boolean(user)}>
+        <PlayerProvider signedIn={signedIn}>
           <PlayerBar locale={locale} />
           {children}
         </PlayerProvider>
