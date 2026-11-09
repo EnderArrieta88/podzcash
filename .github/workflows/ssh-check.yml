@@ -21,36 +21,43 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keygen -l -f ~/.ssh/deploy_key
 
-      - name: Conectar y revisar
+      - name: Buscar puerto y conectar
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
-          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            -o ConnectTimeout=20 \
-            -o BatchMode=yes \
-            "$SSH_USER@$SSH_HOST" 'bash -s' <<'EOF'
+          HOSTS="podzcash.online bh8704.banahosting.com 50.31.188.54"
+          PORTS="22 2222 2200 2022 2223 22022"
+
+          for host in $HOSTS; do
+            for port in $PORTS; do
+              if timeout 5 bash -c "cat < /dev/null > /dev/tcp/$host/$port" 2>/dev/null; then
+                echo "== abierto $host:$port"
+                if ssh -i ~/.ssh/deploy_key -p "$port" \
+                  -o StrictHostKeyChecking=no \
+                  -o UserKnownHostsFile=/dev/null \
+                  -o ConnectTimeout=10 \
+                  -o BatchMode=yes \
+                  "$SSH_USER@$host" 'bash -s' <<'EOF'
           set +e
           echo "user=$(whoami) host=$(hostname) pwd=$(pwd)"
-
           echo "--- procesos next-server"
           pgrep -af '[n]ext-server'
-
           echo "--- detalle"
           ps -u "$(whoami)" -o pid,etime,nlwp,args | grep -E '[n]ext-server|[n]ode' | grep -v grep
-
           echo "--- cwd de cada instancia"
           for pid in $(pgrep -f '[n]ext-server'); do
             echo "PID $pid -> $(readlink /proc/$pid/cwd)"
           done
-
-          echo "--- disco"
-          df -h ~ | tail -1
-          df -i ~ | tail -1
-
           echo "--- tmp de la app"
           ls -la ~/podzcash.online/tmp 2>/dev/null | head
           EOF
+                then
+                  echo "== SSH OK en $host:$port"
+                  exit 0
+                fi
+              fi
+            done
+          done
+
+          echo "No se encontro un puerto SSH accesible desde GitHub."
+          exit 1
