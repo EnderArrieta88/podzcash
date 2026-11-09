@@ -79,47 +79,60 @@ export default async function EpisodesPage() {
 
             return (
               <li key={episode.id} className="p-4">
-                <div className="flex items-center gap-4">
-                  <div className="size-14 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
-                    {cover ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={cover}
-                        alt=""
-                        className="size-full object-cover"
-                      />
-                    ) : (
-                      <span className="flex size-full items-center justify-center text-subtle">
-                        <Mic2 size={18} />
-                      </span>
-                    )}
-                  </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
+                    <div className="size-12 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2 sm:size-14">
+                      {cover ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={cover}
+                          alt=""
+                          className="size-full object-cover"
+                        />
+                      ) : (
+                        <span className="flex size-full items-center justify-center text-subtle">
+                          <Mic2 size={18} />
+                        </span>
+                      )}
+                    </div>
 
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-display text-xl">
-                      {episode.title}
-                    </p>
-                    <p className="mt-0.5 font-mono text-xs tabular text-subtle">
-                      {formatDuration(episode.durationSec)} ·{" "}
-                      {formatDate(episode.publishedAt ?? episode.createdAt, locale)} ·{" "}
-                      {episode.playCount}{" "}
-                      {episode.playCount === 1 ? labels.playOne : labels.playMany}
-                    </p>
-                    {episode.tags.length > 0 && (
-                      <div className="mt-1.5 flex flex-wrap gap-1.5">
-                        {episode.tags.slice(0, 4).map(({ tag }) => (
-                          <span
-                            key={tag.id}
-                            className="rounded-full border border-border px-2 py-0.5 text-[11px] text-subtle"
-                          >
-                            {tag.name}
-                          </span>
-                        ))}
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-2 font-display text-lg leading-tight sm:truncate sm:text-xl">
+                        {episode.title}
+                      </p>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[11px] tabular text-subtle">
+                        <span>{formatDuration(episode.durationSec)}</span>
+                        <span aria-hidden="true">·</span>
+                        <span>
+                          {formatDate(
+                            episode.publishedAt ?? episode.createdAt,
+                            locale,
+                          )}
+                        </span>
+                        <span aria-hidden="true">·</span>
+                        <span>
+                          {episode.playCount}{" "}
+                          {episode.playCount === 1
+                            ? labels.playOne
+                            : labels.playMany}
+                        </span>
                       </div>
-                    )}
+                      {episode.tags.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {episode.tags.slice(0, 4).map(({ tag }) => (
+                            <span
+                              key={tag.id}
+                              className="rounded-full border border-border px-2 py-0.5 text-[11px] text-subtle"
+                            >
+                              {tag.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex shrink-0 items-center justify-between gap-3 border-t border-border/60 pt-3 sm:w-auto sm:border-0 sm:pt-0">
                     <span
                       className={`rounded-full px-2.5 py-1 text-[11px] ${
                         isPublished
@@ -130,12 +143,12 @@ export default async function EpisodesPage() {
                       {isPublished ? labels.published : labels.draft}
                     </span>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 sm:gap-3">
                       {isPublished && (
                         <Link
                           href={episodePath(channel.handle, episode.slug)}
                           target="_blank"
-                          className="text-muted transition-colors hover:text-text"
+                          className="inline-flex size-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-surface-2 hover:text-text"
                           aria-label={labels.viewAria}
                         >
                           <ExternalLink size={15} />
@@ -144,7 +157,7 @@ export default async function EpisodesPage() {
 
                       <Link
                         href={`/estudio/episodios/${episode.id}`}
-                        className="text-muted transition-colors hover:text-text"
+                        className="inline-flex size-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-surface-2 hover:text-text"
                         aria-label={labels.editAria}
                       >
                         <PencilLine size={15} />
