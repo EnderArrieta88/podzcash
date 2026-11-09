@@ -19,6 +19,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 import { shellContent } from "@/lib/i18n/shell";
+import { activeHref } from "@/lib/nav";
 
 export function MobileMenu({
   user,
@@ -70,11 +71,7 @@ export function MobileMenu({
       : []),
   ];
 
-  function isActive(href: string, exact: boolean) {
-    return exact
-      ? pathname === href
-      : pathname === href || pathname.startsWith(`${href}/`);
-  }
+  const activeItem = activeHref(pathname, mainItems);
 
   return (
     <>
@@ -173,13 +170,14 @@ export function MobileMenu({
 
               <nav className="flex flex-col gap-1">
                 {mainItems.map((item) => {
-                  const active = isActive(item.href, item.exact);
+                  const active = item.href === activeItem;
 
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={() => setOpen(false)}
+                      aria-current={active ? "page" : undefined}
                       className={cn(
                         "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
                         active

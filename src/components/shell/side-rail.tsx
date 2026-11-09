@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 import type { ShellContent } from "@/lib/i18n/shell";
 import { channelPath, donatePath } from "@/lib/routes";
+import { activeHref } from "@/lib/nav";
 import { LanguageSwitcher } from "@/components/language-switcher";
 
 export type RailUser = {
@@ -76,6 +77,8 @@ export function SideRail({
         ]
       : []),
   ];
+
+  const activeItem = activeHref(pathname, items);
 
   return (
     <aside
@@ -139,15 +142,14 @@ export function SideRail({
 
       <nav className={cn("mt-2 flex flex-col gap-1", collapsed ? "px-2" : "px-3")}>
         {items.map((item) => {
-          const active = item.exact
-            ? pathname === item.href
-            : pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const active = item.href === activeItem;
 
           return (
             <Link
               key={item.href}
               href={item.href}
               title={collapsed ? item.label : undefined}
+              aria-current={active ? "page" : undefined}
               className={cn(
                 "flex items-center rounded-lg text-sm transition-colors",
                 collapsed ? "justify-center px-0 py-2.5" : "gap-3 px-3 py-2.5",
