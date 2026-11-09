@@ -29,13 +29,6 @@ jobs:
           lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<EOF || true
           set ssl:verify-certificate no
           set ftp:ssl-allow yes
-          mv "$REMOTE_DIR/stderr.log" "$REMOTE_DIR/tmp/diag.log"
-          cls -1 "$REMOTE_DIR/.next/node_modules"
-          echo "--- @prisma"
-          cls -1 "$REMOTE_DIR/.next/node_modules/@prisma"
-          echo "--- adapter alias"
-          cls -1 "$REMOTE_DIR/.next/node_modules/@prisma/adapter-better-sqlite3-da039dd0f7229020"
-          echo "--- better-sqlite3 alias"
-          cls -1 "$REMOTE_DIR/.next/node_modules/better-sqlite3-90e2652d1716b047"
+          mv "$REMOTE_DIR/stderr.log" "$REMOTE_DIR/tmp/diag.txt"
           bye
           EOF
