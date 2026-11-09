@@ -42,7 +42,14 @@ jobs:
 
           if [ -f stderr.log ]; then
             echo "=== stderr.log: $(wc -c < stderr.log) bytes ==="
-            tail -n 50 stderr.log | sed -E 's/[A-Za-z0-9+/=_-]{40,}/[redactado]/g'
+            echo "=== ultimas lineas sin ruido de fork ==="
+            grep -vE "fork: (retry: )?Resource temporarily unavailable" stderr.log \
+              | tail -n 120 \
+              | sed -E 's/[A-Za-z0-9+/=_-]{40,}/[redactado]/g'
+            echo "=== errores clave ==="
+            grep -nE "Cannot find|EAGAIN|ENOMEM|out of memory|SQLITE|Prisma|Segmentation|FATAL|Unhandled|started server|Ready|Listening|Error:" stderr.log \
+              | head -n 80 \
+              | sed -E 's/[A-Za-z0-9+/=_-]{40,}/[redactado]/g'
           else
             echo "No se pudo descargar stderr.log"
           fi
