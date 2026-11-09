@@ -189,6 +189,8 @@ hosting puede terminar las instancias huérfanas y decir cuántas había.
   [docs/comentarios.md](docs/comentarios.md).
 - **PWA:** app instalable, service worker, pantalla offline y descargas de audio.
   Ver [docs/pwa.md](docs/pwa.md).
+- **App nativa / CarPlay:** ADR con opciones, costes y recomendación. Ver
+  [docs/adr/0001-app-nativa.md](docs/adr/0001-app-nativa.md).
 - **Reproductor:** cola, siguiente/anterior, temporizador de sueño y
   sincronización de posición entre dispositivos. Ver
   [docs/reproductor.md](docs/reproductor.md).

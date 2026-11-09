@@ -80,6 +80,9 @@ Decisiones:
   `apple-touch-icon` y `apple-mobile-web-app-capable`.
 - **Escritorio:** icono de instalación en la barra de direcciones.
 
-## Alcance pendiente (épica #62)
+## App nativa (decisión)
 
-- #67: spike de app nativa y CarPlay/Android Auto.
+La épica #62 queda cubierta en la web/PWA. La decisión sobre app nativa,
+CarPlay y Android Auto está documentada en
+[docs/adr/0001-app-nativa.md](adr/0001-app-nativa.md) y queda pendiente de
+aprobación del mantenedor antes de implementar.

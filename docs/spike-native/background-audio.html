@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Spike · audio en segundo plano</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0d11;
+        --surface: #14171d;
+        --border: #2a2f39;
+        --text: #e6e7ec;
+        --muted: #94a3b8;
+        --brand: #f4b728;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+
+      p {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .card {
+        margin-top: 20px;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      button {
+        min-height: 40px;
+        padding: 0 16px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: #1a1c20;
+        color: var(--text);
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      button.primary {
+        border-color: transparent;
+        background: var(--brand);
+        color: #17130a;
+        font-weight: 700;
+      }
+
+      #state {
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      #meta {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      #log {
+        min-height: 180px;
+        max-height: 260px;
+        overflow: auto;
+        margin: 12px 0 0;
+        padding: 12px;
+        background: #0f1217;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Audio en segundo plano</h1>
+      <p>
+        Prototipo mínimo de #67. Genera un WAV en el navegador, registra Media
+        Session y permite comprobar si el audio sigue sonando al cambiar de
+        pestaña o bloquear la pantalla. No usa archivos externos ni red.
+      </p>
+
+      <div class="card">
+        <div class="row">
+          <button id="toggle" class="primary" type="button">Reproducir</button>
+          <button id="prev" type="button">Anterior</button>
+          <button id="next" type="button">Siguiente</button>
+          <button id="back" type="button">−15 s</button>
+          <button id="forward" type="button">+15 s</button>
+        </div>
+        <p id="state">detenido</p>
+        <p id="meta"></p>
+      </div>
+
+      <div class="card">
+        <strong>Pasos sugeridos</strong>
+        <p>
+          1) Reproducí. 2) Cambiá de pestaña o bloqueá la pantalla. 3) Volvé y
+          comprobá que el tiempo avanzó. En el móvil, mirá los controles de la
+          pantalla de bloqueo o de la notificación.
+        </p>
+        <pre id="log"></pre>
+      </div>
+
+      <audio id="audio" preload="metadata" playsinline></audio>
+    </main>
+
+    <script>
+      const audio = document.getElementById("audio");
+      const toggleButton = document.getElementById("toggle");
+      const state = document.getElementById("state");
+      const meta = document.getElementById("meta");
+      const logElement = document.getElementById("log");
+
+      const tracks = [
+        { title: "Prueba de fondo 1", artist: "PodZcash spike" },
+        { title: "Prueba de fondo 2", artist: "PodZcash spike" },
+      ];
+      let index = 0;
+
+      function log(message) {
+        const time = new Date().toLocaleTimeString();
+        logElement.textContent += `[${time}] ${message}\n`;
+        logElement.scrollTop = logElement.scrollHeight;
+      }
+
+      function makeWav(seconds = 120, sampleRate = 8000) {
+        const samples = seconds * sampleRate;
+        const dataSize = samples * 2;
+        const buffer = new ArrayBuffer(44 + dataSize);
+        const view = new DataView(buffer);
+        const write = (offset, text) => {
+          for (let i = 0; i < text.length; i += 1) {
+            view.setUint8(offset + i, text.charCodeAt(i));
+          }
+        };
+
+        write(0, "RIFF");
+        view.setUint32(4, 36 + dataSize, true);
+        write(8, "WAVE");
+        write(12, "fmt ");
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        write(36, "data");
+        view.setUint32(40, dataSize, true);
+
+        for (let i = 0; i < samples; i += 1) {
+          const value =
+            Math.sin((i / sampleRate) * 2 * Math.PI * 220) * 0.06;
+          view.setInt16(44 + i * 2, value * 0x7fff, true);
+        }
+
+        return buffer;
+      }
+
+      const blobUrl = URL.createObjectURL(
+        new Blob([makeWav()], { type: "audio/wav" }),
+      );
+      audio.src = blobUrl;
+
+      function updateMetadata() {
+        const track = tracks[index];
+
+        if ("mediaSession" in navigator) {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.title,
+            artist: track.artist,
+            album: "Spike #67",
+          });
+        }
+
+        meta.textContent = `Pista ${index + 1}/${tracks.length}: ${track.title}`;
+      }
+
+      function setHandlers() {
+        if (!("mediaSession" in navigator)) {
+          log("Media Session no disponible en este navegador");
+          return;
+        }
+
+        const handlers = {
+          play: () => {
+            log("mediaSession: play");
+            void audio.play();
+          },
+          pause: () => {
+            log("mediaSession: pause");
+            audio.pause();
+          },
+          stop: () => {
+            log("mediaSession: stop");
+            audio.pause();
+            audio.currentTime = 0;
+          },
+          seekbackward: () => {
+            log("mediaSession: seekbackward");
+            audio.currentTime = Math.max(0, audio.currentTime - 15);
+          },
+          seekforward: () => {
+            log("mediaSession: seekforward");
+            audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15);
+          },
+          previoustrack: () => {
+            log("mediaSession: previoustrack");
+            changeTrack(-1);
+          },
+          nexttrack: () => {
+            log("mediaSession: nexttrack");
+            changeTrack(1);
+          },
+        };
+
+        for (const [action, handler] of Object.entries(handlers)) {
+          try {
+            navigator.mediaSession.setActionHandler(action, handler);
+          } catch {
+            log(`acción no soportada: ${action}`);
+          }
+        }
+      }
+
+      function changeTrack(delta) {
+        index = (index + delta + tracks.length) % tracks.length;
+        updateMetadata();
+        audio.currentTime = 0;
+
+        if (!audio.paused) {
+          void audio.play();
+        }
+      }
+
+      function updateState() {
+        const stateText = audio.paused ? "pausado" : "reproduciendo";
+        state.textContent = `${stateText} · ${audio.currentTime.toFixed(1)}s / ${(audio.duration || 0).toFixed(1)}s · ${document.visibilityState}`;
+        toggleButton.textContent = audio.paused ? "Reproducir" : "Pausar";
+
+        if ("mediaSession" in navigator && "setPositionState" in navigator.mediaSession) {
+          try {
+            if (Number.isFinite(audio.duration) && audio.duration > 0) {
+              navigator.mediaSession.setPositionState({
+                duration: audio.duration,
+                position: Math.min(audio.currentTime, audio.duration),
+                playbackRate: audio.playbackRate,
+              });
+            }
+          } catch {
+            // Algunos navegadores no aceptan el estado de posición.
+          }
+        }
+      }
+
+      toggleButton.addEventListener("click", () => {
+        if (audio.paused) {
+          log("play (botón)");
+          void audio.play();
+        } else {
+          log("pause (botón)");
+          audio.pause();
+        }
+      });
+
+      document.getElementById("prev").addEventListener("click", () => changeTrack(-1));
+      document.getElementById("next").addEventListener("click", () => changeTrack(1));
+      document.getElementById("back").addEventListener("click", () => {
+        audio.currentTime = Math.max(0, audio.currentTime - 15);
+      });
+      document.getElementById("forward").addEventListener("click", () => {
+        audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15);
+      });
+
+      audio.addEventListener("play", () => {
+        log("evento: play");
+        if ("mediaSession" in navigator) navigator.mediaSession.playbackState = "playing";
+        updateState();
+      });
+      audio.addEventListener("pause", () => {
+        log("evento: pause");
+        if ("mediaSession" in navigator) navigator.mediaSession.playbackState = "paused";
+        updateState();
+      });
+      audio.addEventListener("ended", () => {
+        log("evento: ended");
+        updateState();
+      });
+      audio.addEventListener("loadedmetadata", () => {
+        log(`metadata: ${audio.duration.toFixed(1)}s`);
+        updateState();
+      });
+      audio.addEventListener("timeupdate", updateState);
+
+      document.addEventListener("visibilitychange", () => {
+        log(`visibilitychange: ${document.visibilityState}`);
+        updateState();
+      });
+
+      updateMetadata();
+      setHandlers();
+      updateState();
+      log(`listo · Media Session: ${"mediaSession" in navigator ? "sí" : "no"}`);
+    </script>
+  </body>
+</html>
