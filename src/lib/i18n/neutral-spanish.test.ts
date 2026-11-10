@@ -22,6 +22,7 @@ import { offlineAudioContent } from "./offline-audio";
 import { offlineContent } from "./offline";
 import { playerContent } from "./player";
 import { projectContent } from "./project";
+import { pushContent } from "./push";
 import { reportContent } from "./report";
 import { sharedLabels } from "./shared";
 import { shellContent } from "./shell";
@@ -63,6 +64,7 @@ const contents: Array<[string, unknown]> = [
   ["offline-audio", offlineAudioContent.es],
   ["player", playerContent.es],
   ["project", projectContent.es],
+  ["push", pushContent.es],
   ["report", reportContent.es],
   ["shared", sharedLabels.es],
   ["shell", shellContent.es],

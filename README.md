@@ -17,7 +17,7 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 
 - Registro por invitación y sesiones con cookie httpOnly.
 - Verificación de email por enlace firmado antes de activar la cuenta.
-- Lista de espera para creadores que todavía no tienen invitación.
+- Lista de espera para creadores que todavía no tienen invitación, con aviso por email y notificación push en el teléfono.
 - Recuperación de contraseña por email con enlaces firmados y caducidad.
 - Canales con nombre de usuario, bio, avatar, enlaces y dirección Zcash.
 - Subida de audio en streaming, portadas, borradores y publicación.
@@ -72,6 +72,9 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `RESEND_API_KEY` | API key de Resend para emails transaccionales |
 | `EMAIL_FROM` | Remitente verificado en Resend |
 | `WAITLIST_NOTIFY_EMAIL` | Destino de los avisos de la lista de espera |
+| `VAPID_PUBLIC_KEY` | Clave pública para Web Push de los avisos en el teléfono |
+| `VAPID_PRIVATE_KEY` | Clave privada de Web Push; no se versiona |
+| `VAPID_SUBJECT` | Contacto VAPID, por ejemplo `mailto:hola@podzcash.online` |
 
 ## Comandos
 

@@ -11,9 +11,11 @@ import { adminContent } from "@/lib/i18n/admin";
 import { reportContent } from "@/lib/i18n/report";
 import { commentReportContent } from "@/lib/i18n/comment-report";
 import { waitlistContent } from "@/lib/i18n/waitlist";
+import { pushContent } from "@/lib/i18n/push";
 import { countWaitlist, listWaitlist } from "@/lib/waitlist";
 import { episodePath } from "@/lib/routes";
 import { DeleteWaitlistButton } from "@/components/studio/delete-waitlist-button";
+import { PushNotifications } from "@/components/studio/push-notifications";
 import {
   cleanOrphansAction,
   inviteWaitlistAction,
@@ -56,6 +58,7 @@ export default async function AdminPage({
   }
   const waitlistRoleLabels: Record<string, string> =
     waitlistContent[locale].roles;
+  const pushPublicKey = process.env.VAPID_PUBLIC_KEY?.trim() || null;
 
   const [users, episodes, reports, channels, orphans, publishedCount, waiting, waitlist] =
     await Promise.all([
@@ -220,6 +223,11 @@ export default async function AdminPage({
             {waiting}
           </span>
         </div>
+
+        <PushNotifications
+          publicKey={pushPublicKey}
+          labels={pushContent[locale]}
+        />
 
         {waitlist.length === 0 ? (
           <p className="px-5 py-6 text-sm text-muted">

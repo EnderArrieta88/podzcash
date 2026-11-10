@@ -18,6 +18,7 @@ import { channelSchema, episodeSchema, passwordChangeSchema, toFieldErrors } fro
 import { validateZcashAddress } from "@/lib/zcash-address";
 import { channelPath, episodePath } from "@/lib/routes";
 import { take } from "@/lib/rate-limit";
+import { deleteUserPushSubscriptions } from "@/lib/push";
 import { studioAccountContent } from "@/lib/i18n/studio-account";
 import type { ActionState } from "@/lib/action-state";
 
@@ -538,6 +539,15 @@ export async function deleteAccountAction(
     purgeEpisodes(episodeIds);
   } catch (error) {
     console.error("[account] No se pudo limpiar el índice/analítica:", error);
+  }
+
+  try {
+    await deleteUserPushSubscriptions(user.id);
+  } catch (error) {
+    console.error(
+      "[account] No se pudieron borrar las suscripciones push:",
+      error,
+    );
   }
 
   await Promise.all(mediaKeys.map((key) => storage.remove(key)));
