@@ -189,6 +189,21 @@ model WaitlistEntry {
   createdAt DateTime @default(now())
 }
 
+// Suscripciones Web Push de administradores. La tabla se crea sola en la
+// primera suscripción, como WaitlistEntry, para no depender de migraciones.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
 // Comentarios de los usuarios sobre un episodio. Se crea la tabla sola
 // en la primera escritura (SQLite en producción) para no depender del
 // historial de migraciones.

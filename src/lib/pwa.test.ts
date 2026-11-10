@@ -57,4 +57,11 @@ describe("service worker", () => {
     expect(source).toMatch(/const VERSION = "v\d+"/);
     expect(source).toContain("caches.delete");
   });
+
+  it("maneja notificaciones push y abre el panel al tocarlas", () => {
+    expect(source).toContain('addEventListener("push"');
+    expect(source).toContain('addEventListener("notificationclick"');
+    expect(source).toContain("showNotification");
+    expect(source).toContain("openWindow");
+  });
 });

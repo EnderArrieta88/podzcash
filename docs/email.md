@@ -65,6 +65,8 @@ Cuando alguien se anota en `/lista-de-espera`:
 - Se guarda la solicitud en la base, visible en `/estudio/admin`.
 - Se envía un aviso a `WAITLIST_NOTIFY_EMAIL` (por defecto
   `invitaciones@podzcash.online`).
+- Si el administrador activó los avisos en el teléfono, también recibe una
+  notificación push. Ver [`docs/push.md`](push.md).
 - El aviso no se envía si el email ya estaba anotado.
 
 Desde la sección **Lista de espera** de `/estudio/admin` se puede:

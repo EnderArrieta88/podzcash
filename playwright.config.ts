@@ -43,6 +43,8 @@ export default defineConfig({
         "e2e-secret-0123456789abcdef0123456789abcdef0123456789abcdef",
       SITE_URL: BASE_URL,
       EMAIL_FROM: "PodZcash E2E <e2e@podzcash.local>",
+      VAPID_PUBLIC_KEY:
+        "BMsvnFsMftQt399DrQUuvlDIiYnJOMgNCxjNY9Lfw7BLKfWer4Xc0lwoMpfV18XYzGtxuzhMD2s4YnOWF36-EjQ",
     },
   },
 });
