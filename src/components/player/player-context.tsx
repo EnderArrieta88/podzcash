@@ -717,7 +717,9 @@ export function PlayerProvider({
     <PlayerContext.Provider value={value}>
       {children}
 
-      {track && <div className="player-spacer h-24" aria-hidden="true" />}
+      {track && (
+        <div className="player-spacer h-36 sm:h-24" aria-hidden="true" />
+      )}
 
       <audio
         ref={audioRef}
