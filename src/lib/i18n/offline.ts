@@ -2,7 +2,7 @@ import type { Locale } from "./config";
 
 const es = {
   title: "Sin conexión",
-  body: "PodZcash necesita internet para cargar episodios, comentarios y tu estudio. Revisá tu conexión y volvé a intentar.",
+  body: "PodZcash necesita internet para cargar episodios, comentarios y tu estudio. Revisa tu conexión y vuelve a intentarlo.",
   retry: "Reintentar",
   home: "Ir al inicio",
   hint: "Los episodios que ya estaban cargados siguen disponibles en esta pantalla.",

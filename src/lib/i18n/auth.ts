@@ -19,7 +19,7 @@ const es = {
       invalid: "Email o contraseña incorrectos.",
       suspended: "Esta cuenta está suspendida.",
       unverified:
-        "Tu cuenta todavía no está verificada. Revisá tu correo para activarla.",
+        "Tu cuenta todavía no está verificada. Revisa tu correo para activarla.",
     },
   },
   register: {
@@ -75,7 +75,7 @@ const es = {
       "Si existe una cuenta con ese email, enviamos un enlace. Caduca en una hora.",
     unavailableTitle: "Recuperación no disponible",
     unavailableBody:
-      "La recuperación por email todavía no está configurada en este entorno. Inténtalo más tarde o contacta con el administrador.",
+      "La recuperación por email todavía no está configurada en este entorno. Inténtalo más tarde o ponte en contacto con el administrador.",
     backToLogin: "Volver a entrar",
     errors: {
       emailInvalid: "Escribe un email válido.",
@@ -103,14 +103,14 @@ const es = {
     title: "Verifica tu cuenta",
     intro: "Te enviamos un enlace para confirmar tu email.",
     confirmTitle: "Confirma tu cuenta",
-    confirmBody: "Pulsa el botón para activar tu cuenta y empezar a publicar.",
+    confirmBody: "Haz clic en el botón para activar tu cuenta y empezar a publicar.",
     confirm: "Confirmar cuenta",
     confirming: "Confirmando…",
     successTitle: "Cuenta verificada",
-    successBody: "Ya podés entrar con tu email y contraseña.",
+    successBody: "Ya puedes entrar con tu email y contraseña.",
     invalidTitle: "El enlace no es válido",
     invalidBody:
-      "Puede que haya caducado o ya se haya usado. Pedí uno nuevo abajo.",
+      "Puede que haya caducado o ya se haya usado. Solicita uno nuevo abajo.",
     resendTitle: "Reenviar el enlace",
     resendIntro:
       "Escribe el email de tu cuenta y te enviamos un enlace nuevo.",

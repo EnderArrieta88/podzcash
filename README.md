@@ -9,9 +9,9 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 - **Licencia:** [MIT](LICENSE).
 - **Repositorio:** <https://github.com/EnderArrieta88/podzcash>
 
-> PodZcash es un proyecto independiente. No está afiliado, patrocinado ni
-> respaldado por Zcash Foundation ni por Electric Coin Company. Zcash es una
-> marca de Zcash Foundation. Ver [TRADEMARK.md](TRADEMARK.md).
+> PodZcash es un proyecto independiente hecho en Venezuela. No está afiliado,
+> patrocinado ni respaldado por Zcash Foundation ni por Electric Coin Company.
+> Zcash es una marca de Zcash Foundation. Ver [TRADEMARK.md](TRADEMARK.md).
 
 ## Qué incluye
 

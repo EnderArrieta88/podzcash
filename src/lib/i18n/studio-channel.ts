@@ -25,7 +25,7 @@ const es = {
     linkLabelAria: "Etiqueta del enlace",
     linkUrlAria: "URL del enlace",
     removeLink: "Quitar enlace",
-    addLink: "Agregar enlace",
+    addLink: "Añadir enlace",
     zcashAddress: "Dirección Zcash",
     zcashPlaceholder: "u1… · zs1… · t1… · t3…",
     zcashHint:

@@ -13,10 +13,10 @@ const es = {
   intro:
     "Episodios guardados en este dispositivo. Se reproducen sin conexión.",
   empty: "Todavía no descargaste ningún episodio.",
-  emptyHint: "Abrí un episodio y tocá Descargar para escucharlo sin conexión.",
+  emptyHint: "Abre un episodio y selecciona Descargar para escucharlo sin conexión.",
   used: "Espacio usado",
   almostFull:
-    "Estás cerca del límite de descargas. Borrá algún episodio para liberar espacio.",
+    "Estás cerca del límite de descargas. Borra algún episodio para liberar espacio.",
   clear: "Borrar todas",
   clearConfirm: "¿Borrar todas las descargas de este dispositivo?",
   play: "Reproducir",
@@ -24,13 +24,13 @@ const es = {
   offlineTitle: "Tus descargas",
   offlineHint: "Se reproducen aunque no tengas conexión.",
   downloadedOn: "Descargado",
-  hint: "Las descargas viven en este dispositivo. Podés borrarlas cuando quieras.",
+  hint: "Las descargas están en este dispositivo. Puedes borrarlas cuando quieras.",
   errors: {
     unsupported:
       "Este navegador no permite guardar audio para escuchar sin conexión.",
     quota:
-      "No hay espacio suficiente. Borrá alguna descarga o aumentá la cuota.",
-    network: "No se pudo descargar el episodio. Revisá tu conexión.",
+      "No hay espacio suficiente. Borra alguna descarga o aumenta la cuota.",
+    network: "No se pudo descargar el episodio. Revisa tu conexión.",
     storage: "El navegador no pudo guardar el archivo.",
     play: "No se pudo reproducir la descarga.",
   },

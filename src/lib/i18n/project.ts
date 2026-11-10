@@ -201,7 +201,7 @@ const es = {
         range: "Fases 15 — 20",
         note: "Video, creadores y descubrimiento",
         phases: [
-          { n: "Fase 15", title: "Publicar desde el móvil", body: "Grabar o subir desde el teléfono, con recorte y portada. Publicar ya no requiere un equipo de escritorio." },
+          { n: "Fase 15", title: "Publicar desde el teléfono", body: "Grabar o subir desde el teléfono, con recorte y portada. Publicar ya no requiere un equipo de escritorio." },
           { n: "Fase 16", title: "Video podcast", body: "HLS adaptativo, miniaturas y reproducción sincronizada con el audio. El formato deja de ser solo audio." },
           { n: "Fase 17", title: "Capítulos y transcripciones", body: "Capítulos navegables y transcripción automática con búsqueda dentro del episodio." },
           { n: "Fase 18", title: "Seguir canales y colecciones", body: "Seguir canales, series y listas propias, con un feed personal en lugar de un algoritmo opaco." },
@@ -217,7 +217,7 @@ const es = {
           { n: "Fase 21", title: "Accesibilidad WCAG", body: "Transcripciones, capítulos y contraste para que la app funcione con lectores de pantalla y teclado." },
           { n: "Fase 22", title: "API pública", body: "Acceso documentado a canales y episodios para integrar PodZcash en sitios y herramientas del ecosistema." },
           { n: "Fase 23", title: "Distribución federada", body: "Publicar una vez y aparecer en otras instancias que hablen del mismo tema, sin depender de un servidor único." },
-          { n: "Fase 24", title: "TV y auto", body: "Apps para televisores y reproducción en CarPlay y Android Auto, donde el audio se escucha de verdad." },
+          { n: "Fase 24", title: "TV y automóvil", body: "Apps para televisores y reproducción en CarPlay y Android Auto, donde el audio se escucha de verdad." },
           { n: "Fase 25", title: "Programa de creadores", body: "Acompañamiento, formación y recursos para que nuevos canales despeguen sin depender del equipo." },
           { n: "Fase 26", title: "Sostenibilidad del proyecto", body: "Grants, patrocinios y donaciones de la comunidad al proyecto, además del apoyo directo de oyentes a creadores. Sin métodos de pago ni KYC dentro de la app." },
         ],
