@@ -90,7 +90,7 @@ const es: SiteLegalContent = {
     ],
     teamTitle: "Quién lo construye",
     teamBody:
-      "PodZcash es un proyecto independiente liderado por su fundador, con apoyo puntual de diseñadores y creadores cuando hace falta.",
+      "PodZcash es un proyecto independiente hecho en Venezuela y liderado por su fundador, con apoyo puntual de diseñadores y creadores cuando hace falta.",
     teamName: "Ender Arrieta",
     teamRole: "Fundador y desarrollador",
     statusTitle: "Estado actual",
@@ -104,7 +104,7 @@ const es: SiteLegalContent = {
       "Para consultas generales, escribe a hola@podzcash.online. Para vulnerabilidades de seguridad, usa el canal privado indicado en SECURITY.md.",
     independenceTitle: "Independencia y marca",
     independenceBody:
-      "PodZcash es un proyecto independiente. No está afiliado, patrocinado ni respaldado por Zcash Foundation ni por Electric Coin Company. Zcash es una marca de Zcash Foundation y aquí se usa de forma descriptiva para indicar compatibilidad. El uso del nombre y del dominio se revisa conforme a la política de marcas de Zcash.",
+      "PodZcash es un proyecto independiente hecho en Venezuela. No está afiliado, patrocinado ni respaldado por Zcash Foundation ni por Electric Coin Company. Zcash es una marca de Zcash Foundation y aquí se usa de forma descriptiva para indicar compatibilidad. El uso del nombre y del dominio se revisa conforme a la política de marcas de Zcash.",
     backHome: "Volver al inicio",
     links: {
       project: "Ver el proyecto",
@@ -126,7 +126,7 @@ const es: SiteLegalContent = {
       {
         title: "1. Responsable",
         paragraphs: [
-          "PodZcash es un proyecto independiente. El responsable del tratamiento es Ender Arrieta. Puedes escribir a hola@podzcash.online para cualquier consulta sobre privacidad.",
+          "PodZcash es un proyecto independiente hecho en Venezuela. El responsable del tratamiento es Ender Arrieta. Puedes escribir a hola@podzcash.online para cualquier consulta sobre privacidad.",
         ],
       },
       {
@@ -359,7 +359,7 @@ const en: SiteLegalContent = {
     ],
     teamTitle: "Who builds it",
     teamBody:
-      "PodZcash is an independent project led by its founder, with occasional support from designers and creators when needed.",
+      "PodZcash is an independent project made in Venezuela and led by its founder, with occasional support from designers and creators when needed.",
     teamName: "Ender Arrieta",
     teamRole: "Founder and developer",
     statusTitle: "Current status",
@@ -373,7 +373,7 @@ const en: SiteLegalContent = {
       "For general questions, write to hola@podzcash.online. For security vulnerabilities, use the private channel described in SECURITY.md.",
     independenceTitle: "Independence and trademark",
     independenceBody:
-      "PodZcash is an independent project. It is not affiliated with, sponsored by or endorsed by the Zcash Foundation or Electric Coin Company. Zcash is a trademark of the Zcash Foundation and is used here descriptively to indicate compatibility. Use of the name and domain is being reviewed under the Zcash trademark policy.",
+      "PodZcash is an independent project made in Venezuela. It is not affiliated with, sponsored by or endorsed by the Zcash Foundation or Electric Coin Company. Zcash is a trademark of the Zcash Foundation and is used here descriptively to indicate compatibility. Use of the name and domain is being reviewed under the Zcash trademark policy.",
     backHome: "Back to home",
     links: {
       project: "View the project",
@@ -395,7 +395,7 @@ const en: SiteLegalContent = {
       {
         title: "1. Controller",
         paragraphs: [
-          "PodZcash is an independent project. The data controller is Ender Arrieta. You can write to hola@podzcash.online for any privacy question.",
+          "PodZcash is an independent project made in Venezuela. The data controller is Ender Arrieta. You can write to hola@podzcash.online for any privacy question.",
         ],
       },
       {
