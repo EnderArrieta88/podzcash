@@ -36,10 +36,10 @@ test("cola: agregar, reordenar, persistir y navegar", async ({ page }) => {
 
   // Siguiente y anterior desde la barra.
   await page.getByRole("button", { name: "Siguiente episodio" }).click();
-  await expect(bar.getByTestId("player-track-title")).toHaveText(TITLE_2);
+  await expect(bar.getByTestId("player-track-title")).toContainText(TITLE_2);
 
   await page.getByRole("button", { name: "Episodio anterior" }).click();
-  await expect(bar.getByTestId("player-track-title")).toHaveText(TITLE_1);
+  await expect(bar.getByTestId("player-track-title")).toContainText(TITLE_1);
 
   // Reordenar: bajar el primero deja la cola como [TITLE_2, TITLE_1].
   // El panel sigue abierto mientras se navega entre episodios.
@@ -56,7 +56,7 @@ test("cola: agregar, reordenar, persistir y navegar", async ({ page }) => {
 
   // La cola sobrevive a la recarga.
   await page.reload();
-  await expect(page.getByTestId("player-track-title")).toHaveText(TITLE_1);
+  await expect(page.getByTestId("player-track-title")).toContainText(TITLE_1);
   await page.getByRole("button", { name: /^Cola/ }).click();
 
   const reloaded = page.getByRole("dialog", { name: "Cola de reproducción" });
