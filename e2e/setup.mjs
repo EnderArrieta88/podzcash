@@ -163,6 +163,28 @@ db.prepare(
   `INSERT INTO "Episode" ("id", "channelId", "title", "slug", "description", "kind", "audioPath", "coverKey", "durationSec", "fileSize", "mimeType", "status", "publishedAt", "playCount", "createdAt", "updatedAt")
    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 ).run(
+  "e2e_long_title_episode",
+  channelId,
+  "Un episodio con un título larguísimo para comprobar cómo se desliza el reproductor en el móvil",
+  "titulo-largo-e2e",
+  "Episodio para probar el título en movimiento del reproductor.",
+  "podcast",
+  audioPath,
+  null,
+  4,
+  audio.length,
+  "audio/wav",
+  "published",
+  now,
+  0,
+  now,
+  now,
+);
+
+db.prepare(
+  `INSERT INTO "Episode" ("id", "channelId", "title", "slug", "description", "kind", "audioPath", "coverKey", "durationSec", "fileSize", "mimeType", "status", "publishedAt", "playCount", "createdAt", "updatedAt")
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+).run(
   "e2e_analytics_episode",
   channelId,
   "Episodio de analítica E2E",

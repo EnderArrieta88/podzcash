@@ -184,3 +184,44 @@
   backdrop-filter: blur(20px);
 }
 
+/* Título del reproductor: desplazamiento continuo solo cuando el texto no
+   entra en el ancho disponible. La copia duplicada (aria-hidden) permite que
+   el bucle sea continuo; el hueco entre copias es de 2rem. */
+@keyframes player-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 1rem));
+  }
+}
+
+@layer utilities {
+  .player-title-track {
+    animation: player-marquee var(--marquee-duration, 16s) linear infinite;
+    will-change: transform;
+  }
+
+  .player-title-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-title-track {
+    display: block;
+    width: 100%;
+    animation: none;
+  }
+
+  .player-title-copy {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .player-title-clone {
+    display: none;
+  }
+}
+
