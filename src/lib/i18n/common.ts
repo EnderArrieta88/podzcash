@@ -30,7 +30,7 @@ const es = {
     privacy: "Privacidad",
     terms: "Términos",
     disclaimer:
-      "Proyecto independiente. No afiliado a Zcash Foundation ni a Electric Coin Company. Zcash es una marca de Zcash Foundation.",
+      "Proyecto independiente hecho en Venezuela. No afiliado a Zcash Foundation ni a Electric Coin Company. Zcash es una marca de Zcash Foundation.",
   },
 };
 
@@ -66,7 +66,7 @@ const en: CommonContent = {
     privacy: "Privacy",
     terms: "Terms",
     disclaimer:
-      "Independent project. Not affiliated with the Zcash Foundation or Electric Coin Company. Zcash is a trademark of the Zcash Foundation.",
+      "Independent project made in Venezuela. Not affiliated with the Zcash Foundation or Electric Coin Company. Zcash is a trademark of the Zcash Foundation.",
   },
 };
 
