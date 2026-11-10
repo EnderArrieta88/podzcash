@@ -51,7 +51,7 @@ const verifyEn: EmailCopy = {
 const inviteEs: EmailCopy = {
   subject: "Tu invitación a PodZcash",
   intro:
-    "Te invitaron a crear tu canal en PodZcash. Usá el código o el enlace para registrarte.",
+    "Te invitaron a crear tu canal en PodZcash. Usa el código o el enlace para registrarte.",
   button: "Crear mi cuenta",
   ignore:
     "Si no esperabas esta invitación, ignora este correo. El código es personal: no lo compartas.",

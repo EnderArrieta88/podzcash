@@ -17,7 +17,7 @@ const es = {
   support: "Apoyar con ZEC",
   comments: {
     title: "Comentarios",
-    empty: "Sé el primero: contá qué te pareció este episodio.",
+    empty: "Sé el primero: cuenta qué te pareció este episodio.",
     placeholder: "¿Qué te pareció este episodio?",
     submit: "Publicar comentario",
     pending: "Publicando…",

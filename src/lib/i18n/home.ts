@@ -16,7 +16,7 @@ const es = {
     trustBold: "Comunidad Zcash",
     trustRest: " · beta por invitación",
     latest: "Último episodio",
-    emptyTitle: "Tu primer episodio, acá",
+    emptyTitle: "Tu primer episodio, aquí",
     emptyMeta: "Publica tu audio y compártelo",
     photoAlt:
       "Creadora grabando un podcast en un estudio con micrófono y auriculares",  },
@@ -39,7 +39,7 @@ const es = {
       },
       {
         title: "Publicas tu audio",
-        body: "Arrastras el archivo, pones portada y descripción. Tu feed RSS se genera solo; con audio en MP3 o M4A podés llevarlo a Apple Podcasts y Spotify.",
+        body: "Arrastras el archivo, pones portada y descripción. Tu feed RSS se genera solo; con audio en MP3 o M4A puedes llevarlo a Apple Podcasts y Spotify.",
       },
       {
         title: "Recibes apoyo",

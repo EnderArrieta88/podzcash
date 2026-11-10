@@ -7,7 +7,7 @@ const es = {
     `Dona ZEC directamente a ${name} en PodZcash.`,
   noAddressTitle: (name: string) => `${name} todavía no acepta donaciones`,
   noAddressBody:
-    "Cuando el creador agregue su dirección de Zcash, va a aparecer aquí.",
+    "Cuando el creador añada su dirección de Zcash, va a aparecer aquí.",
   backToChannel: "Volver al canal",
   title: (name: string) => `Apoyar a ${name}`,
   subtitle: "Donación directa en ZEC, de persona a persona.",
@@ -39,7 +39,7 @@ const es = {
     memoLabel: "Mensaje en el memo",
     memoPlaceholder: "Gracias por el episodio",
     memoHint:
-      "Solo funciona con transacciones protegidas y algunos wallets lo ignoran.",
+      "Solo funciona con transacciones protegidas y algunas wallets lo ignoran.",
     openWallet: "Abrir en wallet",
     copied: "Copiado",
     copyUri: "Copiar enlace zcash:",

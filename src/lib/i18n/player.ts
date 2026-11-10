@@ -14,7 +14,7 @@ const es = {
   queue: "Cola",
   queueTitle: "Cola de reproducción",
   queueEmpty: "La cola está vacía.",
-  queueEmptyHint: "Añadí episodios desde su página para escucharlos seguidos.",
+  queueEmptyHint: "Añade episodios desde su página para escucharlos seguidos.",
   queueClear: "Vaciar la cola",
   queueRemove: "Quitar de la cola",
   queueUp: "Subir en la cola",
