@@ -18,13 +18,13 @@ import { reportContent } from "@/lib/i18n/report";
 import { commentReportContent } from "@/lib/i18n/comment-report";
 import { waitlistContent } from "@/lib/i18n/waitlist";
 import { pushContent } from "@/lib/i18n/push";
-import { countWaitlist, listWaitlist } from "@/lib/waitlist";
+import { countWaitlist, listWaitlist } from "@/features/waitlist/queries";
 import { episodePath } from "@/lib/routes";
-import { DeleteWaitlistButton } from "@/components/studio/delete-waitlist-button";
+import { DeleteWaitlistButton } from "@/features/waitlist/components/delete-waitlist-button";
+import { inviteWaitlistAction } from "@/features/waitlist/actions";
 import { PushNotifications } from "@/components/studio/push-notifications";
 import {
   cleanOrphansAction,
-  inviteWaitlistAction,
   resolveReportAction,
   setEpisodeStatusAction,
   setUserStatusAction,
