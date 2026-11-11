@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/guards";
 import { parseLinks } from "@/lib/links";
 import { storage } from "@/lib/storage";
-import { ChannelForm } from "@/components/studio/channel-form";
+import { ChannelForm } from "@/features/channels/components/channel-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { channelSettingsContent } from "@/lib/i18n/studio-channel";
 

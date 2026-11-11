@@ -20,7 +20,7 @@ src/
   app/                 rutas, layouts, páginas, route handlers y acciones
   components/          UI agrupada por dominio (auth, player, studio…)
     ui/                primitivas reutilizables (Button, Field, Copy…)
-  features/            dominios migrados a feature-based (comments, auth, waitlist, episodes)
+  features/            dominios migrados a feature-based (comments, auth, waitlist, episodes, channels)
   lib/                 lógica de dominio, consultas, utilidades y acceso a datos
     auth/              sesión, guardas, contraseñas y tokens
     i18n/              contenido ES/EN con tipos derivados del español
@@ -56,9 +56,10 @@ Reglas concretas:
 ### Deuda conocida
 
 - La migración a features empezó por `src/features/comments`, siguió con
-  `src/features/auth`, `src/features/waitlist` y `src/features/episodes`. El
-  resto de los dominios sigue repartido entre `app`, `components` y `lib`.
-  `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
+  `src/features/auth`, `src/features/waitlist`, `src/features/episodes` y
+  `src/features/channels`. El resto de los dominios sigue repartido entre
+  `app`, `components` y `lib`. `lib/auth` se mantiene como infraestructura de
+  sesión, tokens y contraseñas.
 - Varios componentes cliente todavía importan server actions desde `app`.
 - Algunas páginas consultan Prisma directamente.
 - Hay módulos grandes que conviene dividir: `player-context.tsx`,
