@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteEpisodeAction } from "@/app/(app)/estudio/actions";
+import { deleteEpisodeAction } from "@/features/episodes/actions";
 
 export function DeleteEpisodeButton({
   id,

@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/auth/guards";
 import { formatDate, formatDuration } from "@/lib/format";
 import { storage } from "@/lib/storage";
 import { ButtonLink } from "@/components/ui/button-link";
-import { DeleteEpisodeButton } from "@/components/studio/delete-episode-button";
+import { DeleteEpisodeButton } from "@/features/episodes/components/delete-episode-button";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioEpisodesContent } from "@/lib/i18n/studio-episodes";
 import { episodePath } from "@/lib/routes";

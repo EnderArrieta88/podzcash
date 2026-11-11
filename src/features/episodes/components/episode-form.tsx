@@ -2,7 +2,7 @@
 
 import { useActionState, useRef, useState } from "react";
 import { CheckCircle2, CloudUpload, ImagePlus, Music2, X } from "lucide-react";
-import { saveEpisodeAction } from "@/app/(app)/estudio/actions";
+import { saveEpisodeAction } from "@/features/episodes/actions";
 import {
   FieldError,
   FieldHint,
@@ -14,33 +14,11 @@ import {
 import { SubmitButton } from "@/components/ui/submit-button";
 import { formatBytes, formatDuration } from "@/lib/format";
 import type { StudioEpisodesContent } from "@/lib/i18n/studio-episodes";
+import type { EpisodeFormValues } from "../types";
 
 type EpisodeFormLabels = StudioEpisodesContent["form"];
 
 type UploadResult = { key: string; size: number; mimeType: string };
-
-type ExistingAudio = {
-  key: string;
-  size: number | null;
-  mimeType: string | null;
-  name: string;
-  durationSec: number | null;
-};
-
-export type EpisodeFormValues = {
-  id: string;
-  title: string;
-  description: string | null;
-  kind: string;
-  tags: string;
-  season: number | null;
-  episodeNumber: number | null;
-  episodeType: string;
-  explicit: boolean | null;
-  audio: ExistingAudio;
-  coverKey: string | null;
-  coverUrl: string | null;
-};
 
 const MAX_AUDIO_BYTES = 300 * 1024 * 1024;
 const MAX_COVER_BYTES = 4 * 1024 * 1024;
