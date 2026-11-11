@@ -1,3 +1,4 @@
+import "server-only";
 import { prisma } from "@/lib/db";
 import { ensureIndex, searchEpisodeIds } from "@/lib/search-index";
 

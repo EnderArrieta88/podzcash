@@ -22,14 +22,13 @@ export function InviteForm({
           placeholder={labels.notePlaceholder}
           aria-label={labels.noteAria}
         />
-        <SubmitButton pendingLabel={labels.pending}>{labels.submit}</SubmitButton>
+        <SubmitButton pendingLabel={labels.pending}>
+          {labels.submit}
+        </SubmitButton>
       </div>
 
       {state?.error && <p className="text-xs text-danger">{state.error}</p>}
-      {state?.ok && (
-        <p className="text-xs text-success">{labels.generated}</p>
-      )}
+      {state?.ok && <p className="text-xs text-success">{labels.generated}</p>}
     </form>
   );
 }
-

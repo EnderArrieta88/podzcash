@@ -40,10 +40,7 @@ export type OfflineDownload = {
 export type DownloadInput = Omit<OfflineDownload, "downloadedAt">;
 
 export type OfflineAudioErrorCode =
-  | "unsupported"
-  | "quota"
-  | "network"
-  | "storage";
+  "unsupported" | "quota" | "network" | "storage";
 
 export class OfflineAudioError extends Error {
   code: OfflineAudioErrorCode;
@@ -172,7 +169,10 @@ export function downloadEpisode(
 
 async function runDownload(
   input: DownloadInput,
-  { onProgress, signal }: { onProgress?: (percent: number) => void; signal?: AbortSignal },
+  {
+    onProgress,
+    signal,
+  }: { onProgress?: (percent: number) => void; signal?: AbortSignal },
 ): Promise<void> {
   if (!cacheAvailable()) throw new OfflineAudioError("unsupported");
 
@@ -248,10 +248,7 @@ async function runDownload(
   if (total > 0) headers.set("Content-Length", String(total));
 
   try {
-    await cache.put(
-      key,
-      new Response(stream, { status: 200, headers }),
-    );
+    await cache.put(key, new Response(stream, { status: 200, headers }));
   } catch (error) {
     await cache.delete(key).catch(() => {});
     throw new OfflineAudioError(

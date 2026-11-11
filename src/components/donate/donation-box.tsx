@@ -13,7 +13,11 @@ type DonationBoxProps = {
   labels: DonationBoxLabels;
 };
 
-export function DonationBox({ address, channelName, labels }: DonationBoxProps) {
+export function DonationBox({
+  address,
+  channelName,
+  labels,
+}: DonationBoxProps) {
   const [amount, setAmount] = useState("");
   const [memo, setMemo] = useState("");
   const [qr, setQr] = useState<string | null>(null);
@@ -21,7 +25,9 @@ export function DonationBox({ address, channelName, labels }: DonationBoxProps) 
 
   const parsedAmount = Number.parseFloat(amount.replace(",", "."));
   const amountValue =
-    Number.isFinite(parsedAmount) && parsedAmount > 0 ? parsedAmount : undefined;
+    Number.isFinite(parsedAmount) && parsedAmount > 0
+      ? parsedAmount
+      : undefined;
 
   const uri = useMemo(
     () => buildPaymentUri({ address, amount: amountValue, memo }),
@@ -113,7 +119,9 @@ export function DonationBox({ address, channelName, labels }: DonationBoxProps) 
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">
             {labels.amount}{" "}
-            <span className="normal-case tracking-normal">{labels.optional}</span>
+            <span className="normal-case tracking-normal">
+              {labels.optional}
+            </span>
           </p>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -159,7 +167,9 @@ export function DonationBox({ address, channelName, labels }: DonationBoxProps) 
             className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle"
           >
             {labels.memoLabel}{" "}
-            <span className="normal-case tracking-normal">{labels.optional}</span>
+            <span className="normal-case tracking-normal">
+              {labels.optional}
+            </span>
           </label>
           <input
             id="donation-memo"

@@ -46,12 +46,10 @@ describe("classifyUserAgent", () => {
 
 describe("isPrefetchRequest", () => {
   it("detecta los encabezados de prefetch", () => {
-    expect(
-      isPrefetchRequest(new Headers({ purpose: "prefetch" })),
-    ).toBe(true);
-    expect(
-      isPrefetchRequest(new Headers({ "sec-purpose": "prefetch" })),
-    ).toBe(true);
+    expect(isPrefetchRequest(new Headers({ purpose: "prefetch" }))).toBe(true);
+    expect(isPrefetchRequest(new Headers({ "sec-purpose": "prefetch" }))).toBe(
+      true,
+    );
     expect(isPrefetchRequest(new Headers({ "x-moz": "prefetch" }))).toBe(true);
     expect(isPrefetchRequest(new Headers({ purpose: "playback" }))).toBe(false);
   });
@@ -135,20 +133,43 @@ describe("summarizeMediaEvents", () => {
 describe("aggregateDay", () => {
   it("combina descargas, inicios y escuchas verificadas", () => {
     const media = [
-      { ...event({ requestId: "r1", bytes: 20_000 }), episodeId: "e1", channelId: "c1" },
-      { ...event({ requestId: "r2", bytes: 20_000 }), episodeId: "e1", channelId: "c1" },
       {
-        ...event({ requestId: "r3", ipHash: "ip-short", uaHash: "ua-short", bytes: 5_000 }),
+        ...event({ requestId: "r1", bytes: 20_000 }),
         episodeId: "e1",
         channelId: "c1",
       },
       {
-        ...event({ requestId: "r4", ipHash: "ip-bot", isBot: 1, bytes: 64_044 }),
+        ...event({ requestId: "r2", bytes: 20_000 }),
         episodeId: "e1",
         channelId: "c1",
       },
       {
-        ...event({ requestId: "r5", ipHash: "ip-prefetch", isPrefetch: 1, bytes: 64_044 }),
+        ...event({
+          requestId: "r3",
+          ipHash: "ip-short",
+          uaHash: "ua-short",
+          bytes: 5_000,
+        }),
+        episodeId: "e1",
+        channelId: "c1",
+      },
+      {
+        ...event({
+          requestId: "r4",
+          ipHash: "ip-bot",
+          isBot: 1,
+          bytes: 64_044,
+        }),
+        episodeId: "e1",
+        channelId: "c1",
+      },
+      {
+        ...event({
+          requestId: "r5",
+          ipHash: "ip-prefetch",
+          isPrefetch: 1,
+          bytes: 64_044,
+        }),
         episodeId: "e1",
         channelId: "c1",
       },

@@ -13,7 +13,8 @@ export const pwaManifest: MetadataRoute.Manifest = {
   id: "/",
   name: "PodZcash",
   short_name: "PodZcash",
-  description: "Podcasts y música con apoyo directo en ZEC, sin intermediarios.",
+  description:
+    "Podcasts y música con apoyo directo en ZEC, sin intermediarios.",
   lang: "es",
   dir: "ltr",
   start_url: "/",

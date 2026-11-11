@@ -1,11 +1,13 @@
+import "server-only";
 import { headers } from "next/headers";
+import { env } from "@/lib/env";
 
 /**
  * Origen público para enlaces enviados por email.
  * SITE_URL manda en producción; en local se deriva de la petición.
  */
 export async function getSiteOrigin(): Promise<string> {
-  const configured = process.env.SITE_URL?.replace(/\/+$/, "");
+  const configured = env.SITE_URL?.replace(/\/+$/, "");
   if (configured) return configured;
 
   const requestHeaders = await headers();

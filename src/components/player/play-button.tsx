@@ -46,7 +46,9 @@ export function PlayButton({
       }
       className={cn(
         "inline-flex items-center justify-center gap-2 bg-brand text-[#17130a] transition-colors hover:bg-brand-strong",
-        size === "lg" ? "h-12 rounded-full px-6 text-sm font-medium" : "size-10 rounded-full",
+        size === "lg"
+          ? "h-12 rounded-full px-6 text-sm font-medium"
+          : "size-10 rounded-full",
         isPlaying && "glow-playing",
         className,
       )}

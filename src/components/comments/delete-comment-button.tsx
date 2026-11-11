@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  deleteEpisodeCommentAction,
-} from "@/app/(app)/canal/[handle]/[slug]/comments-actions";
+import { deleteEpisodeCommentAction } from "@/app/(app)/canal/[handle]/[slug]/comments-actions";
 
 export function DeleteCommentButton({
   id,

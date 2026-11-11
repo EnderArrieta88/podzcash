@@ -86,6 +86,8 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript sin emitir |
 | `npm run test` | Tests unitarios con Vitest |
+| `npm run format` | Aplica Prettier a todo el proyecto |
+| `npm run format:check` | Verifica el formato sin escribir |
 | `npm run e2e` | Tests E2E con Playwright (requiere build y Chromium) |
 | `npm run e2e:setup` | Recrea la base y los medios aislados de E2E |
 | `npm run e2e:server` | Levanta el servidor de E2E en el puerto 3100 |
@@ -256,6 +258,9 @@ src/
 La tabla `WaitlistEntry` se crea sola en la primera solicitud. La migración
 equivalente usa `CREATE TABLE IF NOT EXISTS`, así que también funciona en
 instalaciones nuevas.
+
+Las reglas de capas, dependencias y ubicación de archivos están en
+[ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Contribuir
 

@@ -1,3 +1,4 @@
+import "server-only";
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
 // 48 horas: suficiente para revisar el correo sin dejar el enlace abierto

@@ -89,8 +89,12 @@ describe("clampProgress", () => {
 describe("isValidProgress", () => {
   it("valida la forma del progreso", () => {
     expect(isValidProgress(point(10, 1_000))).toBe(true);
-    expect(isValidProgress({ positionSec: 10, durationSec: null, updatedAt: 1 })).toBe(true);
-    expect(isValidProgress({ positionSec: -1, durationSec: null, updatedAt: 1 })).toBe(false);
+    expect(
+      isValidProgress({ positionSec: 10, durationSec: null, updatedAt: 1 }),
+    ).toBe(true);
+    expect(
+      isValidProgress({ positionSec: -1, durationSec: null, updatedAt: 1 }),
+    ).toBe(false);
     expect(isValidProgress({ positionSec: 10, durationSec: null })).toBe(false);
     expect(isValidProgress(null)).toBe(false);
   });

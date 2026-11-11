@@ -5,7 +5,10 @@ import { prisma } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 function baseUrl(): string {
-  return (process.env.SITE_URL ?? "https://podzcash.online").replace(/\/+$/, "");
+  return (process.env.SITE_URL ?? "https://podzcash.online").replace(
+    /\/+$/,
+    "",
+  );
 }
 
 const staticPaths: Array<{

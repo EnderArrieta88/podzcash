@@ -27,7 +27,9 @@ export default async function AccountDeletedPage() {
         <h1 className="mt-5 font-display text-3xl tracking-tight">
           {content.title}
         </h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted">{content.body}</p>
+        <p className="mt-3 text-sm leading-relaxed text-muted">
+          {content.body}
+        </p>
 
         <Link
           href="/"

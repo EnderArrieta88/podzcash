@@ -18,9 +18,7 @@ export async function GET(request: Request) {
 
   if (!user) return unauthorized();
 
-  const episodeId = new URL(request.url).searchParams
-    .get("episodeId")
-    ?.trim();
+  const episodeId = new URL(request.url).searchParams.get("episodeId")?.trim();
 
   if (!episodeId) {
     return NextResponse.json({ error: "invalid" }, { status: 400 });

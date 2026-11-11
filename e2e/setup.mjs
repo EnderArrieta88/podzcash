@@ -247,29 +247,38 @@ db.prepare(
   now,
 );
 
-db.prepare(
-  `INSERT INTO "Tag" ("id", "name", "slug") VALUES (?, ?, ?)`,
-).run("e2e_tag_privacidad", "privacidad", "privacidad");
+db.prepare(`INSERT INTO "Tag" ("id", "name", "slug") VALUES (?, ?, ?)`).run(
+  "e2e_tag_privacidad",
+  "privacidad",
+  "privacidad",
+);
 
-db.prepare(
-  `INSERT INTO "Tag" ("id", "name", "slug") VALUES (?, ?, ?)`,
-).run("e2e_tag_zcash", "zcash", "zcash");
+db.prepare(`INSERT INTO "Tag" ("id", "name", "slug") VALUES (?, ?, ?)`).run(
+  "e2e_tag_zcash",
+  "zcash",
+  "zcash",
+);
 
-db.prepare(
-  `INSERT INTO "Tag" ("id", "name", "slug") VALUES (?, ?, ?)`,
-).run("e2e_tag_seguridad", "seguridad", "seguridad");
+db.prepare(`INSERT INTO "Tag" ("id", "name", "slug") VALUES (?, ?, ?)`).run(
+  "e2e_tag_seguridad",
+  "seguridad",
+  "seguridad",
+);
 
-db.prepare(
-  `INSERT INTO "EpisodeTag" ("episodeId", "tagId") VALUES (?, ?)`,
-).run(episodeId, "e2e_tag_privacidad");
+db.prepare(`INSERT INTO "EpisodeTag" ("episodeId", "tagId") VALUES (?, ?)`).run(
+  episodeId,
+  "e2e_tag_privacidad",
+);
 
-db.prepare(
-  `INSERT INTO "EpisodeTag" ("episodeId", "tagId") VALUES (?, ?)`,
-).run(episodeId, "e2e_tag_zcash");
+db.prepare(`INSERT INTO "EpisodeTag" ("episodeId", "tagId") VALUES (?, ?)`).run(
+  episodeId,
+  "e2e_tag_zcash",
+);
 
-db.prepare(
-  `INSERT INTO "EpisodeTag" ("episodeId", "tagId") VALUES (?, ?)`,
-).run(episodeId, "e2e_tag_seguridad");
+db.prepare(`INSERT INTO "EpisodeTag" ("episodeId", "tagId") VALUES (?, ?)`).run(
+  episodeId,
+  "e2e_tag_seguridad",
+);
 
 const insertComment = db.prepare(
   `INSERT INTO "EpisodeComment" ("id", "episodeId", "userId", "body", "createdAt")
@@ -320,7 +329,13 @@ db.prepare(
 db.prepare(
   `INSERT INTO "Invite" ("id", "code", "note", "createdById", "createdAt")
    VALUES (?, ?, ?, ?, ?)`,
-).run("e2e_delete_invite", "E2EDELETE01", "Invitación de prueba", "e2e_delete_user", now);
+).run(
+  "e2e_delete_invite",
+  "E2EDELETE01",
+  "Invitación de prueba",
+  "e2e_delete_user",
+  now,
+);
 
 db.prepare(
   `INSERT INTO "Invite" ("id", "code", "note", "createdById", "usedById", "usedAt", "createdAt")

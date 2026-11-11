@@ -10,10 +10,10 @@ const es = {
   manage: "Gestionar descargas",
   pageMeta: "Descargas",
   pageTitle: "Descargas",
-  intro:
-    "Episodios guardados en este dispositivo. Se reproducen sin conexión.",
+  intro: "Episodios guardados en este dispositivo. Se reproducen sin conexión.",
   empty: "Todavía no descargaste ningún episodio.",
-  emptyHint: "Abre un episodio y selecciona Descargar para escucharlo sin conexión.",
+  emptyHint:
+    "Abre un episodio y selecciona Descargar para escucharlo sin conexión.",
   used: "Espacio usado",
   almostFull:
     "Estás cerca del límite de descargas. Borra algún episodio para liberar espacio.",
@@ -63,8 +63,7 @@ const en: OfflineAudioContent = {
   downloadedOn: "Downloaded",
   hint: "Downloads live on this device. You can delete them anytime.",
   errors: {
-    unsupported:
-      "This browser cannot save audio for offline listening.",
+    unsupported: "This browser cannot save audio for offline listening.",
     quota: "Not enough space. Delete a download or raise the quota.",
     network: "The episode could not be downloaded. Check your connection.",
     storage: "The browser could not save the file.",

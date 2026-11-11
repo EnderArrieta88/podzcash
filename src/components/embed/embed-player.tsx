@@ -2,7 +2,10 @@
 
 import { useRef } from "react";
 import { Music2, Pause, Play } from "lucide-react";
-import { usePlayer, type PlayerTrack } from "@/components/player/player-context";
+import {
+  usePlayer,
+  type PlayerTrack,
+} from "@/components/player/player-context";
 import { formatDuration } from "@/lib/format";
 import type { Locale } from "@/lib/i18n/config";
 import { embedContent } from "@/lib/i18n/embed";
@@ -23,8 +26,15 @@ export function EmbedPlayer({
   href: string;
   locale: Locale;
 }) {
-  const { track: current, playing, time, duration, play, toggle, seek } =
-    usePlayer();
+  const {
+    track: current,
+    playing,
+    time,
+    duration,
+    play,
+    toggle,
+    seek,
+  } = usePlayer();
   const rail = useRef<HTMLDivElement>(null);
   const text = embedContent[locale];
 

@@ -91,9 +91,7 @@ test("el historial de progreso se puede borrar", async ({ page }) => {
     page.getByText("Historial de reproducción borrado."),
   ).toBeVisible();
 
-  const after = await page.request.get(
-    `/api/progress?episodeId=${EPISODE_ID}`,
-  );
+  const after = await page.request.get(`/api/progress?episodeId=${EPISODE_ID}`);
   expect(after.status()).toBe(200);
   expect(await after.json()).toBeNull();
 });
@@ -162,4 +160,3 @@ test("sin sesión la posición sigue en localStorage y no hay errores", async ({
     { timeout: 15_000 },
   );
 });
-

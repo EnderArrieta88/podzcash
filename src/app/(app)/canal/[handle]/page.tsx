@@ -13,7 +13,12 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { parseLinks } from "@/lib/links";
 import { storage } from "@/lib/storage";
-import { channelPath, donatePath, feedPath, normalizeHandleParam } from "@/lib/routes";
+import {
+  channelPath,
+  donatePath,
+  feedPath,
+  normalizeHandleParam,
+} from "@/lib/routes";
 import { EpisodeRow } from "@/components/content/episode-row";
 import { formatDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
@@ -185,7 +190,8 @@ export default async function ChannelPage({ params }: PageProps) {
           </h1>
 
           <p className="mt-2 font-mono text-xs text-subtle">
-            @{channel.handle} · {content.since} {formatDate(channel.createdAt, locale)}
+            @{channel.handle} · {content.since}{" "}
+            {formatDate(channel.createdAt, locale)}
           </p>
 
           {channel.bio && (
@@ -332,4 +338,3 @@ export default async function ChannelPage({ params }: PageProps) {
     </div>
   );
 }
-

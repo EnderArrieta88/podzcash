@@ -7,11 +7,7 @@ import { FieldError, Input, Label } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { ResetRequestLabels } from "@/lib/i18n/auth";
 
-export function ResetRequestForm({
-  labels,
-}: {
-  labels: ResetRequestLabels;
-}) {
+export function ResetRequestForm({ labels }: { labels: ResetRequestLabels }) {
   const [state, action] = useActionState(requestPasswordResetAction, null);
 
   if (state?.ok) {

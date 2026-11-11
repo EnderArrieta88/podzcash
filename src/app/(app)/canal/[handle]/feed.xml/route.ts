@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 import { buildChannelFeed } from "@/lib/feed-xml";
 import { siteOrigin } from "@/lib/rss";
 import { normalizeHandleParam } from "@/lib/routes";
 
 export const dynamic = "force-dynamic";
 
-const OWNER_EMAIL = process.env.FEED_OWNER_EMAIL ?? "hola@podzcash.online";
+const OWNER_EMAIL = env.FEED_OWNER_EMAIL;
 
 type RouteContext = { params: Promise<{ handle: string }> };
 

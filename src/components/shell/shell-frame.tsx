@@ -41,7 +41,10 @@ export function ShellFrame({
 
     const root = document.documentElement;
     root.style.setProperty("--rail-width", collapsed ? "80px" : "256px");
-    window.localStorage.setItem(STORAGE_KEY, collapsed ? "collapsed" : "expanded");
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      collapsed ? "collapsed" : "expanded",
+    );
 
     return () => {
       root.style.setProperty("--rail-width", "0px");

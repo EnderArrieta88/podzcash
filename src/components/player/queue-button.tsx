@@ -2,7 +2,10 @@
 
 import { Check, ListPlus } from "lucide-react";
 import type { PlayerContent } from "@/lib/i18n/player";
-import { usePlayer, type PlayerTrack } from "@/components/player/player-context";
+import {
+  usePlayer,
+  type PlayerTrack,
+} from "@/components/player/player-context";
 
 /**
  * Añade o quita un episodio de la cola. La cola persiste en localStorage y se

@@ -9,7 +9,9 @@ import { markChannelCommentsSeen } from "@/lib/comments";
 
 const NOTIFY_VALUES = new Set(["inbox", "email", "off"]);
 
-export async function setCommentNotifyAction(formData: FormData): Promise<void> {
+export async function setCommentNotifyAction(
+  formData: FormData,
+): Promise<void> {
   const user = await requireUser();
 
   if (!user.channel) redirect("/estudio/canal");

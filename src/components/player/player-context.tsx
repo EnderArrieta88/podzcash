@@ -150,7 +150,10 @@ export function PlayerProvider({
       if (rawSleep) {
         const parsed = JSON.parse(rawSleep) as { endsAt?: number };
 
-        if (typeof parsed.endsAt === "number" && !isSleepTimerDone(parsed.endsAt)) {
+        if (
+          typeof parsed.endsAt === "number" &&
+          !isSleepTimerDone(parsed.endsAt)
+        ) {
           savedSleep = parsed.endsAt;
         } else {
           window.localStorage.removeItem(SLEEP_KEY);
@@ -728,7 +731,11 @@ export function PlayerProvider({
           const audio = event.currentTarget;
           setTime(audio.currentTime);
 
-          if (!track || !Number.isFinite(audio.duration) || audio.duration <= 0) {
+          if (
+            !track ||
+            !Number.isFinite(audio.duration) ||
+            audio.duration <= 0
+          ) {
             return;
           }
 

@@ -12,12 +12,14 @@ export function ServiceWorkerRegister() {
     if (!("serviceWorker" in navigator)) return;
 
     const register = () => {
-      void navigator.serviceWorker.register("/sw.js", {
-        scope: "/",
-        updateViaCache: "none",
-      }).catch((error) => {
-        console.error("[pwa] No se pudo registrar el service worker:", error);
-      });
+      void navigator.serviceWorker
+        .register("/sw.js", {
+          scope: "/",
+          updateViaCache: "none",
+        })
+        .catch((error) => {
+          console.error("[pwa] No se pudo registrar el service worker:", error);
+        });
     };
 
     if (document.readyState === "complete") {

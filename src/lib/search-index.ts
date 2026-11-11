@@ -1,3 +1,4 @@
+import "server-only";
 import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
@@ -171,6 +172,8 @@ export async function ensureIndex(): Promise<void> {
 
   if (count > 0) return;
 
-  const published = await prisma.episode.count({ where: { status: "published" } });
+  const published = await prisma.episode.count({
+    where: { status: "published" },
+  });
   if (published > 0) await reindexAll();
 }

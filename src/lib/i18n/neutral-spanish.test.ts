@@ -133,9 +133,7 @@ describe("español neutro", () => {
           const match = text.match(rule.pattern);
 
           if (match) {
-            offenders.push(
-              `${name}: "${text}" (${rule.name}: ${match[0]})`,
-            );
+            offenders.push(`${name}: "${text}" (${rule.name}: ${match[0]})`);
           }
         }
       }

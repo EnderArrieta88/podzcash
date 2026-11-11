@@ -10,11 +10,20 @@ import { createSession, destroySession } from "@/lib/auth/session";
 import { generateInviteCode, linkListSchema } from "@/lib/links";
 import { slugify, uniqueSlug } from "@/lib/slug";
 import { IMAGE_MIME } from "@/lib/media-types";
-import { indexEpisode, reindexChannel, removeFromIndex } from "@/lib/search-index";
+import {
+  indexEpisode,
+  reindexChannel,
+  removeFromIndex,
+} from "@/lib/search-index";
 import { purgeEpisodes } from "@/lib/analytics";
 import { storage } from "@/lib/storage";
 import { parseTags } from "@/lib/tags";
-import { channelSchema, episodeSchema, passwordChangeSchema, toFieldErrors } from "@/lib/validation";
+import {
+  channelSchema,
+  episodeSchema,
+  passwordChangeSchema,
+  toFieldErrors,
+} from "@/lib/validation";
 import { validateZcashAddress } from "@/lib/zcash-address";
 import { channelPath, episodePath } from "@/lib/routes";
 import { take } from "@/lib/rate-limit";
@@ -54,8 +63,14 @@ export async function saveChannelAction(
     return { fields: toFieldErrors(parsed.error, locale) };
   }
 
-  const { displayName, handle, feedLanguage, feedCategory, feedExplicit, block } =
-    parsed.data;
+  const {
+    displayName,
+    handle,
+    feedLanguage,
+    feedCategory,
+    feedExplicit,
+    block,
+  } = parsed.data;
   const bio = parsed.data.bio || null;
   const ownerEmail = parsed.data.ownerEmail?.trim() || null;
   const newFeedUrl = parsed.data.newFeedUrl?.trim() || null;
@@ -207,7 +222,10 @@ export async function createInviteAction(
   formData: FormData,
 ): Promise<ActionState> {
   const [admin, locale] = await Promise.all([requireAdmin(), getLocale()]);
-  const note = String(formData.get("note") ?? "").trim().slice(0, 80) || null;
+  const note =
+    String(formData.get("note") ?? "")
+      .trim()
+      .slice(0, 80) || null;
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const code = generateInviteCode();
@@ -272,8 +290,7 @@ export async function saveEpisodeAction(
 
   const { title, description, kind, season, episodeType, explicit } =
     parsed.data;
-  const requestedEpisodeNumber =
-    parsed.data.episodeNumber ?? null;
+  const requestedEpisodeNumber = parsed.data.episodeNumber ?? null;
 
   const existing = episodeId
     ? await prisma.episode.findFirst({
@@ -343,9 +360,7 @@ export async function saveEpisodeAction(
   }
 
   const status = publish ? "published" : "draft";
-  const publishedAt = publish
-    ? (existing?.publishedAt ?? new Date())
-    : null;
+  const publishedAt = publish ? (existing?.publishedAt ?? new Date()) : null;
 
   let savedEpisodeId = "";
 
@@ -475,10 +490,7 @@ export async function deleteAccountAction(
   const confirmation = String(formData.get("confirmation") ?? "").trim();
   const acknowledge = formData.get("acknowledge") === "on";
 
-  if (
-    !acknowledge ||
-    confirmation.toLowerCase() !== user.email.toLowerCase()
-  ) {
+  if (!acknowledge || confirmation.toLowerCase() !== user.email.toLowerCase()) {
     return { error: content.errors.deleteConfirmation };
   }
 
@@ -520,10 +532,7 @@ export async function deleteAccountAction(
       // invitaciones sin usar que creó se revocan con la cuenta.
       prisma.invite.deleteMany({
         where: {
-          OR: [
-            { usedById: user.id },
-            { createdById: user.id, usedById: null },
-          ],
+          OR: [{ usedById: user.id }, { createdById: user.id, usedById: null }],
         },
       }),
       prisma.user.delete({ where: { id: user.id } }),

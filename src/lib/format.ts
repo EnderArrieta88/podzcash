@@ -1,4 +1,6 @@
-export function formatDuration(totalSeconds: number | null | undefined): string {
+export function formatDuration(
+  totalSeconds: number | null | undefined,
+): string {
   if (!totalSeconds || totalSeconds <= 0) return "--:--";
 
   const seconds = Math.round(totalSeconds);

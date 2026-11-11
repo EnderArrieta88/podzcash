@@ -1,9 +1,6 @@
+import "server-only";
 import type Database from "better-sqlite3";
-import {
-  addMissingColumns,
-  columns,
-  openDatabase,
-} from "@/lib/sqlite-bridge";
+import { addMissingColumns, columns, openDatabase } from "@/lib/sqlite-bridge";
 
 function backfillEpisodeNumbers(db: Database.Database): void {
   const episodeColumns = columns(db, "Episode");

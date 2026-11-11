@@ -85,11 +85,7 @@ export function clampProgress(
 ): number {
   if (!Number.isFinite(positionSec) || positionSec < 0) return 0;
 
-  if (
-    durationSec != null &&
-    Number.isFinite(durationSec) &&
-    durationSec > 0
-  ) {
+  if (durationSec != null && Number.isFinite(durationSec) && durationSec > 0) {
     return Math.min(positionSec, durationSec);
   }
 

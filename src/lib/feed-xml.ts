@@ -1,3 +1,4 @@
+import "server-only";
 import {
   cdata,
   escapeXml,
@@ -107,7 +108,10 @@ ${cover ? `      <itunes:image href="${escapeXml(cover)}"/>\n` : ""}${categories
     .join("\n");
 
   const lastBuild = episodes.length
-    ? rfc822(episodes[episodes.length - 1].publishedAt ?? episodes[episodes.length - 1].createdAt)
+    ? rfc822(
+        episodes[episodes.length - 1].publishedAt ??
+          episodes[episodes.length - 1].createdAt,
+      )
     : rfc822(channel.createdAt);
 
   return `<?xml version="1.0" encoding="UTF-8"?>

@@ -1,5 +1,7 @@
+import "server-only";
 import { sendNotification, setVapidDetails } from "web-push";
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 import {
   isMobileUserAgent,
   waitlistPushPayload,
@@ -91,10 +93,9 @@ export async function deleteUserPushSubscriptions(
   await prisma.pushSubscription.deleteMany({ where: { userId } });
 }
 
-const PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY?.trim();
-const PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY?.trim();
-const SUBJECT =
-  process.env.VAPID_SUBJECT?.trim() || "mailto:hola@podzcash.online";
+const PUBLIC_KEY = env.VAPID_PUBLIC_KEY;
+const PRIVATE_KEY = env.VAPID_PRIVATE_KEY;
+const SUBJECT = env.VAPID_SUBJECT;
 
 export function isPushConfigured(): boolean {
   return Boolean(PUBLIC_KEY && PRIVATE_KEY);

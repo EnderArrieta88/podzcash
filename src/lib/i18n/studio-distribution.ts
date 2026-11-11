@@ -30,7 +30,8 @@ const en: StudioDistributionContent = {
   intro:
     "Your RSS feed takes the channel to Apple Podcasts, Spotify and any podcast player.",
   feedTitle: "RSS feed",
-  feedHint: "It is public and updates automatically when you publish an episode.",
+  feedHint:
+    "It is public and updates automatically when you publish an episode.",
   howTo:
     "In Apple and Spotify choose “add podcast by RSS” and paste this URL. Verification can take a few hours. Upload your audio as MP3 or M4A and use a square cover of at least 1400 × 1400 px.",
   embedTitle: "Embeddable player",

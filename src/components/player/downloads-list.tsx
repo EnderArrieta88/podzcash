@@ -152,7 +152,11 @@ export function DownloadsList({
           </div>
           <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-2">
             <div
-              className={ratio >= 85 ? "h-full rounded-full bg-brand" : "h-full rounded-full bg-jade"}
+              className={
+                ratio >= 85
+                  ? "h-full rounded-full bg-brand"
+                  : "h-full rounded-full bg-jade"
+              }
               style={{ width: `${ratio}%` }}
             />
           </div>

@@ -57,8 +57,7 @@ const es = {
       emailExists: "Ese email ya tiene una cuenta.",
       inviteTaken: "Alguien acaba de usar ese código. Pide otro.",
       retry: "No se pudo crear la cuenta. Inténtalo otra vez.",
-      termsRequired:
-        "Debes aceptar los términos y la política de privacidad.",
+      termsRequired: "Debes aceptar los términos y la política de privacidad.",
     },
   },
   resetRequest: {
@@ -103,7 +102,8 @@ const es = {
     title: "Verifica tu cuenta",
     intro: "Te enviamos un enlace para confirmar tu email.",
     confirmTitle: "Confirma tu cuenta",
-    confirmBody: "Haz clic en el botón para activar tu cuenta y empezar a publicar.",
+    confirmBody:
+      "Haz clic en el botón para activar tu cuenta y empezar a publicar.",
     confirm: "Confirmar cuenta",
     confirming: "Confirmando…",
     successTitle: "Cuenta verificada",
@@ -112,8 +112,7 @@ const es = {
     invalidBody:
       "Puede que haya caducado o ya se haya usado. Solicita uno nuevo abajo.",
     resendTitle: "Reenviar el enlace",
-    resendIntro:
-      "Escribe el email de tu cuenta y te enviamos un enlace nuevo.",
+    resendIntro: "Escribe el email de tu cuenta y te enviamos un enlace nuevo.",
     email: "Email",
     emailPlaceholder: "tu@email.com",
     submit: "Reenviar enlace",
@@ -222,8 +221,7 @@ const en: AuthContent = {
     submit: "Save password",
     pending: "Saving…",
     invalidTitle: "This link is not valid",
-    invalidBody:
-      "It may have expired or already been used. Request a new one.",
+    invalidBody: "It may have expired or already been used. Request a new one.",
     requestNew: "Request another link",
     errors: {
       invalidToken: "The link is invalid or expired. Request a new one.",
@@ -235,7 +233,8 @@ const en: AuthContent = {
     title: "Verify your account",
     intro: "We sent you a link to confirm your email.",
     confirmTitle: "Confirm your account",
-    confirmBody: "Press the button to activate your account and start publishing.",
+    confirmBody:
+      "Press the button to activate your account and start publishing.",
     confirm: "Confirm account",
     confirming: "Confirming…",
     successTitle: "Account verified",

@@ -32,8 +32,7 @@ const es = {
     status: "Estado",
     active: "Canal activo",
     nextTitle: "Siguiente: subir tu primer audio",
-    nextBody:
-      "Tu canal ya está listo para recibir tu primer episodio.",
+    nextBody: "Tu canal ya está listo para recibir tu primer episodio.",
     edit: "Editar canal",
   },
 };

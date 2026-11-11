@@ -65,7 +65,10 @@ export function previousTrack<T extends QueueItem>(
   return queue[index - 1] ?? null;
 }
 
-export function canGoNext(queue: QueueItem[], currentId: string | null): boolean {
+export function canGoNext(
+  queue: QueueItem[],
+  currentId: string | null,
+): boolean {
   return nextTrack(queue, currentId) !== null;
 }
 

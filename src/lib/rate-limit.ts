@@ -1,3 +1,4 @@
+import "server-only";
 import Database from "better-sqlite3";
 import { createHmac } from "node:crypto";
 import { mkdirSync } from "node:fs";
@@ -144,7 +145,9 @@ export function createRateLimitStore(
 
       const count = row.count + 1;
       instance
-        .prepare("UPDATE rate_limits SET count = ?, updated_at = ? WHERE key = ?")
+        .prepare(
+          "UPDATE rate_limits SET count = ?, updated_at = ? WHERE key = ?",
+        )
         .run(count, ms, hashed);
 
       const allowed = count <= limit;

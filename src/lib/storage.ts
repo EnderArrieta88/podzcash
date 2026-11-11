@@ -1,13 +1,12 @@
+import "server-only";
 import { createWriteStream } from "node:fs";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
+import { env } from "@/lib/env";
 
-const MEDIA_ROOT = path.resolve(
-  process.cwd(),
-  process.env.MEDIA_ROOT ?? "./.media",
-);
+const MEDIA_ROOT = path.resolve(process.cwd(), env.MEDIA_ROOT);
 
 export { contentTypeFor } from "@/lib/media-types";
 

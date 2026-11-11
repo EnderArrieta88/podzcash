@@ -164,7 +164,12 @@ export async function GET(request: Request, context: RouteContext) {
       end = size - 1;
     }
 
-    if (Number.isNaN(start) || Number.isNaN(end) || start >= size || start > end) {
+    if (
+      Number.isNaN(start) ||
+      Number.isNaN(end) ||
+      start >= size ||
+      start > end
+    ) {
       queueAudioLog(info, {
         status: 416,
         rangeStart: Number.isNaN(start) ? null : start,
@@ -199,9 +204,7 @@ export async function GET(request: Request, context: RouteContext) {
     return new Response(stream, { status: 206, headers });
   }
 
-  const stream = Readable.toWeb(
-    createReadStream(absolute),
-  ) as ReadableStream;
+  const stream = Readable.toWeb(createReadStream(absolute)) as ReadableStream;
 
   headers.set("Content-Length", String(size));
 

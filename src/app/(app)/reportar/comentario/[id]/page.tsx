@@ -53,7 +53,10 @@ export default async function ReportCommentPage({
   if (!comment) notFound();
 
   const viewer = await getCurrentUser();
-  const backPath = episodePath(comment.episode.channel.handle, comment.episode.slug);
+  const backPath = episodePath(
+    comment.episode.channel.handle,
+    comment.episode.slug,
+  );
 
   const errorMessage =
     query.error === "limit"

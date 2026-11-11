@@ -27,7 +27,12 @@ const es = {
       "Creador grabando un podcast en su estudio con micrófono y auriculares",
   },
   stats: [
-    { label: "Fases del plan", value: "10", suffix: "/ 26", sub: "16 por delante" },
+    {
+      label: "Fases del plan",
+      value: "10",
+      suffix: "/ 26",
+      sub: "16 por delante",
+    },
     {
       label: "Funcionalidades",
       value: "12",
@@ -40,7 +45,12 @@ const es = {
       suffix: "",
       sub: "Según financiamiento y crecimiento",
     },
-    { label: "Estado", value: "Beta", suffix: "", sub: "Invitación, sin registro abierto" },
+    {
+      label: "Estado",
+      value: "Beta",
+      suffix: "",
+      sub: "Invitación, sin registro abierto",
+    },
   ],
   about: {
     eyebrow: "01 — Qué es PodZcash",
@@ -90,7 +100,8 @@ const es = {
       },
     ],
     why: {
-      title: "No es una aplicación más: es la capa de audio que a Zcash le falta",
+      title:
+        "No es una aplicación más: es la capa de audio que a Zcash le falta",
       body: "Zcash tiene una de las tecnologías más sólidas del espacio y, sin embargo, muy poca narrativa humana. La gente no adopta privacidad leyendo un documento técnico: la adopta cuando alguien se lo explica con su propia voz. Eso es lo que falta, y es lo que PodZcash construye.",
       reasons: [
         {
@@ -108,13 +119,21 @@ const es = {
       ],
     },
     compare: {
-      headers: ["Hoy, en otras plataformas", "Otra plataforma de audio", "PodZcash"],
+      headers: [
+        "Hoy, en otras plataformas",
+        "Otra plataforma de audio",
+        "PodZcash",
+      ],
       rows: [
         ["Comisión por donación", "5 % — 10 %", "0 %"],
         ["Custodia del dinero", "La plataforma", "Tu wallet"],
         ["Moneda del apoyo", "Fiat con retiros y demoras", "ZEC directo"],
         ["Distribución", "Dentro de la app", "RSS y embeds"],
-        ["Contenido sobre Zcash", "Disperso y sin contexto", "Reunido y fácil de encontrar"],
+        [
+          "Contenido sobre Zcash",
+          "Disperso y sin contexto",
+          "Reunido y fácil de encontrar",
+        ],
       ],
     },
   },
@@ -127,23 +146,59 @@ const es = {
       {
         title: "Listo y en uso",
         items: [
-          { label: "Cuentas e invitaciones", text: "registro por código, verificación por email y recuperación" },
-          { label: "Canales", text: "perfil, bio, avatar, enlaces y página pública" },
-          { label: "Subida de audio", text: "streaming a disco, portadas, borradores y publicación" },
-          { label: "Reproductor", text: "persistente, con cola, velocidad, temporizador y continuidad en otro dispositivo" },
-          { label: "PWA y offline", text: "instalable, con descargas y reproducción sin conexión" },
-          { label: "Analíticas", text: "reproducciones, retención, país, dispositivo, app y CSV" },
+          {
+            label: "Cuentas e invitaciones",
+            text: "registro por código, verificación por email y recuperación",
+          },
+          {
+            label: "Canales",
+            text: "perfil, bio, avatar, enlaces y página pública",
+          },
+          {
+            label: "Subida de audio",
+            text: "streaming a disco, portadas, borradores y publicación",
+          },
+          {
+            label: "Reproductor",
+            text: "persistente, con cola, velocidad, temporizador y continuidad en otro dispositivo",
+          },
+          {
+            label: "PWA y offline",
+            text: "instalable, con descargas y reproducción sin conexión",
+          },
+          {
+            label: "Analíticas",
+            text: "reproducciones, retención, país, dispositivo, app y CSV",
+          },
         ],
       },
       {
         title: "También listo",
         items: [
-          { label: "Búsqueda en texto completo", text: "títulos, descripciones, etiquetas y canales" },
-          { label: "Donaciones ZEC", text: "QR, enlace ZIP-321 y memo, sin custodia" },
-          { label: "RSS y embeds", text: "compatible con Apple Podcasts y Spotify, y reproductor insertable" },
-          { label: "Moderación y administración", text: "comentarios, reportes, suspensión, copias de seguridad y limpieza" },
-          { label: "Seguridad y privacidad", text: "CSP/HSTS, límites de peticiones, exportación y borrado de cuenta" },
-          { label: "Lista de espera", text: "solicitudes con aviso por email y push en el teléfono" },
+          {
+            label: "Búsqueda en texto completo",
+            text: "títulos, descripciones, etiquetas y canales",
+          },
+          {
+            label: "Donaciones ZEC",
+            text: "QR, enlace ZIP-321 y memo, sin custodia",
+          },
+          {
+            label: "RSS y embeds",
+            text: "compatible con Apple Podcasts y Spotify, y reproductor insertable",
+          },
+          {
+            label: "Moderación y administración",
+            text: "comentarios, reportes, suspensión, copias de seguridad y limpieza",
+          },
+          {
+            label: "Seguridad y privacidad",
+            text: "CSP/HSTS, límites de peticiones, exportación y borrado de cuenta",
+          },
+          {
+            label: "Lista de espera",
+            text: "solicitudes con aviso por email y push en el teléfono",
+          },
         ],
       },
     ],
@@ -193,12 +248,38 @@ const es = {
         range: "Fases 09 — 14",
         note: "Base sólida, analíticas y PWA",
         phases: [
-          { n: "Fase 09", title: "Base de datos escalable", body: "Migración a Postgres con índices de búsqueda y consultas preparadas para miles de episodios." },
-          { n: "Fase 10", title: "Almacenamiento y CDN", body: "Audio en almacenamiento de objetos con caché en el borde, para que el streaming no dependa del servidor." },
-          { n: "Fase 11", title: "Copias de seguridad y monitoreo", body: "Copias automáticas, monitorización y recuperación probada. Implementado y verificado; el monitor externo con alertas dedicadas sigue pendiente.", done: true },
-          { n: "Fase 12", title: "Analíticas de escucha", body: "Reproducciones, retención por episodio y origen del tráfico, visibles para cada creador.", done: true },
-          { n: "Fase 13", title: "App móvil de escucha", body: "La PWA ya es instalable y ofrece cola, velocidad, offline y continuar donde quedó. Falta una app nativa con reproducción en segundo plano confiable y controles del sistema." },
-          { n: "Fase 14", title: "Offline y notificaciones", body: "Las descargas offline ya funcionan y la lista de espera avisa en el teléfono. Faltan los avisos de nuevos lanzamientos para los canales que sigue cada oyente." },
+          {
+            n: "Fase 09",
+            title: "Base de datos escalable",
+            body: "Migración a Postgres con índices de búsqueda y consultas preparadas para miles de episodios.",
+          },
+          {
+            n: "Fase 10",
+            title: "Almacenamiento y CDN",
+            body: "Audio en almacenamiento de objetos con caché en el borde, para que el streaming no dependa del servidor.",
+          },
+          {
+            n: "Fase 11",
+            title: "Copias de seguridad y monitoreo",
+            body: "Copias automáticas, monitorización y recuperación probada. Implementado y verificado; el monitor externo con alertas dedicadas sigue pendiente.",
+            done: true,
+          },
+          {
+            n: "Fase 12",
+            title: "Analíticas de escucha",
+            body: "Reproducciones, retención por episodio y origen del tráfico, visibles para cada creador.",
+            done: true,
+          },
+          {
+            n: "Fase 13",
+            title: "App móvil de escucha",
+            body: "La PWA ya es instalable y ofrece cola, velocidad, offline y continuar donde quedó. Falta una app nativa con reproducción en segundo plano confiable y controles del sistema.",
+          },
+          {
+            n: "Fase 14",
+            title: "Offline y notificaciones",
+            body: "Las descargas offline ya funcionan y la lista de espera avisa en el teléfono. Faltan los avisos de nuevos lanzamientos para los canales que sigue cada oyente.",
+          },
         ],
       },
       {
@@ -206,12 +287,36 @@ const es = {
         range: "Fases 15 — 20",
         note: "Video, creadores y descubrimiento",
         phases: [
-          { n: "Fase 15", title: "Publicar desde el teléfono", body: "Subir desde el navegador móvil ya es posible. Faltan grabación y recorte dentro de la app para publicar sin escritorio." },
-          { n: "Fase 16", title: "Video podcast", body: "HLS adaptativo, miniaturas y reproducción sincronizada con el audio. El formato deja de ser solo audio." },
-          { n: "Fase 17", title: "Capítulos y transcripciones", body: "Capítulos navegables y transcripción automática con búsqueda dentro del episodio." },
-          { n: "Fase 18", title: "Seguir canales y colecciones", body: "Seguir canales, series y listas propias, con un feed personal en lugar de un algoritmo opaco." },
-          { n: "Fase 19", title: "Panel del creador", body: "Las analíticas por episodio ya están disponibles. Falta la vista consolidada de evolución del canal." },
-          { n: "Fase 20", title: "Descubrimiento", body: "Recomendaciones por tema y cercanía, destacados editoriales y directorio del ecosistema." },
+          {
+            n: "Fase 15",
+            title: "Publicar desde el teléfono",
+            body: "Subir desde el navegador móvil ya es posible. Faltan grabación y recorte dentro de la app para publicar sin escritorio.",
+          },
+          {
+            n: "Fase 16",
+            title: "Video podcast",
+            body: "HLS adaptativo, miniaturas y reproducción sincronizada con el audio. El formato deja de ser solo audio.",
+          },
+          {
+            n: "Fase 17",
+            title: "Capítulos y transcripciones",
+            body: "Capítulos navegables y transcripción automática con búsqueda dentro del episodio.",
+          },
+          {
+            n: "Fase 18",
+            title: "Seguir canales y colecciones",
+            body: "Seguir canales, series y listas propias, con un feed personal en lugar de un algoritmo opaco.",
+          },
+          {
+            n: "Fase 19",
+            title: "Panel del creador",
+            body: "Las analíticas por episodio ya están disponibles. Falta la vista consolidada de evolución del canal.",
+          },
+          {
+            n: "Fase 20",
+            title: "Descubrimiento",
+            body: "Recomendaciones por tema y cercanía, destacados editoriales y directorio del ecosistema.",
+          },
         ],
       },
       {
@@ -219,19 +324,52 @@ const es = {
         range: "Fases 21 — 26",
         note: "Escala y sostenibilidad",
         phases: [
-          { n: "Fase 21", title: "Accesibilidad WCAG", body: "Ya hay mejoras de contraste, navegación y movimiento reducido. Faltan la auditoría WCAG y las transcripciones." },
-          { n: "Fase 22", title: "API pública", body: "Acceso documentado a canales y episodios para integrar PodZcash en sitios y herramientas del ecosistema." },
-          { n: "Fase 23", title: "Distribución federada", body: "Publicar una vez y aparecer en otras instancias que hablen del mismo tema, sin depender de un servidor único." },
-          { n: "Fase 24", title: "TV y automóvil", body: "Apps para televisores y reproducción en CarPlay y Android Auto, donde el audio se escucha de verdad." },
-          { n: "Fase 25", title: "Programa de creadores", body: "Acompañamiento, formación y recursos para que nuevos canales despeguen sin depender del equipo." },
-          { n: "Fase 26", title: "Sostenibilidad del proyecto", body: "Grants, patrocinios y donaciones de la comunidad al proyecto, además del apoyo directo de oyentes a creadores. Sin métodos de pago ni KYC dentro de la app." },
+          {
+            n: "Fase 21",
+            title: "Accesibilidad WCAG",
+            body: "Ya hay mejoras de contraste, navegación y movimiento reducido. Faltan la auditoría WCAG y las transcripciones.",
+          },
+          {
+            n: "Fase 22",
+            title: "API pública",
+            body: "Acceso documentado a canales y episodios para integrar PodZcash en sitios y herramientas del ecosistema.",
+          },
+          {
+            n: "Fase 23",
+            title: "Distribución federada",
+            body: "Publicar una vez y aparecer en otras instancias que hablen del mismo tema, sin depender de un servidor único.",
+          },
+          {
+            n: "Fase 24",
+            title: "TV y automóvil",
+            body: "Apps para televisores y reproducción en CarPlay y Android Auto, donde el audio se escucha de verdad.",
+          },
+          {
+            n: "Fase 25",
+            title: "Programa de creadores",
+            body: "Acompañamiento, formación y recursos para que nuevos canales despeguen sin depender del equipo.",
+          },
+          {
+            n: "Fase 26",
+            title: "Sostenibilidad del proyecto",
+            body: "Grants, patrocinios y donaciones de la comunidad al proyecto, además del apoyo directo de oyentes a creadores. Sin métodos de pago ni KYC dentro de la app.",
+          },
         ],
       },
     ],
     horizon: [
-      { label: "Hoy:", text: "publicar audio, tener canal, recibir ZEC y ver analíticas." },
-      { label: "En 1 año:", text: "app nativa, publicar desde el teléfono y avisos para oyentes." },
-      { label: "En 3 años:", text: "video, distribución federada y sostenibilidad por grants y donaciones." },
+      {
+        label: "Hoy:",
+        text: "publicar audio, tener canal, recibir ZEC y ver analíticas.",
+      },
+      {
+        label: "En 1 año:",
+        text: "app nativa, publicar desde el teléfono y avisos para oyentes.",
+      },
+      {
+        label: "En 3 años:",
+        text: "video, distribución federada y sostenibilidad por grants y donaciones.",
+      },
     ],
   },
   funding: {
@@ -420,7 +558,12 @@ const en: ProjectContent = {
       suffix: "",
       sub: "Depending on funding and growth",
     },
-    { label: "Status", value: "Beta", suffix: "", sub: "Invite only, no open sign-up" },
+    {
+      label: "Status",
+      value: "Beta",
+      suffix: "",
+      sub: "Invite only, no open sign-up",
+    },
   ],
   about: {
     eyebrow: "01 — What PodZcash is",
@@ -488,13 +631,21 @@ const en: ProjectContent = {
       ],
     },
     compare: {
-      headers: ["Today, on other platforms", "Another audio platform", "PodZcash"],
+      headers: [
+        "Today, on other platforms",
+        "Another audio platform",
+        "PodZcash",
+      ],
       rows: [
         ["Donation fee", "5% — 10%", "0%"],
         ["Custody of funds", "The platform", "Your wallet"],
         ["Support currency", "Fiat with withdrawals and delays", "ZEC direct"],
         ["Distribution", "Inside the app", "RSS and embeds"],
-        ["Zcash content", "Scattered and without context", "Gathered and easy to find"],
+        [
+          "Zcash content",
+          "Scattered and without context",
+          "Gathered and easy to find",
+        ],
       ],
     },
   },
@@ -507,23 +658,59 @@ const en: ProjectContent = {
       {
         title: "Ready and in use",
         items: [
-          { label: "Accounts and invites", text: "code-based registration, email verification and recovery" },
-          { label: "Channels", text: "profile, bio, avatar, links and public page" },
-          { label: "Audio upload", text: "streaming to disk, cover art, drafts and publishing" },
-          { label: "Player", text: "persistent, with queue, speed, sleep timer and cross-device resume" },
-          { label: "PWA and offline", text: "installable, with audio downloads and offline playback" },
-          { label: "Analytics", text: "plays, retention, country, device, app and CSV" },
+          {
+            label: "Accounts and invites",
+            text: "code-based registration, email verification and recovery",
+          },
+          {
+            label: "Channels",
+            text: "profile, bio, avatar, links and public page",
+          },
+          {
+            label: "Audio upload",
+            text: "streaming to disk, cover art, drafts and publishing",
+          },
+          {
+            label: "Player",
+            text: "persistent, with queue, speed, sleep timer and cross-device resume",
+          },
+          {
+            label: "PWA and offline",
+            text: "installable, with audio downloads and offline playback",
+          },
+          {
+            label: "Analytics",
+            text: "plays, retention, country, device, app and CSV",
+          },
         ],
       },
       {
         title: "Also ready",
         items: [
-          { label: "Full-text search", text: "titles, descriptions, tags and channels" },
-          { label: "ZEC donations", text: "QR, ZIP-321 link and memo, non-custodial" },
-          { label: "RSS and embeds", text: "compatible with Apple Podcasts and Spotify, plus an embeddable player" },
-          { label: "Moderation and administration", text: "comments, reports, suspension, backups and cleanup" },
-          { label: "Security and privacy", text: "CSP/HSTS, rate limiting, data export and account deletion" },
-          { label: "Waitlist", text: "requests with email alerts and push notifications on the phone" },
+          {
+            label: "Full-text search",
+            text: "titles, descriptions, tags and channels",
+          },
+          {
+            label: "ZEC donations",
+            text: "QR, ZIP-321 link and memo, non-custodial",
+          },
+          {
+            label: "RSS and embeds",
+            text: "compatible with Apple Podcasts and Spotify, plus an embeddable player",
+          },
+          {
+            label: "Moderation and administration",
+            text: "comments, reports, suspension, backups and cleanup",
+          },
+          {
+            label: "Security and privacy",
+            text: "CSP/HSTS, rate limiting, data export and account deletion",
+          },
+          {
+            label: "Waitlist",
+            text: "requests with email alerts and push notifications on the phone",
+          },
         ],
       },
     ],
@@ -573,12 +760,38 @@ const en: ProjectContent = {
         range: "Phases 09 — 14",
         note: "Solid base, analytics and PWA",
         phases: [
-          { n: "Phase 09", title: "Scalable database", body: "Postgres migration with search indexes and queries ready for thousands of episodes." },
-          { n: "Phase 10", title: "Storage and CDN", body: "Audio on object storage with edge caching, so streaming does not depend on the server." },
-          { n: "Phase 11", title: "Backups and monitoring", body: "Automatic copies, healthcheck and tested recovery. Implemented and verified; a dedicated external monitor with alerts is still pending.", done: true },
-          { n: "Phase 12", title: "Listening analytics", body: "Plays, per-episode retention and traffic sources, visible to every creator.", done: true },
-          { n: "Phase 13", title: "Mobile listening app", body: "The PWA is already installable and offers queue, speed, offline and resume. A native app with reliable background playback and system controls is still missing." },
-          { n: "Phase 14", title: "Offline and notifications", body: "Offline downloads already work and the waitlist sends phone alerts. New-release alerts for the channels each listener follows are still missing." },
+          {
+            n: "Phase 09",
+            title: "Scalable database",
+            body: "Postgres migration with search indexes and queries ready for thousands of episodes.",
+          },
+          {
+            n: "Phase 10",
+            title: "Storage and CDN",
+            body: "Audio on object storage with edge caching, so streaming does not depend on the server.",
+          },
+          {
+            n: "Phase 11",
+            title: "Backups and monitoring",
+            body: "Automatic copies, healthcheck and tested recovery. Implemented and verified; a dedicated external monitor with alerts is still pending.",
+            done: true,
+          },
+          {
+            n: "Phase 12",
+            title: "Listening analytics",
+            body: "Plays, per-episode retention and traffic sources, visible to every creator.",
+            done: true,
+          },
+          {
+            n: "Phase 13",
+            title: "Mobile listening app",
+            body: "The PWA is already installable and offers queue, speed, offline and resume. A native app with reliable background playback and system controls is still missing.",
+          },
+          {
+            n: "Phase 14",
+            title: "Offline and notifications",
+            body: "Offline downloads already work and the waitlist sends phone alerts. New-release alerts for the channels each listener follows are still missing.",
+          },
         ],
       },
       {
@@ -586,12 +799,36 @@ const en: ProjectContent = {
         range: "Phases 15 — 20",
         note: "Video, creators and discovery",
         phases: [
-          { n: "Phase 15", title: "Publish from mobile", body: "Uploading from the mobile browser already works. Recording and trimming inside the app are still missing so publishing no longer needs a desktop." },
-          { n: "Phase 16", title: "Video podcast", body: "Adaptive HLS, thumbnails and playback synced with audio. The format stops being audio-only." },
-          { n: "Phase 17", title: "Chapters and transcripts", body: "Navigable chapters and automatic transcription with in-episode search." },
-          { n: "Phase 18", title: "Following and collections", body: "Follow channels, series and your own lists, with a personal feed instead of an opaque algorithm." },
-          { n: "Phase 19", title: "Creator dashboard", body: "Per-episode analytics are already available. The consolidated channel growth view is still missing." },
-          { n: "Phase 20", title: "Discovery", body: "Recommendations by topic and proximity, editorial highlights and an ecosystem directory." },
+          {
+            n: "Phase 15",
+            title: "Publish from mobile",
+            body: "Uploading from the mobile browser already works. Recording and trimming inside the app are still missing so publishing no longer needs a desktop.",
+          },
+          {
+            n: "Phase 16",
+            title: "Video podcast",
+            body: "Adaptive HLS, thumbnails and playback synced with audio. The format stops being audio-only.",
+          },
+          {
+            n: "Phase 17",
+            title: "Chapters and transcripts",
+            body: "Navigable chapters and automatic transcription with in-episode search.",
+          },
+          {
+            n: "Phase 18",
+            title: "Following and collections",
+            body: "Follow channels, series and your own lists, with a personal feed instead of an opaque algorithm.",
+          },
+          {
+            n: "Phase 19",
+            title: "Creator dashboard",
+            body: "Per-episode analytics are already available. The consolidated channel growth view is still missing.",
+          },
+          {
+            n: "Phase 20",
+            title: "Discovery",
+            body: "Recommendations by topic and proximity, editorial highlights and an ecosystem directory.",
+          },
         ],
       },
       {
@@ -599,19 +836,52 @@ const en: ProjectContent = {
         range: "Phases 21 — 26",
         note: "Scale and sustainability",
         phases: [
-          { n: "Phase 21", title: "WCAG accessibility", body: "Contrast, navigation and reduced-motion improvements are already in. The WCAG audit and transcripts are still missing." },
-          { n: "Phase 22", title: "Public API", body: "Documented access to channels and episodes to integrate PodZcash into ecosystem sites and tools." },
-          { n: "Phase 23", title: "Federated distribution", body: "Publish once and appear on other instances covering the same topic, without relying on a single server." },
-          { n: "Phase 24", title: "TV and car", body: "Apps for TVs and playback on CarPlay and Android Auto, where audio is actually heard." },
-          { n: "Phase 25", title: "Creator program", body: "Support, training and resources so new channels take off without depending on the team." },
-          { n: "Phase 26", title: "Project sustainability", body: "Grants, sponsorships and community donations to the project, plus direct listener support to creators. No payment methods or KYC inside the app." },
+          {
+            n: "Phase 21",
+            title: "WCAG accessibility",
+            body: "Contrast, navigation and reduced-motion improvements are already in. The WCAG audit and transcripts are still missing.",
+          },
+          {
+            n: "Phase 22",
+            title: "Public API",
+            body: "Documented access to channels and episodes to integrate PodZcash into ecosystem sites and tools.",
+          },
+          {
+            n: "Phase 23",
+            title: "Federated distribution",
+            body: "Publish once and appear on other instances covering the same topic, without relying on a single server.",
+          },
+          {
+            n: "Phase 24",
+            title: "TV and car",
+            body: "Apps for TVs and playback on CarPlay and Android Auto, where audio is actually heard.",
+          },
+          {
+            n: "Phase 25",
+            title: "Creator program",
+            body: "Support, training and resources so new channels take off without depending on the team.",
+          },
+          {
+            n: "Phase 26",
+            title: "Project sustainability",
+            body: "Grants, sponsorships and community donations to the project, plus direct listener support to creators. No payment methods or KYC inside the app.",
+          },
         ],
       },
     ],
     horizon: [
-      { label: "Today:", text: "publish audio, have a channel, receive ZEC and see analytics." },
-      { label: "In 1 year:", text: "native app, publishing from the phone and listener alerts." },
-      { label: "In 3 years:", text: "video, federated distribution and sustainability through grants and donations." },
+      {
+        label: "Today:",
+        text: "publish audio, have a channel, receive ZEC and see analytics.",
+      },
+      {
+        label: "In 1 year:",
+        text: "native app, publishing from the phone and listener alerts.",
+      },
+      {
+        label: "In 3 years:",
+        text: "video, federated distribution and sustainability through grants and donations.",
+      },
     ],
   },
   funding: {

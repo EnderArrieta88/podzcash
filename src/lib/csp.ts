@@ -1,3 +1,4 @@
+import "server-only";
 export type CspMode = "report-only" | "enforce";
 
 export type CspOptions = {

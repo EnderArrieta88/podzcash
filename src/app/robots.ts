@@ -1,7 +1,10 @@
 import type { MetadataRoute } from "next";
 
 function baseUrl(): string {
-  return (process.env.SITE_URL ?? "https://podzcash.online").replace(/\/+$/, "");
+  return (process.env.SITE_URL ?? "https://podzcash.online").replace(
+    /\/+$/,
+    "",
+  );
 }
 
 export default function robots(): MetadataRoute.Robots {

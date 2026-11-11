@@ -115,7 +115,9 @@ export default async function ReportPage({
           <div>
             <Label htmlFor="email">
               {content.email}{" "}
-              <span className="font-normal text-subtle">{content.optional}</span>
+              <span className="font-normal text-subtle">
+                {content.optional}
+              </span>
             </Label>
             <Input
               id="email"

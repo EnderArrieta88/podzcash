@@ -77,7 +77,11 @@
   inset: -30% -10% auto -10%;
   height: 70%;
   pointer-events: none;
-  background: radial-gradient(55% 55% at 25% 35%, rgba(244, 183, 40, 0.14), transparent 70%);
+  background: radial-gradient(
+    55% 55% at 25% 35%,
+    rgba(244, 183, 40, 0.14),
+    transparent 70%
+  );
   filter: blur(20px);
 }
 .pz-project .hero-grid {
@@ -171,7 +175,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 45%, rgba(11, 13, 17, 0.75) 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 45%,
+    rgba(11, 13, 17, 0.75) 100%
+  );
 }
 .pz-project .hero-photo .cap {
   position: absolute;
@@ -292,7 +300,11 @@
   margin-bottom: 26px;
   border: 1px solid rgba(244, 183, 40, 0.22);
   border-radius: 18px;
-  background: linear-gradient(150deg, rgba(244, 183, 40, 0.07), var(--pz-surface) 60%);
+  background: linear-gradient(
+    150deg,
+    rgba(244, 183, 40, 0.07),
+    var(--pz-surface) 60%
+  );
   padding: clamp(22px, 3vw, 30px);
 }
 .pz-project .origin .eyebrow {
@@ -556,7 +568,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(11, 13, 17, 0.9) 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 40%,
+    rgba(11, 13, 17, 0.9) 100%
+  );
 }
 .pz-project .shot .cap {
   position: absolute;
@@ -582,7 +598,11 @@
 .pz-project .done-card {
   border: 1px solid rgba(16, 185, 129, 0.28);
   border-radius: 18px;
-  background: linear-gradient(150deg, rgba(16, 185, 129, 0.07), var(--pz-surface) 60%);
+  background: linear-gradient(
+    150deg,
+    rgba(16, 185, 129, 0.07),
+    var(--pz-surface) 60%
+  );
   padding: clamp(22px, 3vw, 30px);
   margin-bottom: 36px;
 }
@@ -768,7 +788,11 @@
 }
 .pz-project .way.accent {
   border-color: rgba(244, 183, 40, 0.28);
-  background: linear-gradient(150deg, rgba(244, 183, 40, 0.08), var(--pz-surface) 65%);
+  background: linear-gradient(
+    150deg,
+    rgba(244, 183, 40, 0.08),
+    var(--pz-surface) 65%
+  );
 }
 .pz-project .way h3 {
   font-family: var(--font-display-face), Georgia, serif;
@@ -1040,7 +1064,12 @@
   align-items: center;
   border: 1px solid rgba(244, 183, 40, 0.3);
   border-radius: 18px;
-  background: linear-gradient(120deg, rgba(244, 183, 40, 0.1), rgba(16, 185, 129, 0.05) 60%, transparent);
+  background: linear-gradient(
+    120deg,
+    rgba(244, 183, 40, 0.1),
+    rgba(16, 185, 129, 0.05) 60%,
+    transparent
+  );
   padding: clamp(22px, 3vw, 30px);
 }
 .pz-project .donate h3 {
@@ -1072,7 +1101,11 @@
   position: absolute;
   inset: auto 0 -40% 0;
   height: 80%;
-  background: radial-gradient(50% 60% at 50% 100%, rgba(244, 183, 40, 0.14), transparent 70%);
+  background: radial-gradient(
+    50% 60% at 50% 100%,
+    rgba(244, 183, 40, 0.14),
+    transparent 70%
+  );
 }
 .pz-project .final h2 {
   position: relative;

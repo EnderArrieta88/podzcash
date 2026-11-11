@@ -130,7 +130,13 @@ export async function GET(request: Request) {
     }),
     prisma.waitlistEntry.findMany({
       where: { email: viewer.email },
-      select: { email: true, name: true, role: true, note: true, createdAt: true },
+      select: {
+        email: true,
+        name: true,
+        role: true,
+        note: true,
+        createdAt: true,
+      },
     }),
   ]);
 

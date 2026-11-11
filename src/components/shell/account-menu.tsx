@@ -33,7 +33,10 @@ export function AccountMenu({
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {
-      if (container.current && !container.current.contains(event.target as Node)) {
+      if (
+        container.current &&
+        !container.current.contains(event.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -62,7 +65,11 @@ export function AccountMenu({
       icon: MessageSquare,
     },
     { href: "/estudio/canal", label: studio.nav.channel, icon: Radio },
-    { href: "/estudio/distribucion", label: studio.nav.distribution, icon: Rss },
+    {
+      href: "/estudio/distribucion",
+      label: studio.nav.distribution,
+      icon: Rss,
+    },
     ...(user.role === "admin"
       ? [
           {

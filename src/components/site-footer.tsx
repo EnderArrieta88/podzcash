@@ -30,13 +30,22 @@ export async function SiteFooter() {
             >
               {content.footer.waitlist}
             </Link>
-            <Link href="/proyecto" className="transition-colors hover:text-text">
+            <Link
+              href="/proyecto"
+              className="transition-colors hover:text-text"
+            >
               {content.nav.project}
             </Link>
-            <Link href="/privacidad" className="transition-colors hover:text-text">
+            <Link
+              href="/privacidad"
+              className="transition-colors hover:text-text"
+            >
               {content.footer.privacy}
             </Link>
-            <Link href="/terminos" className="transition-colors hover:text-text">
+            <Link
+              href="/terminos"
+              className="transition-colors hover:text-text"
+            >
               {content.footer.terms}
             </Link>
           </nav>

@@ -46,10 +46,7 @@ test("login y validación de dirección Zcash", async ({ page }) => {
 
   await expect(page.locator("#zcashAddress")).toHaveValue(/^u1/);
 
-  await page.fill(
-    "#zcashAddress",
-    "t1goiSyw2JinFCmUnfiwwp72LEZzD42TyYu",
-  );
+  await page.fill("#zcashAddress", "t1goiSyw2JinFCmUnfiwwp72LEZzD42TyYu");
   await page
     .getByRole("button", { name: "Guardar cambios", exact: true })
     .click();
@@ -75,7 +72,9 @@ test("rechaza una portada que no cumple Apple", async ({ page }) => {
   });
 
   await expect(
-    page.getByText("La portada tiene que ser cuadrada y medir entre 1400 y 3000 px."),
+    page.getByText(
+      "La portada tiene que ser cuadrada y medir entre 1400 y 3000 px.",
+    ),
   ).toBeVisible({ timeout: 15_000 });
 });
 
@@ -109,13 +108,11 @@ test("crear borrador, publicarlo y abrir el episodio", async ({ page }) => {
   await login(page);
   await page.goto("/estudio/episodios/nuevo");
 
-  await page
-    .locator('input[type="file"][accept="audio/*"]')
-    .setInputFiles({
-      name: "e2e-audio.wav",
-      mimeType: "audio/wav",
-      buffer: makeWav(),
-    });
+  await page.locator('input[type="file"][accept="audio/*"]').setInputFiles({
+    name: "e2e-audio.wav",
+    mimeType: "audio/wav",
+    buffer: makeWav(),
+  });
 
   await expect(page.getByText("e2e-audio.wav")).toBeVisible({
     timeout: 20_000,
@@ -170,9 +167,7 @@ test("comentar, reproducir y cargar el embed", async ({ page }) => {
     .first()
     .click();
   await expect(
-    page
-      .getByRole("button", { name: `Pausar ${EPISODE_TITLE}` })
-      .first(),
+    page.getByRole("button", { name: `Pausar ${EPISODE_TITLE}` }).first(),
   ).toBeVisible();
 
   await page.goto(`/embed/${EPISODE_ID}`);

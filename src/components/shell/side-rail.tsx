@@ -48,14 +48,24 @@ export function SideRail({
 
   const items = [
     { href: "/", label: labels.nav.home, icon: LayoutDashboard, exact: true },
-    { href: "/explorar", label: labels.nav.explore, icon: Compass, exact: false },
+    {
+      href: "/explorar",
+      label: labels.nav.explore,
+      icon: Compass,
+      exact: false,
+    },
     {
       href: "/descargas",
       label: labels.nav.downloads,
       icon: Download,
       exact: true,
     },
-    { href: "/estudio", label: labels.nav.studio, icon: ListMusic, exact: false },
+    {
+      href: "/estudio",
+      label: labels.nav.studio,
+      icon: ListMusic,
+      exact: false,
+    },
     ...(user?.channel
       ? [
           {
@@ -103,9 +113,30 @@ export function SideRail({
               fill="none"
               aria-hidden="true"
             >
-              <rect x="1.5" y="6" width="2" height="4" rx="1" fill="currentColor" />
-              <rect x="7" y="2.5" width="2" height="11" rx="1" fill="currentColor" />
-              <rect x="12.5" y="4.5" width="2" height="7" rx="1" fill="currentColor" />
+              <rect
+                x="1.5"
+                y="6"
+                width="2"
+                height="4"
+                rx="1"
+                fill="currentColor"
+              />
+              <rect
+                x="7"
+                y="2.5"
+                width="2"
+                height="11"
+                rx="1"
+                fill="currentColor"
+              />
+              <rect
+                x="12.5"
+                y="4.5"
+                width="2"
+                height="7"
+                rx="1"
+                fill="currentColor"
+              />
             </svg>
           </span>
           {!collapsed && (
@@ -140,7 +171,9 @@ export function SideRail({
         </button>
       )}
 
-      <nav className={cn("mt-2 flex flex-col gap-1", collapsed ? "px-2" : "px-3")}>
+      <nav
+        className={cn("mt-2 flex flex-col gap-1", collapsed ? "px-2" : "px-3")}
+      >
         {items.map((item) => {
           const active = item.href === activeItem;
 
@@ -215,7 +248,9 @@ export function SideRail({
               />
             ) : (
               <span className="flex size-8 items-center justify-center rounded-full bg-brand-soft text-xs font-semibold text-brand">
-                {(user.channel?.displayName ?? user.name).slice(0, 1).toUpperCase()}
+                {(user.channel?.displayName ?? user.name)
+                  .slice(0, 1)
+                  .toUpperCase()}
               </span>
             )}
 

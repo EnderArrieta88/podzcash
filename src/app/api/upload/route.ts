@@ -35,7 +35,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const kind = new URL(request.url).searchParams.get("kind") as UploadKind | null;
+  const kind = new URL(request.url).searchParams.get(
+    "kind",
+  ) as UploadKind | null;
   const purpose = new URL(request.url).searchParams.get("purpose");
 
   if (!kind || !(kind in LIMITS)) {

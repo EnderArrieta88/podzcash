@@ -19,7 +19,8 @@ const es = {
     emptyTitle: "Tu primer episodio, aquí",
     emptyMeta: "Publica tu audio y compártelo",
     photoAlt:
-      "Creadora grabando un podcast en un estudio con micrófono y auriculares",  },
+      "Creadora grabando un podcast en un estudio con micrófono y auriculares",
+  },
   strip: {
     audioFirst: "Audio primero, sin distracciones",
     zecDirect: "ZEC directo a tu wallet",
@@ -103,7 +104,8 @@ const es = {
   scenes: {
     eyebrow: "Hecho para audio",
     title: "Voces reales, en cualquier lugar",
-    intro: "Desde un estudio casero hasta la calle. Si hay una historia, hay un canal.",
+    intro:
+      "Desde un estudio casero hasta la calle. Si hay una historia, hay un canal.",
     items: [
       {
         title: "Estudio casero",
@@ -259,7 +261,8 @@ const en: HomeContent = {
   scenes: {
     eyebrow: "Made for audio",
     title: "Real voices, anywhere",
-    intro: "From a home studio to the street. If there is a story, there is a channel.",
+    intro:
+      "From a home studio to the street. If there is a story, there is a channel.",
     items: [
       {
         title: "Home studio",

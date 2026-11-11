@@ -14,10 +14,22 @@ import { episodeContent } from "@/lib/i18n/episode";
 import { offlineAudioContent } from "@/lib/i18n/offline-audio";
 import { playerContent } from "@/lib/i18n/player";
 import { sharedLabels } from "@/lib/i18n/shared";
-import { channelPath, donatePath, episodePath, feedPath, normalizeHandleParam } from "@/lib/routes";
+import {
+  channelPath,
+  donatePath,
+  episodePath,
+  feedPath,
+  normalizeHandleParam,
+} from "@/lib/routes";
 import { episodeEmbedCode } from "@/lib/embed";
 import { EmbedCode } from "@/components/embed/embed-code";
-import { absoluteUrl, isoDuration, jsonLd, SITE_URL, socialMetadata } from "@/lib/seo";
+import {
+  absoluteUrl,
+  isoDuration,
+  jsonLd,
+  SITE_URL,
+  socialMetadata,
+} from "@/lib/seo";
 import { pageParam } from "@/lib/pagination";
 import { listEpisodeComments } from "@/lib/comments";
 import { EpisodeComments } from "@/components/comments/episode-comments";
@@ -115,7 +127,8 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
 
   const cover = episode.coverKey ? storage.url(episode.coverKey) : null;
   const audioUrl = storage.url(episode.audioPath);
-  const ogImage = cover ?? (channel.avatarKey ? storage.url(channel.avatarKey) : null);
+  const ogImage =
+    cover ?? (channel.avatarKey ? storage.url(channel.avatarKey) : null);
 
   const episodeLd = {
     "@context": "https://schema.org",
@@ -307,7 +320,9 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
       )}
 
       {channel.zcashAddress && (
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-jade/25 bg-jade-soft p-5">          <div className="flex items-start gap-3">
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-jade/25 bg-jade-soft p-5">
+          {" "}
+          <div className="flex items-start gap-3">
             <ShieldCheck size={18} className="mt-0.5 text-jade-bright" />
             <div>
               <p className="font-heading text-sm font-semibold text-jade-bright">
@@ -318,7 +333,6 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
               </p>
             </div>
           </div>
-
           <Link
             href={donatePath(channel.handle)}
             className="inline-flex h-10 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
@@ -330,4 +344,3 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
     </div>
   );
 }
-

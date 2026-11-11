@@ -48,8 +48,7 @@ function buildHref(
 
   if (query) params.set("q", query);
 
-  const tipo =
-    patch.tipo === undefined ? firstValue(current.tipo) : patch.tipo;
+  const tipo = patch.tipo === undefined ? firstValue(current.tipo) : patch.tipo;
   const tag = patch.tag === undefined ? firstValue(current.tag) : patch.tag;
 
   if (tipo) params.set("tipo", tipo);
@@ -118,7 +117,8 @@ export default async function ExplorePage({
   const tipo =
     tipoRaw === "podcast" || tipoRaw === "musica" ? tipoRaw : undefined;
   const tag = firstValue(params.tag).trim() || undefined;
-  const kind = tipo === "musica" ? "music" : tipo === "podcast" ? "podcast" : undefined;
+  const kind =
+    tipo === "musica" ? "music" : tipo === "podcast" ? "podcast" : undefined;
 
   const [results, tags, channels] = await Promise.all([
     searchCatalog({ query, kind, tag, limit: 32 }),
@@ -128,7 +128,7 @@ export default async function ExplorePage({
 
   const hasFilters = Boolean(query || tipo || tag);
   const activeTag = tag
-    ? tags.find((item) => item.slug === tag)?.name ?? tag
+    ? (tags.find((item) => item.slug === tag)?.name ?? tag)
     : null;
   const countLabel = query
     ? results.length === 1
@@ -230,7 +230,11 @@ export default async function ExplorePage({
           {results.length > 0 ? (
             <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3">
               {results.map((episode) => (
-                <EpisodeCard key={episode.id} episode={episode} locale={locale} />
+                <EpisodeCard
+                  key={episode.id}
+                  episode={episode}
+                  locale={locale}
+                />
               ))}
             </div>
           ) : (
@@ -242,7 +246,9 @@ export default async function ExplorePage({
                 {query ? content.empty.noResults : content.empty.silence}
               </p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted">
-                {query ? content.empty.noResultsBody : content.empty.silenceBody}
+                {query
+                  ? content.empty.noResultsBody
+                  : content.empty.silenceBody}
               </p>
               {hasFilters && (
                 <Link

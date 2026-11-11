@@ -8,7 +8,9 @@ import { formatDuration } from "@/lib/format";
 import { socialMetadata } from "@/lib/seo";
 import "./home.css";
 
-const wave = [38, 62, 48, 80, 56, 92, 64, 44, 74, 52, 86, 40, 68, 50, 78, 58, 34, 70];
+const wave = [
+  38, 62, 48, 80, 56, 92, 64, 44, 74, 52, 86, 40, 68, 50, 78, 58, 34, 70,
+];
 
 const featureIcons = [
   <svg
@@ -171,7 +173,14 @@ export default async function Home() {
       <div className="strip">
         <div className="strip-in">
           <div className="strip-item">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
               <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
               <path d="M12 18v4" />
@@ -179,13 +188,27 @@ export default async function Home() {
             <span>{content.strip.audioFirst}</span>
           </div>
           <div className="strip-item">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
             </svg>
             <span>{content.strip.zecDirect}</span>
           </div>
           <div className="strip-item">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <circle cx="12" cy="12" r="9" />
               <path d="M8 12h8" />
             </svg>
@@ -348,7 +371,14 @@ export default async function Home() {
               <div className="checks">
                 {content.product.checks.map((check) => (
                   <div className="check" key={check}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                    >
                       <path d="m5 13 4 4L19 7" />
                     </svg>
                     <span>{check}</span>
@@ -399,7 +429,15 @@ export default async function Home() {
                 loading="lazy"
               />
               <div className="qr-note">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden="true"
+                >
                   <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
                   <path d="m9 12 2 2 4-4" />
                 </svg>
