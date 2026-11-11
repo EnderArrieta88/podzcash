@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteWaitlistAction } from "@/app/(app)/estudio/admin/actions";
+import { deleteWaitlistAction } from "@/features/waitlist/actions";
 
 export function DeleteWaitlistButton({
   id,

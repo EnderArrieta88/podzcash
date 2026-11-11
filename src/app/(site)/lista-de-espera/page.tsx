@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { WaitlistForm } from "@/components/waitlist/waitlist-form";
+import { WaitlistForm } from "@/features/waitlist/components/waitlist-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { waitlistContent } from "@/lib/i18n/waitlist";
 import { socialMetadata } from "@/lib/seo";

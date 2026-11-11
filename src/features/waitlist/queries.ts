@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/db";
+import type { WaitlistInput, WaitlistRow } from "./types";
 
 /**
  * La tabla de la lista de espera se crea en la primera escritura.
@@ -37,13 +38,6 @@ export function ensureWaitlistTable(): Promise<void> {
   return ready;
 }
 
-export type WaitlistInput = {
-  name: string;
-  email: string;
-  role: string;
-  note: string | null;
-};
-
 export async function addWaitlistEntry(
   input: WaitlistInput,
 ): Promise<"created" | "exists"> {
@@ -60,15 +54,6 @@ export async function addWaitlistEntry(
     throw error;
   }
 }
-
-export type WaitlistRow = {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  note: string | null;
-  createdAt: Date;
-};
 
 export async function listWaitlist(limit = 50): Promise<WaitlistRow[]> {
   await ensureWaitlistTable();

@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { joinWaitlistAction } from "@/app/(site)/lista-de-espera/actions";
+import { joinWaitlistAction } from "@/features/waitlist/actions";
 import { FieldError, Input, Label, Textarea } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { WaitlistContent } from "@/lib/i18n/waitlist";
