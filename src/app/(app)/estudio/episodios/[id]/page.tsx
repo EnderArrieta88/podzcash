@@ -3,10 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
 import { storage } from "@/lib/storage";
-import {
-  EpisodeForm,
-  type EpisodeFormValues,
-} from "@/components/studio/episode-form";
+import { EpisodeForm } from "@/features/episodes/components/episode-form";
+import type { EpisodeFormValues } from "@/features/episodes/types";
 import { EpisodeAnalytics } from "@/components/studio/episode-analytics";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioEpisodesContent } from "@/lib/i18n/studio-episodes";

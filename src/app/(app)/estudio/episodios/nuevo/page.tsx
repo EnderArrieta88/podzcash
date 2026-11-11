@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/guards";
-import { EpisodeForm } from "@/components/studio/episode-form";
+import { EpisodeForm } from "@/features/episodes/components/episode-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioEpisodesContent } from "@/lib/i18n/studio-episodes";
 
