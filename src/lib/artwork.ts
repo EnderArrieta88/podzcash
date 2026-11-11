@@ -1,9 +1,8 @@
+import "server-only";
 import sharp from "sharp";
 
 export type ArtworkError =
-  | "artworkFormat"
-  | "artworkDimensions"
-  | "artworkColor";
+  "artworkFormat" | "artworkDimensions" | "artworkColor";
 
 export type ArtworkValidation =
   | { ok: true; width: number; height: number }
@@ -23,7 +22,9 @@ type ImageInfo = {
   color?: "rgb" | "gray" | "cmyk" | "palette" | "unknown";
 };
 
-const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const PNG_SIGNATURE = Buffer.from([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+]);
 
 function inspectPng(buffer: Buffer): ImageInfo {
   if (buffer.length < 26 || !buffer.subarray(0, 8).equals(PNG_SIGNATURE)) {
@@ -96,7 +97,10 @@ function inspectJpeg(buffer: Buffer): ImageInfo {
 }
 
 function inspectImage(buffer: Buffer): ImageInfo {
-  if (buffer.subarray(0, 4).toString("ascii") === "RIFF" && buffer.subarray(8, 12).toString("ascii") === "WEBP") {
+  if (
+    buffer.subarray(0, 4).toString("ascii") === "RIFF" &&
+    buffer.subarray(8, 12).toString("ascii") === "WEBP"
+  ) {
     return { format: "webp" };
   }
 
@@ -147,7 +151,9 @@ export function validateArtwork(buffer: Buffer): ArtworkValidation {
  * Deriva el artwork para Apple Podcasts: cuadrado, sin transparencia y con un
  * máximo de 3000×3000. Nunca amplía una imagen más pequeña.
  */
-export async function deriveArtwork(buffer: Buffer): Promise<ArtworkDerivative> {
+export async function deriveArtwork(
+  buffer: Buffer,
+): Promise<ArtworkDerivative> {
   const source = sharp(buffer, { failOn: "error" });
   const metadata = await source.metadata();
 

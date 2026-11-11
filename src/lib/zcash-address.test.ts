@@ -126,7 +126,9 @@ describe("validateZcashAddress", () => {
       ok: false,
       error: es.required,
     });
-    expect(validateZcashAddress(`${UNIFIED.slice(0, 10)} ${UNIFIED.slice(10)}`)).toEqual({
+    expect(
+      validateZcashAddress(`${UNIFIED.slice(0, 10)} ${UNIFIED.slice(10)}`),
+    ).toEqual({
       ok: false,
       error: es.spaces,
     });

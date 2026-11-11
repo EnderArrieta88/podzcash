@@ -67,8 +67,7 @@ const en: StudioCommentsContent = {
     } as Record<string, string>,
     emailHint:
       "Emails go to the channel account address and require email delivery to be configured.",
-    inboxHint:
-      "The in-app inbox shows new comments in the studio menu.",
+    inboxHint: "The in-app inbox shows new comments in the studio menu.",
     emailNotConfigured:
       "Email delivery is not configured; notifications stay in the in-app inbox.",
   },

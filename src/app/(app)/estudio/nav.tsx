@@ -35,7 +35,12 @@ export function StudioNav({
   const pathname = usePathname();
 
   const baseItems: NavItem[] = [
-    { href: "/estudio", label: labels.overview, icon: LayoutDashboard, exact: true },
+    {
+      href: "/estudio",
+      label: labels.overview,
+      icon: LayoutDashboard,
+      exact: true,
+    },
     { href: "/estudio/episodios", label: labels.episodes, icon: ListMusic },
     {
       href: "/estudio/comentarios",

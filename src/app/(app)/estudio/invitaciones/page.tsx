@@ -49,8 +49,7 @@ export default async function InvitesPage() {
           <ul className="divide-y divide-border">
             {invites.map((invite) => {
               const expired =
-                invite.expiresAt !== null &&
-                invite.expiresAt.getTime() < now;
+                invite.expiresAt !== null && invite.expiresAt.getTime() < now;
               const used = invite.usedById !== null;
 
               const status = used
@@ -71,7 +70,9 @@ export default async function InvitesPage() {
                     {formatInviteCode(invite.code)}
                   </code>
 
-                  <span className={`text-xs ${status.tone}`}>{status.label}</span>
+                  <span className={`text-xs ${status.tone}`}>
+                    {status.label}
+                  </span>
 
                   {invite.note && (
                     <span className="truncate text-xs text-muted">
@@ -110,4 +111,3 @@ export default async function InvitesPage() {
     </div>
   );
 }
-

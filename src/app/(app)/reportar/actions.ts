@@ -8,9 +8,15 @@ import { take } from "@/lib/rate-limit";
 export async function submitReportAction(formData: FormData): Promise<void> {
   const targetType = String(formData.get("targetType") ?? "episode");
   const targetId = String(formData.get("targetId") ?? "");
-  const reason = String(formData.get("reason") ?? "").trim().slice(0, 40);
-  const details = String(formData.get("details") ?? "").trim().slice(0, 1000);
-  const email = String(formData.get("email") ?? "").trim().slice(0, 200);
+  const reason = String(formData.get("reason") ?? "")
+    .trim()
+    .slice(0, 40);
+  const details = String(formData.get("details") ?? "")
+    .trim()
+    .slice(0, 1000);
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .slice(0, 200);
 
   if (!targetId || !reason) {
     redirect(`/reportar/${targetId}?error=invalid`);

@@ -72,7 +72,10 @@ export async function addEpisodeCommentAction(
 
   // Vuelve a la primera página para que el autor vea su comentario, que es
   // el más reciente. En páginas antiguas quedaría fuera de la vista.
-  if (draft.channel.commentNotify === "email" && draft.channel.userId !== user.id) {
+  if (
+    draft.channel.commentNotify === "email" &&
+    draft.channel.userId !== user.id
+  ) {
     const to = draft.channel.ownerEmail ?? draft.channel.user.email;
 
     try {

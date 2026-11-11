@@ -1,3 +1,4 @@
+import "server-only";
 import { addMissingColumns, openDatabase } from "@/lib/sqlite-bridge";
 
 /**

@@ -180,27 +180,55 @@ export default async function ProjectPage() {
               <div className="pillar" key={pillar.title}>
                 <div className="ico">
                   {index === 0 && (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                       <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
                       <path d="M12 18v4" />
                     </svg>
                   )}
                   {index === 1 && (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
                       <path d="m9 12 2 2 4-4" />
                     </svg>
                   )}
                   {index === 2 && (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M4 11a9 9 0 0 1 9 9" />
                       <path d="M4 4a16 16 0 0 1 16 16" />
                       <circle cx="5" cy="19" r="1" />
                     </svg>
                   )}
                   {index === 3 && (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <circle cx="12" cy="12" r="9" />
                       <path d="M12 3v18" />
                       <path d="M3 12h18" />
@@ -300,7 +328,14 @@ export default async function ProjectPage() {
           <div className="done-card">
             <div className="head">
               <span className="badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                >
                   <path d="m5 13 4 4L19 7" />
                 </svg>
                 {content.plan.done.badge}
@@ -345,7 +380,11 @@ export default async function ProjectPage() {
       </section>
 
       {/* FINANCIAMIENTO */}
-      <section className="pz-block" id="financiamiento" style={{ paddingTop: 0 }}>
+      <section
+        className="pz-block"
+        id="financiamiento"
+        style={{ paddingTop: 0 }}
+      >
         <div className="wrap">
           <div className="sec-head">
             <div className="eyebrow">{content.funding.eyebrow}</div>
@@ -356,7 +395,10 @@ export default async function ProjectPage() {
 
           <div className="ways">
             {content.funding.ways.map((way, index) => (
-              <div className={index === 0 ? "way accent" : "way"} key={way.title}>
+              <div
+                className={index === 0 ? "way accent" : "way"}
+                key={way.title}
+              >
                 <h3>{way.title}</h3>
                 <p>{way.body}</p>
                 <ul>
@@ -413,10 +455,14 @@ export default async function ProjectPage() {
               </div>
             ))}
             <div className="budget-row total">
-              <div className="label">{content.funding.composition.totalLabel}</div>
+              <div className="label">
+                {content.funding.composition.totalLabel}
+              </div>
               <b>{content.funding.composition.total}</b>
             </div>
-            <div className="budget-note">{content.funding.composition.note}</div>
+            <div className="budget-note">
+              {content.funding.composition.note}
+            </div>
           </div>
 
           <div className="estimate">

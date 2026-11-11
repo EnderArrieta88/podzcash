@@ -13,7 +13,9 @@ const BECH32_CONST = 1;
 const BECH32M_CONST = 0x2bc830a3;
 
 function polymod(values: number[]): number {
-  const generators = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
+  const generators = [
+    0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3,
+  ];
   let checksum = 1;
 
   for (const value of values) {
@@ -151,7 +153,11 @@ export function validateZcashAddress(
     return { ok: false, error: m.sprout };
   }
 
-  if (lower.startsWith("t1") || lower.startsWith("t3") || lower.startsWith("tex1")) {
+  if (
+    lower.startsWith("t1") ||
+    lower.startsWith("t3") ||
+    lower.startsWith("tex1")
+  ) {
     return { ok: false, error: m.transparentForbidden };
   }
 

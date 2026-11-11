@@ -12,10 +12,7 @@ export function DeleteAccountForm({
   email: string;
   labels: StudioAccountContent["delete"];
 }) {
-  const [state, action, pending] = useActionState(
-    deleteAccountAction,
-    null,
-  );
+  const [state, action, pending] = useActionState(deleteAccountAction, null);
 
   return (
     <form action={action} className="mt-4 space-y-4">

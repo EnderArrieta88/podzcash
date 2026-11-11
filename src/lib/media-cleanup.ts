@@ -1,3 +1,4 @@
+import "server-only";
 import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { prisma } from "@/lib/db";

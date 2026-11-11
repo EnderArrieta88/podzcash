@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { XMLParser, XMLValidator } from "fast-xml-parser";
-import { buildChannelFeed, type FeedChannel, type FeedEpisode } from "./feed-xml";
+import {
+  buildChannelFeed,
+  type FeedChannel,
+  type FeedEpisode,
+} from "./feed-xml";
 import { podcastGuid } from "./rss";
 
 const ORIGIN = "https://podzcash.online";
@@ -88,7 +92,11 @@ function validateFeed(xml: string): string[] {
   require(root["podcast:locked"]?.["@_owner"], "podcast:locked@owner");
   require(root["podcast:guid"], "podcast:guid");
 
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(String(root["podcast:guid"]))) {
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+      String(root["podcast:guid"]),
+    )
+  ) {
     missing.push("podcast:guid no es un UUID v5");
   }
 
@@ -180,7 +188,9 @@ describe("buildChannelFeed", () => {
     expect(parsed["itunes:explicit"]).toBe("true");
     expect(parsed["itunes:owner"]?.["itunes:email"]).toBe("owner@example.com");
     expect(parsed["itunes:block"]).toBe("yes");
-    expect(parsed["itunes:new-feed-url"]).toBe("https://example.com/new-feed.xml");
+    expect(parsed["itunes:new-feed-url"]).toBe(
+      "https://example.com/new-feed.xml",
+    );
     expect(parsed["podcast:locked"]?.["@_owner"]).toBe("owner@example.com");
     expect(parsed["podcast:funding"]).toBeUndefined();
 

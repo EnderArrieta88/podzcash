@@ -33,7 +33,9 @@ export default async function EpisodesPage() {
     include: { tags: { include: { tag: true } } },
   });
 
-  const published = episodes.filter((episode) => episode.status === "published");
+  const published = episodes.filter(
+    (episode) => episode.status === "published",
+  );
 
   return (
     <div className="space-y-6">
@@ -178,4 +180,3 @@ export default async function EpisodesPage() {
     </div>
   );
 }
-

@@ -62,18 +62,14 @@ test("elimina la cuenta con reautenticación y confirmación", async ({
   await page.fill("#delete-confirmation", EMAIL);
   await page.check('input[name="acknowledge"]');
   await submit.click();
-  await expect(
-    page.getByText("La contraseña no es correcta."),
-  ).toBeVisible();
+  await expect(page.getByText("La contraseña no es correcta.")).toBeVisible();
 
   // Confirmación incorrecta.
   await page.fill("#delete-password", PASSWORD);
   await page.fill("#delete-confirmation", "otro@ejemplo.com");
   await page.check('input[name="acknowledge"]');
   await submit.click();
-  await expect(
-    page.getByText(/Escribe tu email exactamente/),
-  ).toBeVisible();
+  await expect(page.getByText(/Escribe tu email exactamente/)).toBeVisible();
 
   // Eliminación definitiva.
   await page.fill("#delete-password", PASSWORD);
@@ -122,7 +118,13 @@ test("elimina la cuenta con reautenticación y confirmación", async ({
   expect(invites).toHaveLength(0);
   expect(
     existsSync(
-      path.join(process.cwd(), ".media-e2e", "audio", "e2e_delete", "delete.wav"),
+      path.join(
+        process.cwd(),
+        ".media-e2e",
+        "audio",
+        "e2e_delete",
+        "delete.wav",
+      ),
     ),
   ).toBe(false);
 });

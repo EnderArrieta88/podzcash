@@ -1,3 +1,4 @@
+import "server-only";
 import { openDatabase } from "@/lib/sqlite-bridge";
 
 /**

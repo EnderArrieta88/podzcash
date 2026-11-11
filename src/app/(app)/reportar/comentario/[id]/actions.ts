@@ -23,7 +23,9 @@ export async function submitCommentReportAction(
   if (!user) redirect("/entrar");
 
   const reason = String(formData.get("reason") ?? "").trim();
-  const details = String(formData.get("details") ?? "").trim().slice(0, 1000);
+  const details = String(formData.get("details") ?? "")
+    .trim()
+    .slice(0, 1000);
 
   if (!REASONS.has(reason)) {
     redirect(`${target}?error=invalid`);

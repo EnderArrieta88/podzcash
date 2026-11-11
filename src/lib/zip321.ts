@@ -6,10 +6,7 @@ export type PaymentRequest = {
 };
 
 function formatAmount(amount: number): string {
-  return amount
-    .toFixed(8)
-    .replace(/0+$/, "")
-    .replace(/\.$/, "");
+  return amount.toFixed(8).replace(/0+$/, "").replace(/\.$/, "");
 }
 
 /**

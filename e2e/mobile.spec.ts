@@ -27,7 +27,9 @@ test("la lista de episodios se adapta al móvil", async ({ page }) => {
   await expect(row).toBeVisible();
   await expect(row.getByText("Publicado", { exact: true })).toBeVisible();
   await expect(row.getByRole("link", { name: "Ver episodio" })).toBeVisible();
-  await expect(row.getByRole("link", { name: "Editar episodio" })).toBeVisible();
+  await expect(
+    row.getByRole("link", { name: "Editar episodio" }),
+  ).toBeVisible();
   await expect(row.getByText("privacidad")).toBeVisible();
 
   const overflow = await page.evaluate(

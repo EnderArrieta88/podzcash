@@ -137,7 +137,11 @@ export default async function EpisodeAnalyticsPage({
 
   const summary = [
     { key: "raw", label: labels.raw, value: String(data.summary.rawDownloads) },
-    { key: "valid", label: labels.valid, value: String(data.summary.validDownloads) },
+    {
+      key: "valid",
+      label: labels.valid,
+      value: String(data.summary.validDownloads),
+    },
     { key: "starts", label: labels.starts, value: String(data.summary.starts) },
     {
       key: "verified",
@@ -149,7 +153,11 @@ export default async function EpisodeAnalyticsPage({
       label: labels.clients,
       value: String(data.summary.uniqueClients),
     },
-    { key: "bytes", label: labels.bytes, value: formatBytes(data.summary.bytes) },
+    {
+      key: "bytes",
+      label: labels.bytes,
+      value: formatBytes(data.summary.bytes),
+    },
   ];
 
   const maxDaily = Math.max(

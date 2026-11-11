@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  formatInviteCode,
-  normalizeInviteCode,
-  parseLinks,
-} from "./links";
+import { formatInviteCode, normalizeInviteCode, parseLinks } from "./links";
 
 describe("códigos de invitación", () => {
   it("normaliza espacios, guiones y minúsculas", () => {
@@ -18,14 +14,16 @@ describe("códigos de invitación", () => {
 describe("enlaces de canal", () => {
   it("acepta una lista válida", () => {
     expect(
-      parseLinks(JSON.stringify([{ label: "Web", url: "https://example.com" }])),
+      parseLinks(
+        JSON.stringify([{ label: "Web", url: "https://example.com" }]),
+      ),
     ).toEqual([{ label: "Web", url: "https://example.com" }]);
   });
 
   it("ignora JSON inválido o URLs no válidas", () => {
     expect(parseLinks("no es json")).toEqual([]);
-    expect(parseLinks(JSON.stringify([{ label: "Web", url: "no-es-url" }]))).toEqual(
-      [],
-    );
+    expect(
+      parseLinks(JSON.stringify([{ label: "Web", url: "no-es-url" }])),
+    ).toEqual([]);
   });
 });

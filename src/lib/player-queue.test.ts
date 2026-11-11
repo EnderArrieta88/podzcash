@@ -30,12 +30,16 @@ describe("cola de reproducción", () => {
   it("mueve una pista arriba y abajo respetando los bordes", () => {
     const queue = [track("a"), track("b"), track("c")];
 
-    expect(
-      moveQueueItem(queue, "b", -1).map((item) => item.id),
-    ).toEqual(["b", "a", "c"]);
-    expect(
-      moveQueueItem(queue, "b", 1).map((item) => item.id),
-    ).toEqual(["a", "c", "b"]);
+    expect(moveQueueItem(queue, "b", -1).map((item) => item.id)).toEqual([
+      "b",
+      "a",
+      "c",
+    ]);
+    expect(moveQueueItem(queue, "b", 1).map((item) => item.id)).toEqual([
+      "a",
+      "c",
+      "b",
+    ]);
     expect(moveQueueItem(queue, "a", -1)).toBe(queue);
     expect(moveQueueItem(queue, "c", 1)).toBe(queue);
     expect(moveQueueItem(queue, "zzz", 1)).toBe(queue);

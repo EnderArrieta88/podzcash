@@ -36,9 +36,7 @@ export default async function AboutPage() {
       <h1 className="mt-2 font-display text-4xl tracking-tight sm:text-5xl">
         {content.title}
       </h1>
-      <p className="mt-3 text-sm leading-relaxed text-muted">
-        {content.intro}
-      </p>
+      <p className="mt-3 text-sm leading-relaxed text-muted">{content.intro}</p>
 
       <section className="mt-10">
         <h2 className="font-heading text-xl font-bold tracking-tight">

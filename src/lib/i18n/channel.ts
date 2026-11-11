@@ -17,8 +17,7 @@ const es = {
   emptyVisitor: "Este canal está empezando. Vuelve pronto para escucharlo.",
   upload: "Subir episodio",
   supportPanelTitle: "Apoya este canal",
-  supportPanelBody:
-    "ZEC directo a la wallet del creador, sin intermediarios.",
+  supportPanelBody: "ZEC directo a la wallet del creador, sin intermediarios.",
   sendZec: "Enviar ZEC",
   donations: "Donaciones",
   noAddress: "Este canal todavía no configuró una dirección Zcash.",
@@ -41,7 +40,8 @@ const en: ChannelContent = {
   rssTitle: "Channel RSS feed",
   episodes: "Episodes",
   emptyTitle: "Silence in the studio",
-  emptyOwner: "Your channel is ready. Upload your first episode from the studio.",
+  emptyOwner:
+    "Your channel is ready. Upload your first episode from the studio.",
   emptyVisitor: "This channel is just getting started. Check back soon.",
   upload: "Upload episode",
   supportPanelTitle: "Support this channel",

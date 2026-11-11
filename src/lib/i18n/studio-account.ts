@@ -71,8 +71,7 @@ const en: StudioAccountContent = {
       "Type your email exactly and confirm that you understand the action.",
     deleteAdmin: "Administrator accounts cannot be deleted here.",
     deleteLimit: "Too many attempts. Wait a few minutes.",
-    deleteGeneric:
-      "Could not delete the account. Try again or contact us.",
+    deleteGeneric: "Could not delete the account. Try again or contact us.",
   },
   currentPassword: "Current password",
   newPassword: "New password",

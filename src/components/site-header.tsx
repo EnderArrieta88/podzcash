@@ -28,9 +28,30 @@ export async function SiteHeader() {
               fill="none"
               aria-hidden="true"
             >
-              <rect x="1.5" y="6" width="2" height="4" rx="1" fill="currentColor" />
-              <rect x="7" y="2.5" width="2" height="11" rx="1" fill="currentColor" />
-              <rect x="12.5" y="4.5" width="2" height="7" rx="1" fill="currentColor" />
+              <rect
+                x="1.5"
+                y="6"
+                width="2"
+                height="4"
+                rx="1"
+                fill="currentColor"
+              />
+              <rect
+                x="7"
+                y="2.5"
+                width="2"
+                height="11"
+                rx="1"
+                fill="currentColor"
+              />
+              <rect
+                x="12.5"
+                y="4.5"
+                width="2"
+                height="7"
+                rx="1"
+                fill="currentColor"
+              />
             </svg>
           </span>
           <span className="font-heading text-[15px] font-bold tracking-tight">

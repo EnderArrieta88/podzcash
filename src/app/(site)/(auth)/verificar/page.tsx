@@ -44,11 +44,12 @@ export default async function VerifyPage({ searchParams }: PageProps) {
     : null;
 
   const valid = Boolean(
-    payload && user && emailFingerprint(user.email) === payload.emailFingerprint,
+    payload &&
+    user &&
+    emailFingerprint(user.email) === payload.emailFingerprint,
   );
 
-  const success =
-    params.ok === "1" || (valid && user?.status === "active");
+  const success = params.ok === "1" || (valid && user?.status === "active");
 
   const confirmable = valid && user?.status === "unverified";
 

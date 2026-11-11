@@ -16,10 +16,7 @@ import {
   Timer,
   X,
 } from "lucide-react";
-import {
-  PLAYBACK_RATES,
-  usePlayer,
-} from "@/components/player/player-context";
+import { PLAYBACK_RATES, usePlayer } from "@/components/player/player-context";
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 import { playerContent, type PlayerContent } from "@/lib/i18n/player";
@@ -322,7 +319,9 @@ function MarqueeText({ text }: { text: string }) {
   return (
     <span ref={viewportRef} className="block overflow-hidden">
       <span
-        className={overflowing ? "player-title-track flex w-max gap-8" : undefined}
+        className={
+          overflowing ? "player-title-track flex w-max gap-8" : undefined
+        }
         style={
           overflowing
             ? ({ "--marquee-duration": `${duration}s` } as CSSProperties)
@@ -600,17 +599,13 @@ export function PlayerBar({ locale }: { locale: Locale }) {
             <QueueButton
               labels={labels}
               open={panel === "queue"}
-              onToggle={() =>
-                setPanel(panel === "queue" ? null : "queue")
-              }
+              onToggle={() => setPanel(panel === "queue" ? null : "queue")}
             />
 
             <SleepButton
               labels={labels}
               open={panel === "sleep"}
-              onToggle={() =>
-                setPanel(panel === "sleep" ? null : "sleep")
-              }
+              onToggle={() => setPanel(panel === "sleep" ? null : "sleep")}
             />
           </div>
 

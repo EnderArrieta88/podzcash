@@ -8,15 +8,11 @@ const TITLE_2 = "Episodio de analítica E2E";
 test("cola: agregar, reordenar, persistir y navegar", async ({ page }) => {
   await page.goto(EPISODE_1);
   await page.getByRole("button", { name: "Añadir a la cola" }).click();
-  await expect(
-    page.getByRole("button", { name: "En la cola" }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "En la cola" })).toBeVisible();
 
   await page.goto(EPISODE_2);
   await page.getByRole("button", { name: "Añadir a la cola" }).click();
-  await expect(
-    page.getByRole("button", { name: "En la cola" }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "En la cola" })).toBeVisible();
 
   // Reproducir el primero abre la barra.
   await page.goto(EPISODE_1);

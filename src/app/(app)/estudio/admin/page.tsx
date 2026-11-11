@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, Flag, HardDrive, ShieldAlert, UserPlus } from "lucide-react";
+import {
+  AlertTriangle,
+  Flag,
+  HardDrive,
+  ShieldAlert,
+  UserPlus,
+} from "lucide-react";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
 import { findOrphans } from "@/lib/media-cleanup";
@@ -60,43 +66,51 @@ export default async function AdminPage({
     waitlistContent[locale].roles;
   const pushPublicKey = process.env.VAPID_PUBLIC_KEY?.trim() || null;
 
-  const [users, episodes, reports, channels, orphans, publishedCount, waiting, waitlist] =
-    await Promise.all([
-      prisma.user.findMany({
-        orderBy: { createdAt: "asc" },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          status: true,
-          createdAt: true,
-          channel: { select: { handle: true, displayName: true } },
-        },
-      }),
-      prisma.episode.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 20,
-        select: {
-          id: true,
-          title: true,
-          status: true,
-          playCount: true,
-          createdAt: true,
-          channel: { select: { handle: true, displayName: true } },
-        },
-      }),
-      prisma.report.findMany({
-        where: { status: "open" },
-        orderBy: { createdAt: "desc" },
-        take: 20,
-      }),
-      prisma.channel.count(),
-      findOrphans(),
-      prisma.episode.count({ where: { status: "published" } }),
-      countWaitlist(),
-      listWaitlist(20),
-    ]);
+  const [
+    users,
+    episodes,
+    reports,
+    channels,
+    orphans,
+    publishedCount,
+    waiting,
+    waitlist,
+  ] = await Promise.all([
+    prisma.user.findMany({
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        channel: { select: { handle: true, displayName: true } },
+      },
+    }),
+    prisma.episode.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        playCount: true,
+        createdAt: true,
+        channel: { select: { handle: true, displayName: true } },
+      },
+    }),
+    prisma.report.findMany({
+      where: { status: "open" },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    }),
+    prisma.channel.count(),
+    findOrphans(),
+    prisma.episode.count({ where: { status: "published" } }),
+    countWaitlist(),
+    listWaitlist(20),
+  ]);
 
   const episodeIds = reports
     .filter((report) => report.targetType === "episode")
@@ -244,8 +258,7 @@ export default async function AdminPage({
                   </p>
                 </div>
                 <p className="mt-0.5 text-xs text-muted">
-                  {entry.email} ·{" "}
-                  {waitlistRoleLabels[entry.role] ?? entry.role}
+                  {entry.email} · {waitlistRoleLabels[entry.role] ?? entry.role}
                 </p>
                 {entry.note && (
                   <p className="mt-1 text-sm text-muted">{entry.note}</p>
@@ -320,7 +333,8 @@ export default async function AdminPage({
                             : content.reports.commentDeleted
                           : null}
                         {comment && target ? " · " : null}
-                        {reasonLabels.get(report.reason) ?? report.reason} ·{" "}
+                        {reasonLabels.get(report.reason) ??
+                          report.reason} ·{" "}
                         {formatDate(report.createdAt, locale)}
                       </p>
 
@@ -344,10 +358,7 @@ export default async function AdminPage({
 
                       {target && (
                         <Link
-                          href={episodePath(
-                            target.channel.handle,
-                            target.slug,
-                          )}
+                          href={episodePath(target.channel.handle, target.slug)}
                           className="mt-1 inline-block text-xs text-brand hover:underline"
                         >
                           {content.reports.view}
@@ -513,7 +524,9 @@ export default async function AdminPage({
                 <input
                   type="hidden"
                   name="status"
-                  value={episode.status === "published" ? "hidden" : "published"}
+                  value={
+                    episode.status === "published" ? "hidden" : "published"
+                  }
                 />
                 <button
                   type="submit"

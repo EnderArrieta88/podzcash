@@ -1,13 +1,11 @@
+import "server-only";
 import { createHash } from "node:crypto";
 
 const PODCAST_NAMESPACE = "2f8c1f0e-6b3a-4d9c-8e7f-1a2b3c4d5e6f";
 
 export function podcastGuid(seed: string): string {
   const namespace = Buffer.from(PODCAST_NAMESPACE.replaceAll("-", ""), "hex");
-  const hash = createHash("sha1")
-    .update(namespace)
-    .update(seed)
-    .digest();
+  const hash = createHash("sha1").update(namespace).update(seed).digest();
   const bytes = Buffer.from(hash.subarray(0, 16));
 
   bytes[6] = (bytes[6] & 0x0f) | 0x50;
@@ -61,8 +59,7 @@ export function siteOrigin(request: Request): string {
     request.headers.get("host") ??
     url.host;
   const proto =
-    request.headers.get("x-forwarded-proto") ??
-    url.protocol.replace(":", "");
+    request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
 
   const isInternal =
     !host ||

@@ -15,10 +15,12 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "e2e:setup": "node e2e/setup.mjs",
     "e2e:server": "npm run e2e:setup && next start -p 3100",
     "e2e": "playwright test",
-    "check": "npm run lint && npm run typecheck && npm run test"
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run test"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.10.1",
@@ -48,6 +50,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "fast-xml-parser": "^5.12.0",
+    "prettier": "^3.9.10",
     "prisma": "^7.10.1",
     "tailwindcss": "^4",
     "typescript": "^5",

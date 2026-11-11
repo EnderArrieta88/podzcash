@@ -1,9 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  addEpisodeCommentAction,
-} from "@/app/(app)/canal/[handle]/[slug]/comments-actions";
+import { addEpisodeCommentAction } from "@/app/(app)/canal/[handle]/[slug]/comments-actions";
 import { Textarea } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { episodeContent } from "@/lib/i18n/episode";
@@ -18,7 +16,7 @@ export function CommentForm({
 }: {
   episodeId: string;
   labels: Pick<
-    typeof episodeContent["es"]["comments"],
+    (typeof episodeContent)["es"]["comments"],
     "placeholder" | "submit" | "pending"
   >;
 }) {

@@ -19,13 +19,15 @@ export async function register() {
     const { ensureCommentsSchema } = await import("./lib/comments-migration");
     ensureCommentsSchema();
   } catch (error) {
-    console.error("[instrumentation] No se pudo migrar los comentarios:", error);
+    console.error(
+      "[instrumentation] No se pudo migrar los comentarios:",
+      error,
+    );
   }
 
   try {
-    const { ensurePlaybackProgressSchema } = await import(
-      "./lib/progress-migration"
-    );
+    const { ensurePlaybackProgressSchema } =
+      await import("./lib/progress-migration");
     ensurePlaybackProgressSchema();
   } catch (error) {
     console.error(

@@ -24,11 +24,15 @@ export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
   const router = useRouter();
   const container = useRef<HTMLDivElement>(null);
 
-  const current = options.find((option) => option.value === locale) ?? options[0];
+  const current =
+    options.find((option) => option.value === locale) ?? options[0];
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {
-      if (container.current && !container.current.contains(event.target as Node)) {
+      if (
+        container.current &&
+        !container.current.contains(event.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -74,7 +78,9 @@ export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
         <span className="hidden sm:inline">{current.label}</span>
         <ChevronDown
           size={12}
-          className={open ? "rotate-180 transition-transform" : "transition-transform"}
+          className={
+            open ? "rotate-180 transition-transform" : "transition-transform"
+          }
         />
       </button>
 
@@ -103,7 +109,9 @@ export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
               className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-xs text-muted transition-colors hover:bg-surface-3 hover:text-text disabled:opacity-60"
             >
               {option.label}
-              {option.value === locale && <Check size={13} className="text-jade" />}
+              {option.value === locale && (
+                <Check size={13} className="text-jade" />
+              )}
             </button>
           ))}
         </div>

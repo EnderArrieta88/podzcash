@@ -97,14 +97,17 @@ export const commentEmailContent: Record<Locale, CommentEmailCopy> = {
     intro: (author, episode) =>
       `${author} comentó en tu episodio «${episode}».`,
     button: "Ver el comentario",
-    manage: "Puedes cambiar o desactivar estos avisos en Estudio → Comentarios.",
+    manage:
+      "Puedes cambiar o desactivar estos avisos en Estudio → Comentarios.",
     footer: "PodZcash · Audio para Zcash",
   },
   en: {
     subject: (episode) => `New comment on ${episode}`,
-    intro: (author, episode) => `${author} commented on your episode “${episode}”.`,
+    intro: (author, episode) =>
+      `${author} commented on your episode “${episode}”.`,
     button: "View the comment",
-    manage: "You can change or turn off these notifications in Studio → Comments.",
+    manage:
+      "You can change or turn off these notifications in Studio → Comments.",
     footer: "PodZcash · Audio for Zcash",
   },
 };

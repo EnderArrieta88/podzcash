@@ -77,7 +77,11 @@
   inset: -20% -10% auto -10%;
   height: 70%;
   pointer-events: none;
-  background: radial-gradient(60% 60% at 30% 30%, rgba(244, 183, 40, 0.16), transparent 70%);
+  background: radial-gradient(
+    60% 60% at 30% 30%,
+    rgba(244, 183, 40, 0.16),
+    transparent 70%
+  );
   filter: blur(20px);
 }
 .pz-home .hero-grid {
@@ -168,8 +172,17 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(11, 13, 17, 0.05) 40%, rgba(11, 13, 17, 0.86) 100%),
-    radial-gradient(80% 60% at 80% 0%, rgba(244, 183, 40, 0.22), transparent 60%);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11, 13, 17, 0.05) 40%,
+      rgba(11, 13, 17, 0.86) 100%
+    ),
+    radial-gradient(
+      80% 60% at 80% 0%,
+      rgba(244, 183, 40, 0.22),
+      transparent 60%
+    );
 }
 .pz-home .photo-chip {
   position: absolute;
@@ -346,7 +359,12 @@
   background: var(--pz-surface);
 }
 .pz-home .why-col.accent {
-  background: linear-gradient(155deg, rgba(244, 183, 40, 0.1), rgba(16, 185, 129, 0.05) 70%, transparent);
+  background: linear-gradient(
+    155deg,
+    rgba(244, 183, 40, 0.1),
+    rgba(16, 185, 129, 0.05) 70%,
+    transparent
+  );
   border-color: rgba(244, 183, 40, 0.28);
 }
 .pz-home .why-col > h3 {
@@ -430,7 +448,12 @@
   align-items: center;
   border: 1px solid rgba(244, 183, 40, 0.22);
   border-radius: 20px;
-  background: linear-gradient(120deg, rgba(244, 183, 40, 0.09), rgba(16, 185, 129, 0.04) 60%, transparent);
+  background: linear-gradient(
+    120deg,
+    rgba(244, 183, 40, 0.09),
+    rgba(16, 185, 129, 0.04) 60%,
+    transparent
+  );
   padding: clamp(26px, 4vw, 44px);
 }
 .pz-home .project h2 {
@@ -513,7 +536,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 45%, rgba(11, 13, 17, 0.88) 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 45%,
+    rgba(11, 13, 17, 0.88) 100%
+  );
 }
 .pz-home .scene.tall {
   aspect-ratio: 3 / 4;
@@ -626,7 +653,12 @@
   border: 1px solid rgba(244, 183, 40, 0.22);
   border-radius: 22px;
   overflow: hidden;
-  background: linear-gradient(120deg, rgba(244, 183, 40, 0.09), rgba(16, 185, 129, 0.05) 60%, transparent);
+  background: linear-gradient(
+    120deg,
+    rgba(244, 183, 40, 0.09),
+    rgba(16, 185, 129, 0.05) 60%,
+    transparent
+  );
 }
 .pz-home .donate-copy {
   padding: clamp(26px, 4vw, 48px);
@@ -702,7 +734,11 @@
   position: absolute;
   inset: auto 0 -40% 0;
   height: 80%;
-  background: radial-gradient(50% 60% at 50% 100%, rgba(244, 183, 40, 0.14), transparent 70%);
+  background: radial-gradient(
+    50% 60% at 50% 100%,
+    rgba(244, 183, 40, 0.14),
+    transparent 70%
+  );
 }
 .pz-home .final h2 {
   position: relative;

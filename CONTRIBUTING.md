@@ -47,9 +47,13 @@ Reglas prácticas:
 - **Estilo:** commits atómicos, PRs pequeños, mensajes claros y documentación
   actualizada. Seguimos los principios de revisión de `librustzcash` adaptados a
   TypeScript: revisión antes de fusionar, CI obligatorio, historial legible y
-  ningún secreto en el repositorio.
+  ningún secreto en el repositorio. El formato se aplica con `npm run format` y
+  se verifica con `npm run format:check`.
+- **Arquitectura:** las reglas de capas y dependencias están en
+  [ARCHITECTURE.md](ARCHITECTURE.md).
 - **Pruebas:** los tests unitarios viven en `*.test.ts` y deben pasar en CI.
-  `npm run check` ejecuta lint, tipos y tests; `npm run build` valida el build.
+  `npm run check` ejecuta lint, formato, tipos y tests; `npm run build` valida
+  el build.
 - **Datos:** no subas bases de datos, audios, portadas, `.env` ni datos de
   producción.
 

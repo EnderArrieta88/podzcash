@@ -236,7 +236,9 @@ export async function requestPasswordResetAction(
 
   if (user && user.status === "active") {
     if (!isResetTokenConfigured()) {
-      console.warn("[auth] AUTH_SECRET no está configurado; no se envía el enlace.");
+      console.warn(
+        "[auth] AUTH_SECRET no está configurado; no se envía el enlace.",
+      );
       return { ok: true };
     }
 
@@ -247,7 +249,10 @@ export async function requestPasswordResetAction(
 
       await sendPasswordResetEmail({ to: user.email, url, locale });
     } catch (error) {
-      console.error("[auth] No se pudo preparar el email de recuperación:", error);
+      console.error(
+        "[auth] No se pudo preparar el email de recuperación:",
+        error,
+      );
     }
   }
 

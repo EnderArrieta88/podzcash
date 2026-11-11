@@ -1,13 +1,7 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
-import {
-  CheckCircle2,
-  CloudUpload,
-  ImagePlus,
-  Music2,
-  X,
-} from "lucide-react";
+import { CheckCircle2, CloudUpload, ImagePlus, Music2, X } from "lucide-react";
 import { saveEpisodeAction } from "@/app/(app)/estudio/actions";
 import {
   FieldError,
@@ -599,11 +593,8 @@ export function EpisodeForm({
           {labels.saveDraft}
         </SubmitButton>
 
-        {!audio && (
-          <p className="text-xs text-subtle">{labels.needAudio}</p>
-        )}
+        {!audio && <p className="text-xs text-subtle">{labels.needAudio}</p>}
       </div>
     </form>
   );
 }
-

@@ -1,8 +1,17 @@
-import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
+import "server-only";
+import {
+  randomBytes,
+  scrypt as scryptCallback,
+  timingSafeEqual,
+} from "node:crypto";
 
 const KEY_LENGTH = 64;
 
-function scrypt(password: string, salt: Buffer, length: number): Promise<Buffer> {
+function scrypt(
+  password: string,
+  salt: Buffer,
+  length: number,
+): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     scryptCallback(password, salt, length, (error, key) => {
       if (error) reject(error);
@@ -31,9 +40,11 @@ export async function verifyPassword(
 
   const salt = Buffer.from(saltPart, "base64url");
   const expected = Buffer.from(keyPart, "base64url");
-  const actual = await scrypt(password.normalize("NFKC"), salt, expected.length);
-
-  return (
-    actual.length === expected.length && timingSafeEqual(actual, expected)
+  const actual = await scrypt(
+    password.normalize("NFKC"),
+    salt,
+    expected.length,
   );
+
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
 }

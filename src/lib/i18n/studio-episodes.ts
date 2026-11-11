@@ -48,8 +48,7 @@ const es = {
     bytes: "Bytes servidos",
     empty: "Todavía no hay descargas registradas.",
     full: "Ver analítica completa",
-    hint:
-      "Cuenta descargas de servidor con deduplicación por cliente. Las escuchas en apps externas llegarán con la agregación diaria.",
+    hint: "Cuenta descargas de servidor con deduplicación por cliente. Las escuchas en apps externas llegarán con la agregación diaria.",
   },
   form: {
     audio: "Audio",
@@ -116,7 +115,8 @@ const es = {
     },
   },
   delete: {
-    confirm: "¿Borrar este episodio? Se elimina el audio y no se puede deshacer.",
+    confirm:
+      "¿Borrar este episodio? Se elimina el audio y no se puede deshacer.",
     label: "Borrar",
   },
 };
@@ -171,8 +171,7 @@ const en: StudioEpisodesContent = {
     bytes: "Bytes served",
     empty: "No downloads recorded yet.",
     full: "View full analytics",
-    hint:
-      "Counts server downloads with per-client deduplication. External app listens will arrive with daily aggregation.",
+    hint: "Counts server downloads with per-client deduplication. External app listens will arrive with daily aggregation.",
   },
   form: {
     audio: "Audio",
@@ -238,7 +237,8 @@ const en: StudioEpisodesContent = {
     },
   },
   delete: {
-    confirm: "Delete this episode? The audio is removed and this cannot be undone.",
+    confirm:
+      "Delete this episode? The audio is removed and this cannot be undone.",
     label: "Delete",
   },
 };

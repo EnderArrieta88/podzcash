@@ -1,4 +1,6 @@
+import "server-only";
 import { Resend } from "resend";
+import { env } from "@/lib/env";
 import {
   inviteEmailContent,
   commentEmailContent,
@@ -8,8 +10,8 @@ import {
 } from "@/lib/i18n/email";
 import type { Locale } from "@/lib/i18n/config";
 
-const FROM = process.env.EMAIL_FROM ?? "PodZcash <hola@podzcash.online>";
-const API_KEY = process.env.RESEND_API_KEY?.trim();
+const FROM = env.EMAIL_FROM;
+const API_KEY = env.RESEND_API_KEY;
 
 export function isEmailConfigured(): boolean {
   return Boolean(API_KEY);
@@ -97,7 +99,7 @@ async function sendLinkEmail({
   devLabel: string;
 }): Promise<boolean> {
   if (!isEmailConfigured()) {
-    if (process.env.NODE_ENV !== "production") {
+    if (env.NODE_ENV !== "production") {
       console.info(`[email:dev] ${devLabel}: ${url}`);
     } else {
       console.warn("[email] RESEND_API_KEY no está configurado.");
@@ -165,7 +167,9 @@ export async function sendInviteEmail({
   const content = inviteEmailContent[locale];
 
   if (!isEmailConfigured()) {
-    console.warn("[email] RESEND_API_KEY no está configurado; no se envió la invitación.");
+    console.warn(
+      "[email] RESEND_API_KEY no está configurado; no se envió la invitación.",
+    );
     return false;
   }
 

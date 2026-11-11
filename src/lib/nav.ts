@@ -13,10 +13,7 @@ export function isNavItemActive(pathname: string, item: NavItem): boolean {
  * Devuelve la ruta activa más específica. Así `/estudio/admin` no marca también
  * `/estudio`: gana el prefijo más largo.
  */
-export function activeHref(
-  pathname: string,
-  items: NavItem[],
-): string | null {
+export function activeHref(pathname: string, items: NavItem[]): string | null {
   let best: string | null = null;
 
   for (const item of items) {

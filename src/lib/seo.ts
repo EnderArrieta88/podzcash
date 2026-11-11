@@ -1,9 +1,12 @@
+import "server-only";
 import type { Metadata } from "next";
 import type { Locale } from "@/lib/i18n/config";
+import { env } from "@/lib/env";
 
-export const SITE_URL = (
-  process.env.SITE_URL ?? "https://podzcash.online"
-).replace(/\/+$/, "");
+export const SITE_URL = (env.SITE_URL ?? "https://podzcash.online").replace(
+  /\/+$/,
+  "",
+);
 
 export const DEFAULT_OG_IMAGE = "/landing/app.jpg";
 

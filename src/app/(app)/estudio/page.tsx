@@ -32,7 +32,8 @@ export default async function StudioPage() {
               <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
               {index === 0 ? (
                 <span>
-                  {bullet} <code className="text-text">{content.bulletCode}</code>
+                  {bullet}{" "}
+                  <code className="text-text">{content.bulletCode}</code>
                 </span>
               ) : (
                 bullet
@@ -152,4 +153,3 @@ export default async function StudioPage() {
     </div>
   );
 }
-

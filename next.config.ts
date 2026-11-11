@@ -33,9 +33,7 @@ const nextConfig: NextConfig = {
     },
   },
   async headers() {
-    return [
-      { source: "/(.*)", headers: securityHeaders },
-    ];
+    return [{ source: "/(.*)", headers: securityHeaders }];
   },
   async redirects() {
     return [

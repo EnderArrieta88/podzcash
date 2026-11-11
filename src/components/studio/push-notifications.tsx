@@ -10,9 +10,7 @@ import type { PushContent } from "@/lib/i18n/push";
 
 function urlBase64ToUint8Array(value: string): Uint8Array<ArrayBuffer> {
   const padding = "=".repeat((4 - (value.length % 4)) % 4);
-  const base64 = (value + padding)
-    .replaceAll("-", "+")
-    .replaceAll("_", "/");
+  const base64 = (value + padding).replaceAll("-", "+").replaceAll("_", "/");
   const raw = atob(base64);
   const bytes = new Uint8Array(new ArrayBuffer(raw.length));
 
@@ -68,7 +66,8 @@ export function PushNotifications({
   const [supported, setSupported] = useState(false);
   const [standalone, setStandalone] = useState(true);
   const [ios, setIos] = useState(false);
-  const [permission, setPermission] = useState<NotificationPermission>("default");
+  const [permission, setPermission] =
+    useState<NotificationPermission>("default");
   const [subscribed, setSubscribed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

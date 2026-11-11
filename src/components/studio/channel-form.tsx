@@ -6,7 +6,14 @@ import type { ChannelLink } from "@/lib/links";
 import { AvatarField } from "@/components/studio/avatar-field";
 import { BannerField } from "@/components/studio/banner-field";
 import { LinksEditor } from "@/components/studio/links-editor";
-import { FieldError, FieldHint, Input, Label, Select, Textarea } from "@/components/ui/field";
+import {
+  FieldError,
+  FieldHint,
+  Input,
+  Label,
+  Select,
+  Textarea,
+} from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { PODCAST_CATEGORIES } from "@/lib/feed";
 import type { ChannelFormLabels } from "@/lib/i18n/studio-channel";
@@ -221,9 +228,7 @@ export function ChannelForm({ channel, links, labels }: ChannelFormProps) {
               type="checkbox"
               name="feedExplicit"
               checked={values.feedExplicit}
-              onChange={(event) =>
-                update("feedExplicit", event.target.checked)
-              }
+              onChange={(event) => update("feedExplicit", event.target.checked)}
               className="mt-0.5 size-4 accent-[var(--color-brand)]"
             />
             <span>
@@ -290,11 +295,8 @@ export function ChannelForm({ channel, links, labels }: ChannelFormProps) {
         <SubmitButton pendingLabel={labels.saving}>
           {channel ? labels.save : labels.create}
         </SubmitButton>
-        {!channel && (
-          <p className="text-xs text-subtle">{labels.editLater}</p>
-        )}
+        {!channel && <p className="text-xs text-subtle">{labels.editLater}</p>}
       </div>
     </form>
   );
 }
-

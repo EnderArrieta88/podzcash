@@ -1,3 +1,4 @@
+import "server-only";
 import Database from "better-sqlite3";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync } from "node:fs";
@@ -52,31 +53,29 @@ export function classifyUserAgent(userAgent: string | null): UserAgentInfo {
     };
   }
 
-  const device =
-    /ipad|tablet/.test(lower)
-      ? "tablet"
-      : /iphone|ipod|android|mobile/.test(lower)
-        ? "mobile"
-        : "desktop";
+  const device = /ipad|tablet/.test(lower)
+    ? "tablet"
+    : /iphone|ipod|android|mobile/.test(lower)
+      ? "mobile"
+      : "desktop";
 
-  const app =
-    /applecoremedia|itunes/.test(lower)
-      ? "Apple Podcasts"
-      : /spotify/.test(lower)
-        ? "Spotify"
-        : /pocketcasts/.test(lower)
-          ? "Pocket Casts"
-          : /overcast/.test(lower)
-            ? "Overcast"
-            : /podcastaddict/.test(lower)
-              ? "Podcast Addict"
-              : /castbox/.test(lower)
-                ? "Castbox"
-                : /vlc/.test(lower)
-                  ? "VLC"
-                  : /mozilla|chrome|safari|firefox|edg\//.test(lower)
-                    ? "Web"
-                    : "Other";
+  const app = /applecoremedia|itunes/.test(lower)
+    ? "Apple Podcasts"
+    : /spotify/.test(lower)
+      ? "Spotify"
+      : /pocketcasts/.test(lower)
+        ? "Pocket Casts"
+        : /overcast/.test(lower)
+          ? "Overcast"
+          : /podcastaddict/.test(lower)
+            ? "Podcast Addict"
+            : /castbox/.test(lower)
+              ? "Castbox"
+              : /vlc/.test(lower)
+                ? "VLC"
+                : /mozilla|chrome|safari|firefox|edg\//.test(lower)
+                  ? "Web"
+                  : "Other";
 
   return { isBot: false, device, app };
 }
@@ -123,11 +122,11 @@ function dayRange(days: number): string[] {
 
 function hashValue(value: string, day: string): string {
   const salt =
-    process.env.ANALYTICS_SALT ?? process.env.AUTH_SECRET ?? "podzcash-analytics";
+    process.env.ANALYTICS_SALT ??
+    process.env.AUTH_SECRET ??
+    "podzcash-analytics";
 
-  return createHash("sha256")
-    .update(`${day}|${value}|${salt}`)
-    .digest("hex");
+  return createHash("sha256").update(`${day}|${value}|${salt}`).digest("hex");
 }
 
 function refererHost(referer: string | null): string | null {
@@ -246,9 +245,7 @@ function getDb(): Database.Database {
 
   if (!globalForAnalytics.podzcashAnalyticsPruned) {
     globalForAnalytics.podzcashAnalyticsPruned = true;
-    const cutoff = new Date(
-      Date.now() - RETENTION_DAYS * DAY_MS,
-    ).toISOString();
+    const cutoff = new Date(Date.now() - RETENTION_DAYS * DAY_MS).toISOString();
     db.prepare(`DELETE FROM media_events WHERE createdAt < ?`).run(cutoff);
     db.prepare(`DELETE FROM listen_events WHERE createdAt < ?`).run(cutoff);
     db.prepare(`DELETE FROM progress_events WHERE createdAt < ?`).run(cutoff);
@@ -388,8 +385,7 @@ function analyzeMedia(events: AnalyticsEvent[]): MediaAnalysis {
 
     const thresholdBytes =
       duration > 0 && totalBytes > 0
-        ? totalBytes *
-          (Math.min(60, Math.max(1, duration * 0.1)) / duration)
+        ? totalBytes * (Math.min(60, Math.max(1, duration * 0.1)) / duration)
         : 1_048_576;
 
     if (client.bytes >= thresholdBytes) validClients.add(key);
@@ -422,7 +418,10 @@ export function aggregateDay(
   mediaEvents: Array<AnalyticsEvent & { episodeId: string; channelId: string }>,
   listenEvents: ListenEvent[],
 ): DailyStats[] {
-  const mediaByEpisode = new Map<string, (AnalyticsEvent & { episodeId: string; channelId: string })[]>();
+  const mediaByEpisode = new Map<
+    string,
+    (AnalyticsEvent & { episodeId: string; channelId: string })[]
+  >();
   const listenByEpisode = new Map<string, ListenEvent[]>();
 
   for (const event of mediaEvents) {
@@ -448,9 +447,7 @@ export function aggregateDay(
     const listens = listenByEpisode.get(episodeId) ?? [];
     const analysis = analyzeMedia(media);
     const starts = new Set(
-      listens
-        .filter((event) => !event.isBot)
-        .map((event) => clientKey(event)),
+      listens.filter((event) => !event.isBot).map((event) => clientKey(event)),
     );
     const verifiedListens = [...starts].filter((key) =>
       analysis.validClients.has(key),
@@ -596,7 +593,8 @@ export function reconcileDay(day: string): Array<{
   return differences;
 }
 
-export function getEpisodeStats(episodeId: string, days = 30): EpisodeStats {  const db = getDb();
+export function getEpisodeStats(episodeId: string, days = 30): EpisodeStats {
+  const db = getDb();
   const daysList = dayRange(days);
 
   for (const day of daysList) ensureDay(day);
@@ -717,9 +715,10 @@ function dayListBetween(from: string, to: string): string[] {
   return days.length > 0 ? days : dayRange(30);
 }
 
-function filterWhere(
-  filters: AnalyticsFilters,
-): { clause: string; params: Array<string> } {
+function filterWhere(filters: AnalyticsFilters): {
+  clause: string;
+  params: Array<string>;
+} {
   const clause = [`episodeId = ?`, `day >= ?`, `day <= ?`];
   const params = [filters.episodeId, filters.from, filters.to];
 

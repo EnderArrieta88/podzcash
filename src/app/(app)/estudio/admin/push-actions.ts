@@ -2,18 +2,11 @@
 
 import { headers } from "next/headers";
 import { requireAdmin } from "@/lib/auth/guards";
-import {
-  deletePushSubscription,
-  savePushSubscription,
-} from "@/lib/push";
-import {
-  isMobileUserAgent,
-  pushSubscriptionSchema,
-} from "@/lib/push-payload";
+import { deletePushSubscription, savePushSubscription } from "@/lib/push";
+import { isMobileUserAgent, pushSubscriptionSchema } from "@/lib/push-payload";
 
 export type PushActionResult =
-  | { ok: true }
-  | { ok: false; error: "mobile" | "invalid" | "server" };
+  { ok: true } | { ok: false; error: "mobile" | "invalid" | "server" };
 
 export async function subscribePushAction(
   input: unknown,

@@ -61,9 +61,13 @@ test("el admin resuelve el reporte y borra el comentario", async ({ page }) => {
   await loginAs(page, "e2e-admin@podzcash.local");
   await page.goto("/estudio/admin");
 
-  const report = page.locator("li").filter({ hasText: "Reporte E2E de comentario" });
+  const report = page
+    .locator("li")
+    .filter({ hasText: "Reporte E2E de comentario" });
   await expect(report).toBeVisible();
-  await expect(page.getByText("Comentario de E2E Author").first()).toBeVisible();
+  await expect(
+    page.getByText("Comentario de E2E Author").first(),
+  ).toBeVisible();
 
   await report.getByRole("button", { name: "Eliminar comentario" }).click();
 

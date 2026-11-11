@@ -262,7 +262,6 @@ jobs:
             exit 1
           fi
 
-
       - name: Solicitar reinicio y verificar
         env:
           FTP_HOST: ${{ secrets.FTP_SERVER }}

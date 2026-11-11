@@ -40,18 +40,11 @@ export const handleSchema = z
   });
 
 export const registerSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, "nameMin")
-    .max(60, "nameMax"),
+  name: z.string().trim().min(2, "nameMin").max(60, "nameMax"),
   email: z
     .email("emailInvalid")
     .transform((value) => value.trim().toLowerCase()),
-  password: z
-    .string()
-    .min(8, "passwordMin")
-    .max(100, "passwordMax"),
+  password: z.string().min(8, "passwordMin").max(100, "passwordMax"),
   inviteCode: z.string().trim().max(64, "inviteCodeMax").optional(),
 });
 
@@ -70,10 +63,7 @@ export const resetRequestSchema = z.object({
 
 export const passwordResetSchema = z
   .object({
-    newPassword: z
-      .string()
-      .min(8, "newPasswordMin")
-      .max(100, "newPasswordMax"),
+    newPassword: z.string().min(8, "newPasswordMin").max(100, "newPasswordMax"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
@@ -131,22 +121,20 @@ export const channelSchema = z.object({
 });
 
 export const episodeSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(2, "titleMin")
-    .max(140, "titleMax"),
-  description: z
-    .string()
-    .trim()
-    .max(5000, "descriptionMax"),
+  title: z.string().trim().min(2, "titleMin").max(140, "titleMax"),
+  description: z.string().trim().max(5000, "descriptionMax"),
   kind: z.enum(["podcast", "music"], {
     message: "kindRequired",
   }),
   tags: z.string().trim().max(240, "tagsMax").optional(),
   season: z.preprocess(
     (value) => (value === "" || value == null ? undefined : value),
-    z.coerce.number().int().min(0, "seasonInvalid").max(9999, "seasonInvalid").optional(),
+    z.coerce
+      .number()
+      .int()
+      .min(0, "seasonInvalid")
+      .max(9999, "seasonInvalid")
+      .optional(),
   ),
   episodeNumber: z.preprocess(
     (value) => (value === "" || value == null ? undefined : value),
@@ -160,15 +148,12 @@ export const episodeSchema = z.object({
   episodeType: z
     .enum(["full", "trailer", "bonus"], { message: "episodeTypeInvalid" })
     .default("full"),
-  explicit: z.preprocess(
-    (value) => {
-      if (value === "" || value == null) return undefined;
-      if (value === "true") return true;
-      if (value === "false") return false;
-      return value;
-    },
-    z.boolean().optional(),
-  ),
+  explicit: z.preprocess((value) => {
+    if (value === "" || value == null) return undefined;
+    if (value === "true") return true;
+    if (value === "false") return false;
+    return value;
+  }, z.boolean().optional()),
 });
 
 export type EpisodeInput = z.infer<typeof episodeSchema>;
@@ -176,10 +161,7 @@ export type EpisodeInput = z.infer<typeof episodeSchema>;
 export const passwordChangeSchema = z
   .object({
     currentPassword: z.string().min(1, "currentPasswordRequired"),
-    newPassword: z
-      .string()
-      .min(8, "newPasswordMin")
-      .max(100, "newPasswordMax"),
+    newPassword: z.string().min(8, "newPasswordMin").max(100, "newPasswordMax"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {

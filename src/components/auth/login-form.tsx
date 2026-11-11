@@ -53,10 +53,7 @@ export function LoginForm({ labels }: { labels: LoginLabels }) {
       </div>
 
       <div className="text-right">
-        <Link
-          href="/recuperar"
-          className="text-xs text-muted hover:text-text"
-        >
+        <Link href="/recuperar" className="text-xs text-muted hover:text-text">
           {labels.forgotPassword}
         </Link>
       </div>
@@ -74,4 +71,3 @@ export function LoginForm({ labels }: { labels: LoginLabels }) {
     </form>
   );
 }
-

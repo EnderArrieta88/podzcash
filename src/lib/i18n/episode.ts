@@ -28,8 +28,7 @@ const es = {
     report: "Reportar",
     newest: "Más recientes",
     oldest: "Más antiguos",
-    pagination: (page: number, total: number) =>
-      `Página ${page} de ${total}`,
+    pagination: (page: number, total: number) => `Página ${page} de ${total}`,
     error: "No se pudo guardar el comentario. Inténtalo otra vez.",
   },
 };
@@ -48,8 +47,7 @@ const en: EpisodeContent = {
     copied: "Copied",
   },
   helpTitle: "Did this episode help you?",
-  helpBody: (name: string) =>
-    `Support ${name} directly in ZEC, no middlemen.`,
+  helpBody: (name: string) => `Support ${name} directly in ZEC, no middlemen.`,
   support: "Support with ZEC",
   comments: {
     title: "Comments",

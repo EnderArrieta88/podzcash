@@ -18,7 +18,8 @@ export async function setUserStatusAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
-  const status = formData.get("status") === "suspended" ? "suspended" : "active";
+  const status =
+    formData.get("status") === "suspended" ? "suspended" : "active";
 
   if (!id || id === admin.id) redirect("/estudio/admin");
 
@@ -31,7 +32,9 @@ export async function setUserStatusAction(formData: FormData): Promise<void> {
   revalidatePath("/estudio/admin");
 }
 
-export async function setEpisodeStatusAction(formData: FormData): Promise<void> {
+export async function setEpisodeStatusAction(
+  formData: FormData,
+): Promise<void> {
   await requireAdmin();
 
   const id = String(formData.get("id") ?? "");

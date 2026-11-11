@@ -44,9 +44,7 @@ test("registra descargas con rango y hash de IP", async ({ request }) => {
   expect(response.status()).toBe(206);
   expect((await response.body()).length).toBe(100);
 
-  await expect
-    .poll(() => eventFor(userAgent), { timeout: 5_000 })
-    .toBeTruthy();
+  await expect.poll(() => eventFor(userAgent), { timeout: 5_000 }).toBeTruthy();
 
   const event = eventFor(userAgent)!;
 
@@ -79,9 +77,7 @@ test("marca bots y prefetch sin contarlos como clientes", async ({
     },
   });
 
-  await expect
-    .poll(() => eventFor(botAgent), { timeout: 5_000 })
-    .toBeTruthy();
+  await expect.poll(() => eventFor(botAgent), { timeout: 5_000 }).toBeTruthy();
   await expect
     .poll(() => eventFor(prefetchAgent), { timeout: 5_000 })
     .toBeTruthy();
@@ -133,9 +129,7 @@ test("el dashboard muestra descargas brutas, válidas y clientes únicos", async
   });
 
   for (const agent of [statsAgent, shortAgent, botAgent, prefetchAgent]) {
-    await expect
-      .poll(() => eventFor(agent), { timeout: 5_000 })
-      .toBeTruthy();
+    await expect.poll(() => eventFor(agent), { timeout: 5_000 }).toBeTruthy();
   }
 
   await login(page);

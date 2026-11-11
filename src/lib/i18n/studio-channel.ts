@@ -16,8 +16,7 @@ const es = {
     usernameHint:
       "Es la dirección de tu canal. Solo minúsculas, números y guiones.",
     bio: "Bio",
-    bioPlaceholder:
-      "Cuéntale a la comunidad de qué hablas o qué música haces.",
+    bioPlaceholder: "Cuéntale a la comunidad de qué hablas o qué música haces.",
     links: "Enlaces",
     optional: "(opcional)",
     linkLabel: "Etiqueta",
@@ -83,7 +82,8 @@ const en: ChannelSettingsContent = {
     usernameHint:
       "It is your channel address. Lowercase letters, numbers and hyphens only.",
     bio: "Bio",
-    bioPlaceholder: "Tell the community what you talk about or what music you make.",
+    bioPlaceholder:
+      "Tell the community what you talk about or what music you make.",
     links: "Links",
     optional: "(optional)",
     linkLabel: "Label",

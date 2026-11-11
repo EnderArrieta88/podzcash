@@ -35,7 +35,9 @@ describe("política CSP", () => {
   it("no permite scripts inline sin nonce", () => {
     const policy = cspPolicy({ ...base, embed: false });
 
-    expect(policy.value).toContain("script-src 'self' 'nonce-abc123' 'strict-dynamic'");
+    expect(policy.value).toContain(
+      "script-src 'self' 'nonce-abc123' 'strict-dynamic'",
+    );
     expect(policy.value).not.toMatch(/script-src[^;]*'unsafe-inline'/);
   });
 
