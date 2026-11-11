@@ -3,8 +3,11 @@ import { Download } from "lucide-react";
 import { requireUser } from "@/lib/auth/guards";
 import { Input, Label } from "@/components/ui/field";
 import { ConfirmButton } from "@/components/ui/confirm-button";
-import { DeleteAccountForm } from "@/components/studio/delete-account-form";
-import { changePasswordAction, clearPlaybackHistoryAction } from "../actions";
+import { DeleteAccountForm } from "@/features/account/components/delete-account-form";
+import {
+  changePasswordAction,
+  clearPlaybackHistoryAction,
+} from "@/features/account/actions";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioAccountContent } from "@/lib/i18n/studio-account";
 

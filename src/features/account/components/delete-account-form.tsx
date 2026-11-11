@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { deleteAccountAction } from "@/app/(app)/estudio/actions";
+import { deleteAccountAction } from "@/features/account/actions";
 import { Input, Label } from "@/components/ui/field";
 import type { StudioAccountContent } from "@/lib/i18n/studio-account";
 
