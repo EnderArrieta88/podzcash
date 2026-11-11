@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { saveChannelAction } from "@/app/(app)/estudio/actions";
+import { saveChannelAction } from "@/features/channels/actions";
 import type { ChannelLink } from "@/lib/links";
 import { AvatarField } from "@/components/studio/avatar-field";
 import { BannerField } from "@/components/studio/banner-field";

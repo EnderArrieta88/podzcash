@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { channelSchema, toFieldErrors } from "./validation";
+import { toFieldErrors } from "@/lib/validation";
+import { channelSchema } from "./schemas";
 
 describe("validación de canal", () => {
   it("traduce el nombre de usuario reservado", () => {
