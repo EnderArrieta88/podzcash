@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { requestPasswordResetAction } from "@/app/(site)/(auth)/actions";
+import { requestPasswordResetAction } from "@/features/auth/actions";
 import { FieldError, Input, Label } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { ResetRequestLabels } from "@/lib/i18n/auth";

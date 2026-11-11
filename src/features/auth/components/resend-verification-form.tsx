@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { resendVerificationAction } from "@/app/(site)/(auth)/actions";
+import { resendVerificationAction } from "@/features/auth/actions";
 import { FieldError, Input, Label } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { VerifyLabels } from "@/lib/i18n/auth";

@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { registerAction } from "@/app/(site)/(auth)/actions";
+import { registerAction } from "@/features/auth/actions";
 import { Input, Label, FieldError, FieldHint } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { RegisterLabels } from "@/lib/i18n/auth";

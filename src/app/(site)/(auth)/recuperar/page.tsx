@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { ResetRequestForm } from "@/components/auth/reset-request-form";
+import { ResetRequestForm } from "@/features/auth/components/reset-request-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { authContent } from "@/lib/i18n/auth";
 import { isEmailConfigured } from "@/lib/email";

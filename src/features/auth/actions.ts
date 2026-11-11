@@ -1,5 +1,6 @@
 "use server";
 
+import "server-only";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
@@ -10,9 +11,8 @@ import {
   passwordResetSchema,
   registerSchema,
   resetRequestSchema,
-  toFieldErrors,
-  type FieldErrors,
-} from "@/lib/validation";
+} from "./schemas";
+import { toFieldErrors, type FieldErrors } from "@/lib/validation";
 import type { ActionState } from "@/lib/action-state";
 import { clearLimit, take } from "@/lib/rate-limit";
 import { getLocale } from "@/lib/i18n/locale";

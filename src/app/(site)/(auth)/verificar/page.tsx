@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { emailFingerprint, verifyEmailToken } from "@/lib/auth/email-token";
-import { VerifyConfirm } from "@/components/auth/verify-confirm";
-import { ResendVerificationForm } from "@/components/auth/resend-verification-form";
+import { VerifyConfirm } from "@/features/auth/components/verify-confirm";
+import { ResendVerificationForm } from "@/features/auth/components/resend-verification-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { authContent } from "@/lib/i18n/auth";
 
