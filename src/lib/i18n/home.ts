@@ -39,7 +39,7 @@ const es = {
       },
       {
         title: "Publicas tu audio",
-        body: "Arrastras el archivo, pones portada y descripción. Tu feed RSS se genera solo; con audio en MP3 o M4A puedes llevarlo a Apple Podcasts y Spotify.",
+        body: "Arrastras el archivo o lo subes desde el teléfono, pones portada y descripción. Tu feed RSS se genera solo; con audio en MP3 o M4A puedes llevarlo a Apple Podcasts y Spotify.",
       },
       {
         title: "Recibes apoyo",
@@ -95,7 +95,7 @@ const es = {
     body: "PodZcash nació como idea a finales de 2023 y empezó a construirse en febrero de 2025; hoy la beta corre en un hosting compartido. En la página del proyecto contamos qué está listo, las 26 fases del plan y qué financiamiento hace falta para el primer año.",
     cta: "Leer sobre el proyecto",
     stats: [
-      { label: "Fases", value: "9 / 26" },
+      { label: "Fases", value: "10 / 26" },
       { label: "Horizonte", value: "1 — 3 años" },
       { label: "Estado", value: "Beta cerrada" },
     ],
@@ -125,10 +125,12 @@ const es = {
   product: {
     eyebrow: "Tu canal",
     title: "Una página propia, no un perfil perdido",
-    body: "Tu catálogo, tu bio y tus enlaces en una dirección que puedes compartir. El reproductor sigue sonando mientras la gente navega.",
+    body: "Tu catálogo, tu bio y tus enlaces en una dirección que puedes compartir. El reproductor sigue sonando mientras la gente navega y la PWA permite escuchar sin conexión.",
     checks: [
-      "Reproductor persistente con velocidad y “continuar escuchando”.",
-      "Feed RSS con etiquetas de Podcasting 2.0.",
+      "Reproductor persistente con cola, velocidad y “continuar escuchando”.",
+      "PWA instalable con descargas para escuchar sin conexión.",
+      "Analíticas por episodio: reproducciones, retención y origen.",
+      "Feed RSS compatible con Apple Podcasts y Spotify.",
       "Donaciones con QR y enlace ZIP-321, sin custodia.",
     ],
     browserUrl: "podzcash.online/canal/@ender-arrieta",
@@ -193,7 +195,7 @@ const en: HomeContent = {
       },
       {
         title: "Publish your audio",
-        body: "Drag the file, add cover art and a description. Your RSS feed is generated automatically; with MP3 or M4A audio you can take it to Apple Podcasts and Spotify.",
+        body: "Drag the file or upload it from your phone, add cover art and a description. Your RSS feed is generated automatically; with MP3 or M4A audio you can take it to Apple Podcasts and Spotify.",
       },
       {
         title: "Get support",
@@ -249,7 +251,7 @@ const en: HomeContent = {
     body: "PodZcash started as an idea in late 2023 and began to take shape in February 2025; today the beta runs on shared hosting. The project page covers what is ready, the 26 phases of the plan and the funding needed for year one.",
     cta: "Read about the project",
     stats: [
-      { label: "Phases", value: "9 / 26" },
+      { label: "Phases", value: "10 / 26" },
       { label: "Horizon", value: "1 — 3 years" },
       { label: "Status", value: "Closed beta" },
     ],
@@ -279,10 +281,12 @@ const en: HomeContent = {
   product: {
     eyebrow: "Your channel",
     title: "A page of your own, not a lost profile",
-    body: "Your catalog, your bio and your links at an address you can share. The player keeps playing while people browse.",
+    body: "Your catalog, your bio and your links at an address you can share. The player keeps playing while people browse, and the PWA lets them listen offline.",
     checks: [
-      "Persistent player with speed control and “continue listening”.",
-      "RSS feed with Podcasting 2.0 tags.",
+      "Persistent player with queue, speed control and “continue listening”.",
+      "Installable PWA with downloads for offline listening.",
+      "Per-episode analytics: plays, retention and source.",
+      "RSS feed compatible with Apple Podcasts and Spotify.",
       "Donations with QR and ZIP-321 links, non-custodial.",
     ],
     browserUrl: "podzcash.online/canal/@ender-arrieta",
