@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
-import { LoginForm } from "@/components/auth/login-form";
+import { LoginForm } from "@/features/auth/components/login-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { authContent } from "@/lib/i18n/auth";
 

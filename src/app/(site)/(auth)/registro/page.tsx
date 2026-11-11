@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
-import { RegisterForm } from "@/components/auth/register-form";
+import { RegisterForm } from "@/features/auth/components/register-form";
 import { getLocale } from "@/lib/i18n/locale";
 import { authContent } from "@/lib/i18n/auth";
 import { formatInviteCode, normalizeInviteCode } from "@/lib/links";

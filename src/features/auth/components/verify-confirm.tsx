@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { confirmEmailAction } from "@/app/(site)/(auth)/actions";
+import { confirmEmailAction } from "@/features/auth/actions";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { VerifyLabels } from "@/lib/i18n/auth";
 
