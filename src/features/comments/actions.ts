@@ -1,16 +1,24 @@
 "use server";
 
+import "server-only";
 import type { ActionState } from "@/lib/action-state";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
+import { requireUser } from "@/lib/auth/guards";
 import {
   addEpisodeComment,
   canModerateComment,
   deleteEpisodeComment,
   ensureEpisodeCommentsTable,
-} from "@/lib/comments";
+  markChannelCommentsSeen,
+} from "./queries";
+import {
+  commentNotifySchema,
+  commentSchema,
+  deleteCommentSchema,
+} from "./schemas";
 import { clearLimit, take } from "@/lib/rate-limit";
 import { episodePath } from "@/lib/routes";
 import { getLocale } from "@/lib/i18n/locale";
@@ -28,10 +36,14 @@ export async function addEpisodeCommentAction(
 
   if (!user) return { error: content.error };
 
-  const body = String(formData.get("body") ?? "").trim();
-  const episodeId = String(formData.get("episodeId") ?? "").trim();
+  const parsed = commentSchema.safeParse({
+    episodeId: formData.get("episodeId"),
+    body: formData.get("body"),
+  });
 
-  if (body.length < 2 || body.length > 600) return { error: content.error };
+  if (!parsed.success) return { error: content.error };
+
+  const { episodeId, body } = parsed.data;
 
   const limitKey = `comment:${user.id}`;
 
@@ -102,10 +114,14 @@ export async function deleteEpisodeCommentAction(
   formData: FormData,
 ): Promise<void> {
   const user = await getCurrentUser();
-  const id = String(formData.get("id") ?? "");
-  const path = String(formData.get("path") ?? "");
+  const parsed = deleteCommentSchema.safeParse({
+    id: formData.get("id"),
+    path: formData.get("path") ?? "",
+  });
 
-  if (!user || !id) return;
+  if (!user || !parsed.success) return;
+
+  const { id, path } = parsed.data;
 
   await ensureEpisodeCommentsTable();
 
@@ -134,4 +150,35 @@ export async function deleteEpisodeCommentAction(
 
   revalidatePath(path || "/");
   revalidatePath("/estudio/comentarios");
+}
+
+export async function setCommentNotifyAction(
+  formData: FormData,
+): Promise<void> {
+  const user = await requireUser();
+
+  if (!user.channel) redirect("/estudio/canal");
+
+  const parsed = commentNotifySchema.safeParse(formData.get("commentNotify"));
+  const commentNotify = parsed.success ? parsed.data : "inbox";
+
+  await prisma.channel.update({
+    where: { id: user.channel.id },
+    data: { commentNotify },
+  });
+
+  revalidatePath("/estudio/comentarios");
+  redirect("/estudio/comentarios?saved=1");
+}
+
+/**
+ * Marca la bandeja como vista. Se llama al abrir la página, sin revalidar:
+ * el contador del menú se actualiza en la siguiente navegación.
+ */
+export async function markCommentsSeenAction(): Promise<void> {
+  const user = await getCurrentUser();
+
+  if (!user?.channel) return;
+
+  await markChannelCommentsSeen(user.channel.id);
 }

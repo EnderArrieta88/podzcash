@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
 import { indexEpisode } from "@/lib/search-index";
 import { deleteOrphans } from "@/lib/media-cleanup";
-import { deleteEpisodeComment } from "@/lib/comments";
+import { deleteEpisodeComment } from "@/features/comments/queries";
 import { channelPath, episodePath } from "@/lib/routes";
 import { formatInviteCode, generateInviteCode } from "@/lib/links";
 import { getSiteOrigin } from "@/lib/origin";

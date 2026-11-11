@@ -18,8 +18,9 @@ dominio.
 ```text
 src/
   app/                 rutas, layouts, páginas, route handlers y acciones
-  components/          UI agrupada por dominio (auth, comments, player…)
+  components/          UI agrupada por dominio (auth, player, studio…)
     ui/                primitivas reutilizables (Button, Field, Copy…)
+  features/            dominios migrados a feature-based (hoy: comments)
   lib/                 lógica de dominio, consultas, utilidades y acceso a datos
     auth/              sesión, guardas, contraseñas y tokens
     i18n/              contenido ES/EN con tipos derivados del español
@@ -54,9 +55,9 @@ Reglas concretas:
 
 ### Deuda conocida
 
-- Todavía no existe `src/features/`. Una funcionalidad puede vivir en `app`,
-  `components` y `lib` a la vez.
-- Varios componentes cliente importan server actions desde `app`.
+- La migración a features empezó por `src/features/comments`. El resto de los
+  dominios sigue repartido entre `app`, `components` y `lib`.
+- Varios componentes cliente todavía importan server actions desde `app`.
 - Algunas páginas consultan Prisma directamente.
 - Hay módulos grandes que conviene dividir: `player-context.tsx`,
   `estudio/actions.ts`, `analytics.ts` y `episode-form.tsx`.

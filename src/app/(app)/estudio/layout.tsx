@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { requireUser } from "@/lib/auth/guards";
-import { countUnreadChannelComments } from "@/lib/comments";
+import { countUnreadChannelComments } from "@/features/comments/queries";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioShellContent } from "@/lib/i18n/studio-shell";
 import { channelPath } from "@/lib/routes";

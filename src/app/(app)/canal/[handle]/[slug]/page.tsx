@@ -31,8 +31,8 @@ import {
   socialMetadata,
 } from "@/lib/seo";
 import { pageParam } from "@/lib/pagination";
-import { listEpisodeComments } from "@/lib/comments";
-import { EpisodeComments } from "@/components/comments/episode-comments";
+import { listEpisodeComments } from "@/features/comments/queries";
+import { EpisodeComments } from "@/features/comments/components/episode-comments";
 
 type PageProps = {
   params: Promise<{ handle: string; slug: string }>;
