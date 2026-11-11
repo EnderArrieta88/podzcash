@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { addEpisodeCommentAction } from "@/app/(app)/canal/[handle]/[slug]/comments-actions";
+import { addEpisodeCommentAction } from "@/features/comments/actions";
 import { Textarea } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { episodeContent } from "@/lib/i18n/episode";

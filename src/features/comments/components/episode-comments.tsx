@@ -1,8 +1,8 @@
 import type { Locale } from "@/lib/i18n/config";
 import type { episodeContent } from "@/lib/i18n/episode";
 import { relativeDate } from "@/lib/format";
-import { DeleteCommentButton } from "@/components/comments/delete-comment-button";
-import { CommentForm } from "@/components/comments/comment-form";
+import { DeleteCommentButton } from "./delete-comment-button";
+import { CommentForm } from "./comment-form";
 import { cn } from "@/lib/utils";
 
 type Labels = (typeof episodeContent)["es"]["comments"];

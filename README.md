@@ -245,6 +245,7 @@ prisma/
 src/
   app/                 Rutas y páginas
   components/          UI y componentes de cliente
+  features/            Dominios migrados (comments)
   lib/db.ts            Cliente Prisma
   lib/i18n/            Contenido ES/EN
   lib/routes.ts        URLs de canales y episodios

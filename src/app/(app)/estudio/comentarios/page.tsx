@@ -6,7 +6,7 @@ import { requireUser } from "@/lib/auth/guards";
 import {
   countUnreadChannelComments,
   listChannelComments,
-} from "@/lib/comments";
+} from "@/features/comments/queries";
 import { pageParam } from "@/lib/pagination";
 import { isEmailConfigured } from "@/lib/email";
 import { formatDate } from "@/lib/format";
@@ -14,9 +14,9 @@ import { getLocale } from "@/lib/i18n/locale";
 import { studioCommentsContent } from "@/lib/i18n/studio-comments";
 import { episodePath } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { DeleteCommentButton } from "@/components/comments/delete-comment-button";
-import { MarkCommentsSeen } from "@/components/comments/mark-comments-seen";
-import { setCommentNotifyAction } from "./actions";
+import { DeleteCommentButton } from "@/features/comments/components/delete-comment-button";
+import { MarkCommentsSeen } from "@/features/comments/components/mark-comments-seen";
+import { setCommentNotifyAction } from "@/features/comments/actions";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();

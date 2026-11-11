@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { markCommentsSeenAction } from "@/app/(app)/estudio/comentarios/actions";
+import { markCommentsSeenAction } from "@/features/comments/actions";
 
 /**
  * Marca los comentarios como vistos al abrir la bandeja. Va en un efecto

@@ -1,5 +1,10 @@
 import "server-only";
 import { prisma } from "@/lib/db";
+import type {
+  ChannelCommentItem,
+  EpisodeCommentItem,
+  EpisodeCommentsPage,
+} from "./types";
 
 /**
  * La tabla de comentarios por episodio se crea en la primera escritura.
@@ -43,21 +48,6 @@ export function ensureEpisodeCommentsTable(): Promise<void> {
 
   return ready;
 }
-
-export type EpisodeCommentItem = {
-  id: string;
-  userId: string;
-  body: string;
-  createdAt: Date;
-  user: { name: string };
-};
-
-export type EpisodeCommentsPage = {
-  items: EpisodeCommentItem[];
-  total: number;
-  page: number;
-  pageCount: number;
-};
 
 /**
  * Lista los comentarios de un episodio, del más reciente al más antiguo.
@@ -143,10 +133,6 @@ export async function deleteEpisodeComment(
     },
   });
 }
-
-export type ChannelCommentItem = EpisodeCommentItem & {
-  episode: { id: string; title: string; slug: string; status: string };
-};
 
 /** Bandeja de comentarios de todos los episodios de un canal. */
 export async function listChannelComments(
