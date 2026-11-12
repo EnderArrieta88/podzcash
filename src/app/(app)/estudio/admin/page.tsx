@@ -7,9 +7,7 @@ import {
   ShieldAlert,
   UserPlus,
 } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
-import { findOrphans } from "@/lib/media-cleanup";
 import { getRateLimitMetrics } from "@/lib/rate-limit";
 import { formatBytes, formatDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
@@ -18,7 +16,7 @@ import { reportContent } from "@/lib/i18n/report";
 import { commentReportContent } from "@/lib/i18n/comment-report";
 import { waitlistContent } from "@/lib/i18n/waitlist";
 import { pushContent } from "@/lib/i18n/push";
-import { countWaitlist, listWaitlist } from "@/features/waitlist/queries";
+import { getAdminDashboard } from "@/features/admin/queries";
 import { episodePath } from "@/lib/routes";
 import { DeleteWaitlistButton } from "@/features/waitlist/components/delete-waitlist-button";
 import { inviteWaitlistAction } from "@/features/waitlist/actions";
@@ -66,7 +64,7 @@ export default async function AdminPage({
     waitlistContent[locale].roles;
   const pushPublicKey = process.env.VAPID_PUBLIC_KEY?.trim() || null;
 
-  const [
+  const {
     users,
     episodes,
     reports,
@@ -75,102 +73,10 @@ export default async function AdminPage({
     publishedCount,
     waiting,
     waitlist,
-  ] = await Promise.all([
-    prisma.user.findMany({
-      orderBy: { createdAt: "asc" },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        status: true,
-        createdAt: true,
-        channel: { select: { handle: true, displayName: true } },
-      },
-    }),
-    prisma.episode.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 20,
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        playCount: true,
-        createdAt: true,
-        channel: { select: { handle: true, displayName: true } },
-      },
-    }),
-    prisma.report.findMany({
-      where: { status: "open" },
-      orderBy: { createdAt: "desc" },
-      take: 20,
-    }),
-    prisma.channel.count(),
-    findOrphans(),
-    prisma.episode.count({ where: { status: "published" } }),
-    countWaitlist(),
-    listWaitlist(20),
-  ]);
-
-  const episodeIds = reports
-    .filter((report) => report.targetType === "episode")
-    .map((report) => report.targetId);
-
-  const reportedEpisodes = new Map(
-    (
-      await prisma.episode.findMany({
-        where: { id: { in: episodeIds } },
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          channel: { select: { handle: true } },
-        },
-      })
-    ).map((episode) => [episode.id, episode]),
-  );
-
-  const commentIds = reports
-    .filter((report) => report.targetType === "comment")
-    .map((report) => report.targetId);
-
-  const reportedComments = new Map(
-    (
-      await prisma.episodeComment.findMany({
-        where: { id: { in: commentIds } },
-        select: {
-          id: true,
-          body: true,
-          user: { select: { name: true } },
-          episode: {
-            select: {
-              id: true,
-              title: true,
-              slug: true,
-              channel: { select: { handle: true } },
-            },
-          },
-        },
-      })
-    ).map((comment) => [comment.id, comment]),
-  );
-
-  const reporterIds = [
-    ...new Set(
-      reports
-        .map((report) => report.reporterId)
-        .filter((value): value is string => Boolean(value)),
-    ),
-  ];
-
-  const reporters = new Map(
-    (
-      await prisma.user.findMany({
-        where: { id: { in: reporterIds } },
-        select: { id: true, name: true },
-      })
-    ).map((user) => [user.id, user.name]),
-  );
+    reportedEpisodes,
+    reportedComments,
+    reporters,
+  } = await getAdminDashboard();
 
   const stats = [
     { label: content.stats.users, value: users.length },
