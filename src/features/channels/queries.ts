@@ -53,3 +53,30 @@ export async function getChannelPageData(handle: string) {
     bannerUrl: channel.bannerKey ? storage.url(channel.bannerKey) : null,
   };
 }
+
+/**
+ * Canal y episodios publicados para el feed RSS.
+ */
+export async function getChannelFeedData(handle: string) {
+  return prisma.channel.findUnique({
+    where: { handle: normalizeHandleParam(handle) },
+    include: {
+      episodes: {
+        where: { status: "published" },
+        orderBy: { publishedAt: "asc" },
+        include: { tags: { include: { tag: true } } },
+      },
+    },
+  });
+}
+
+/**
+ * Canales para el sitemap, ordenados por última actualización.
+ */
+export async function listSitemapChannels() {
+  return prisma.channel.findMany({
+    select: { handle: true, updatedAt: true },
+    orderBy: { updatedAt: "desc" },
+    take: 500,
+  });
+}

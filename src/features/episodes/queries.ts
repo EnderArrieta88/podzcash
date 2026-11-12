@@ -100,3 +100,80 @@ export async function listStudioEpisodes(channelId: string) {
       .length,
   };
 }
+
+/**
+ * Episodio para el reproductor embebido, con portada y audio resueltos.
+ */
+export async function getEmbedEpisode(id: string) {
+  const episode = await prisma.episode.findUnique({
+    where: { id },
+    include: {
+      channel: { select: { handle: true, displayName: true } },
+    },
+  });
+
+  if (!episode) return null;
+
+  return {
+    episode,
+    cover: episode.coverKey ? storage.url(episode.coverKey) : null,
+    audioUrl: storage.url(episode.audioPath),
+  };
+}
+
+/**
+ * Título del episodio para los metadatos del embed, sin el resto de campos.
+ */
+export async function getEpisodeTitle(id: string) {
+  const episode = await prisma.episode.findUnique({
+    where: { id },
+    select: { title: true },
+  });
+
+  return episode?.title ?? null;
+}
+
+type AudioEpisode = {
+  id: string;
+  channelId: string;
+  durationSec: number | null;
+} | null;
+
+const audioEpisodeCache = new Map<string, AudioEpisode>();
+
+/**
+ * Episodio asociado a una ruta de audio. Se cachea por ruta porque la ruta de
+ * medios resuelve el mismo archivo en cada petición de rango.
+ */
+export async function findEpisodeByAudioPath(
+  audioPath: string,
+): Promise<AudioEpisode> {
+  if (audioEpisodeCache.has(audioPath)) {
+    return audioEpisodeCache.get(audioPath) ?? null;
+  }
+
+  const episode = await prisma.episode.findFirst({
+    where: { audioPath },
+    select: { id: true, channelId: true, durationSec: true },
+  });
+
+  audioEpisodeCache.set(audioPath, episode);
+  return episode;
+}
+
+/**
+ * Episodios publicados para el sitemap.
+ */
+export async function listSitemapEpisodes() {
+  return prisma.episode.findMany({
+    where: { status: "published" },
+    select: {
+      slug: true,
+      publishedAt: true,
+      createdAt: true,
+      channel: { select: { handle: true } },
+    },
+    orderBy: { publishedAt: "desc" },
+    take: 1000,
+  });
+}

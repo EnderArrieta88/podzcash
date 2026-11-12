@@ -1,36 +1,14 @@
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { Readable } from "node:stream";
-import { prisma } from "@/lib/db";
 import { isPrefetchRequest, recordMediaEvent } from "@/lib/analytics";
 import { contentTypeFor } from "@/lib/media-types";
 import { resolveMediaPath } from "@/lib/storage";
+import { findEpisodeByAudioPath } from "@/features/episodes/queries";
 
 export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ path: string[] }> };
-
-type AudioEpisode = {
-  id: string;
-  channelId: string;
-  durationSec: number | null;
-} | null;
-
-const audioEpisodeCache = new Map<string, AudioEpisode>();
-
-async function episodeForAudioPath(audioPath: string): Promise<AudioEpisode> {
-  if (audioEpisodeCache.has(audioPath)) {
-    return audioEpisodeCache.get(audioPath) ?? null;
-  }
-
-  const episode = await prisma.episode.findFirst({
-    where: { audioPath },
-    select: { id: true, channelId: true, durationSec: true },
-  });
-
-  audioEpisodeCache.set(audioPath, episode);
-  return episode;
-}
 
 type RequestInfo = {
   relativePath: string;
@@ -53,7 +31,7 @@ type MediaLog = {
 async function logAudioRequest(requestInfo: RequestInfo, log: MediaLog) {
   if (!requestInfo.relativePath.startsWith("audio/")) return;
 
-  const episode = await episodeForAudioPath(requestInfo.relativePath);
+  const episode = await findEpisodeByAudioPath(requestInfo.relativePath);
   if (!episode) return;
 
   recordMediaEvent({
