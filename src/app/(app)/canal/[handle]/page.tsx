@@ -9,53 +9,16 @@ import {
   Rss,
   ShieldCheck,
 } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
-import { parseLinks } from "@/lib/links";
-import { storage } from "@/lib/storage";
-import {
-  channelPath,
-  donatePath,
-  feedPath,
-  normalizeHandleParam,
-} from "@/lib/routes";
+import { channelPath, donatePath, feedPath } from "@/lib/routes";
 import { EpisodeRow } from "@/components/content/episode-row";
 import { formatDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
 import { channelContent } from "@/lib/i18n/channel";
 import { absoluteUrl, jsonLd, socialMetadata } from "@/lib/seo";
+import { getChannelPageData } from "@/features/channels/queries";
 
 type PageProps = { params: Promise<{ handle: string }> };
-
-async function loadChannel(handle: string) {
-  return prisma.channel.findUnique({
-    where: { handle: normalizeHandleParam(handle) },
-    include: {
-      _count: {
-        select: { episodes: { where: { status: "published" } } },
-      },
-      episodes: {
-        where: { status: "published" },
-        orderBy: { publishedAt: "desc" },
-        take: 24,
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          kind: true,
-          durationSec: true,
-          publishedAt: true,
-          createdAt: true,
-          coverKey: true,
-          audioPath: true,
-          channel: {
-            select: { handle: true, displayName: true, avatarKey: true },
-          },
-        },
-      },
-    },
-  });
-}
 
 export async function generateMetadata({
   params,
@@ -63,17 +26,13 @@ export async function generateMetadata({
   const { handle } = await params;
   const locale = await getLocale();
   const content = channelContent[locale];
-  const channel = await loadChannel(handle);
+  const data = await getChannelPageData(handle);
 
-  if (!channel) return { title: content.notFound };
+  if (!data) return { title: content.notFound };
 
+  const { channel, image } = data;
   const description =
     channel.bio ?? content.metaDescription(channel.displayName);
-  const latestCover = [...channel.episodes]
-    .reverse()
-    .find((episode) => episode.coverKey)?.coverKey;
-  const imageKey = latestCover ?? channel.avatarKey;
-  const image = imageKey ? storage.url(imageKey) : null;
 
   const social = socialMetadata({
     title: channel.displayName,
@@ -101,19 +60,13 @@ export default async function ChannelPage({ params }: PageProps) {
   const { handle } = await params;
   const locale = await getLocale();
   const content = channelContent[locale];
-  const channel = await loadChannel(handle);
+  const data = await getChannelPageData(handle);
 
-  if (!channel) notFound();
+  if (!data) notFound();
 
-  const links = parseLinks(channel.links);
+  const { channel, links, image, avatarUrl, bannerUrl } = data;
   const viewer = await getCurrentUser();
   const isOwner = viewer?.channel?.id === channel.id;
-
-  const latestCover = [...channel.episodes]
-    .reverse()
-    .find((episode) => episode.coverKey)?.coverKey;
-  const imageKey = latestCover ?? channel.avatarKey;
-  const image = imageKey ? storage.url(imageKey) : null;
 
   const seriesLd = {
     "@context": "https://schema.org",
@@ -134,13 +87,9 @@ export default async function ChannelPage({ params }: PageProps) {
       />
       <div className="overflow-hidden rounded-xl border border-border bg-surface">
         <div className="relative h-40 sm:h-52">
-          {channel.bannerKey ? (
+          {bannerUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={storage.url(channel.bannerKey)}
-              alt=""
-              className="size-full object-cover"
-            />
+            <img src={bannerUrl} alt="" className="size-full object-cover" />
           ) : (
             <div className="size-full bg-[radial-gradient(120%_120%_at_20%_0%,rgba(244,183,40,0.28),rgba(16,185,129,0.08)_45%,transparent_75%)]" />
           )}
@@ -149,10 +98,10 @@ export default async function ChannelPage({ params }: PageProps) {
 
         <div className="px-5 pb-6 sm:px-7">
           <div className="-mt-12 flex flex-wrap items-end justify-between gap-4">
-            {channel.avatarKey ? (
+            {avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={storage.url(channel.avatarKey)}
+                src={avatarUrl}
                 alt={content.avatarAlt(channel.displayName)}
                 className="relative z-10 size-24 rounded-full border-4 border-surface object-cover"
               />
