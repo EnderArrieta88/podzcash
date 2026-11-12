@@ -59,10 +59,10 @@ Reglas concretas:
   principales (`comments`, `auth`, `waitlist`, `episodes`, `channels`,
   `account`, `invites`, `admin`). Quedan las acciones de reportes en `app` y las
   consultas Prisma dentro de algunas páginas. Las páginas de administración,
-  canal y episodio ya delegan en sus `queries.ts`; quedan estudio y
+  canal, episodio y estudio ya delegan en sus `queries.ts`; queda
   cuenta/exportación.
 - `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
-- Algunas páginas consultan Prisma directamente.
+- La exportación de cuenta todavía consulta Prisma en su route handler.
 - Hay módulos grandes que conviene dividir: `player-context.tsx`,
   `analytics.ts` y `episode-form.tsx`.
 
