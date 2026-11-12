@@ -1,19 +1,13 @@
 "use server";
 
+import "server-only";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
-import { destroySession } from "@/lib/auth/session";
 import { generateInviteCode } from "@/lib/links";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioErrors } from "@/lib/i18n/studio-errors";
 import type { ActionState } from "@/lib/action-state";
-
-export async function logoutAction(): Promise<void> {
-  await destroySession();
-  redirect("/");
-}
 
 export async function createInviteAction(
   _previous: ActionState,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { createInviteAction } from "@/app/(app)/estudio/actions";
+import { createInviteAction } from "@/features/invites/actions";
 import { Input } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { StudioInvitesContent } from "@/lib/i18n/studio-invites";

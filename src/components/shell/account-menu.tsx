@@ -13,7 +13,7 @@ import {
   Ticket,
   UserRound,
 } from "lucide-react";
-import { logoutAction } from "@/app/(app)/estudio/actions";
+import { logoutAction } from "@/features/auth/actions";
 import type { RailUser } from "@/components/shell/side-rail";
 import type { Locale } from "@/lib/i18n/config";
 import { shellContent } from "@/lib/i18n/shell";
