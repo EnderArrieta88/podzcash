@@ -37,6 +37,22 @@ export async function getEpisodePageData(handle: string, slug: string) {
   return { channel, episode, cover, audioUrl, ogImage };
 }
 
+/**
+ * Último episodio publicado, usado en la portada. Devuelve solo los campos que
+ * muestra la vista.
+ */
+export async function getLatestPublishedEpisode() {
+  return prisma.episode.findFirst({
+    where: { status: "published" },
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+    select: {
+      title: true,
+      durationSec: true,
+      channel: { select: { displayName: true } },
+    },
+  });
+}
+
 type StudioChannel = {
   id: string;
   avatarKey: string | null;

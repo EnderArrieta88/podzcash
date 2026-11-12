@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { homeContent } from "@/lib/i18n/home";
 import { getLocale } from "@/lib/i18n/locale";
-import { prisma } from "@/lib/db";
 import { formatDuration } from "@/lib/format";
 import { socialMetadata } from "@/lib/seo";
+import { getLatestPublishedEpisode } from "@/features/episodes/queries";
 import "./home.css";
 
 const wave = [
@@ -81,15 +81,7 @@ export default async function Home() {
   const locale = await getLocale();
   const content = homeContent[locale];
 
-  const latest = await prisma.episode.findFirst({
-    where: { status: "published" },
-    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-    select: {
-      title: true,
-      durationSec: true,
-      channel: { select: { displayName: true } },
-    },
-  });
+  const latest = await getLatestPublishedEpisode();
 
   return (
     <div className="pz-home" lang={locale}>
