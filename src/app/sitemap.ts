@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/db";
+import { listSitemapChannels } from "@/features/channels/queries";
+import { listSitemapEpisodes } from "@/features/episodes/queries";
 
 // El sitemap consulta la base en cada petición: en el build la base está vacía.
 export const dynamic = "force-dynamic";
@@ -29,22 +30,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = baseUrl();
 
   const [channels, episodes] = await Promise.all([
-    prisma.channel.findMany({
-      select: { handle: true, updatedAt: true },
-      orderBy: { updatedAt: "desc" },
-      take: 500,
-    }),
-    prisma.episode.findMany({
-      where: { status: "published" },
-      select: {
-        slug: true,
-        publishedAt: true,
-        createdAt: true,
-        channel: { select: { handle: true } },
-      },
-      orderBy: { publishedAt: "desc" },
-      take: 1000,
-    }),
+    listSitemapChannels(),
+    listSitemapEpisodes(),
   ]);
 
   return [

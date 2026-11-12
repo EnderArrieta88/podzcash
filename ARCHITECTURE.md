@@ -62,10 +62,10 @@ Reglas concretas:
   sus `queries.ts`.
 - `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
 - Todavía consultan Prisma directamente algunas rutas y páginas fuera de los
-  dominios migrados: `embed`, `design`, `donar`, `distribucion`,
-  `invitaciones`, edición de episodio y analítica del estudio, las rutas de API
-  (`plays`, `progress`, `analytics`, `health`), `feed.xml`, `media`, `sitemap` y
-  las pantallas de autenticación (`registro`, `verificar`, `restablecer`).
+  dominios migrados: `design`, `donar`, `distribucion`, `invitaciones`, edición
+  de episodio y analítica del estudio, las rutas de API (`plays`, `progress`,
+  `analytics`, `health`) y las pantallas de autenticación (`registro`,
+  `verificar`, `restablecer`).
 - Hay módulos grandes que conviene dividir: `player-context.tsx`,
   `analytics.ts` y `episode-form.tsx`.
 
