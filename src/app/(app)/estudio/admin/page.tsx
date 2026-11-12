@@ -22,13 +22,13 @@ import { countWaitlist, listWaitlist } from "@/features/waitlist/queries";
 import { episodePath } from "@/lib/routes";
 import { DeleteWaitlistButton } from "@/features/waitlist/components/delete-waitlist-button";
 import { inviteWaitlistAction } from "@/features/waitlist/actions";
-import { PushNotifications } from "@/components/studio/push-notifications";
+import { PushNotifications } from "@/features/admin/components/push-notifications";
 import {
   cleanOrphansAction,
   resolveReportAction,
   setEpisodeStatusAction,
   setUserStatusAction,
-} from "./actions";
+} from "@/features/admin/actions";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
