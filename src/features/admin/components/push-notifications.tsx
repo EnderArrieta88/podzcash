@@ -5,7 +5,7 @@ import { Bell, BellOff, Loader2 } from "lucide-react";
 import {
   subscribePushAction,
   unsubscribePushAction,
-} from "@/app/(app)/estudio/admin/push-actions";
+} from "@/features/admin/push-actions";
 import type { PushContent } from "@/lib/i18n/push";
 
 function urlBase64ToUint8Array(value: string): Uint8Array<ArrayBuffer> {

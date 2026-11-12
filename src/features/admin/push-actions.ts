@@ -1,5 +1,7 @@
 "use server";
 
+import "server-only";
+
 import { headers } from "next/headers";
 import { requireAdmin } from "@/lib/auth/guards";
 import { deletePushSubscription, savePushSubscription } from "@/lib/push";

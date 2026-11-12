@@ -20,7 +20,7 @@ src/
   app/                 rutas, layouts, páginas, route handlers y acciones
   components/          UI agrupada por dominio (auth, player, studio…)
     ui/                primitivas reutilizables (Button, Field, Copy…)
-  features/            dominios migrados a feature-based (comments, auth, waitlist, episodes, channels, account, invites)
+  features/            dominios migrados a feature-based (comments, auth, waitlist, episodes, channels, account, invites, admin)
   lib/                 lógica de dominio, consultas, utilidades y acceso a datos
     auth/              sesión, guardas, contraseñas y tokens
     i18n/              contenido ES/EN con tipos derivados del español
@@ -55,15 +55,14 @@ Reglas concretas:
 
 ### Deuda conocida
 
-- La migración a features empezó por `src/features/comments`, siguió con
-  `src/features/auth`, `src/features/waitlist`, `src/features/episodes`,
-  `src/features/channels`, `src/features/account` y `src/features/invites`. El
-  resto de los dominios sigue repartido entre `app`, `components` y `lib`.
-  `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
-- Varios componentes cliente todavía importan server actions desde `app`.
+- La migración de acciones y componentes está completa para los dominios
+  principales (`comments`, `auth`, `waitlist`, `episodes`, `channels`,
+  `account`, `invites`, `admin`). Quedan las acciones de reportes en `app` y las
+  consultas Prisma dentro de algunas páginas.
+- `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
 - Algunas páginas consultan Prisma directamente.
 - Hay módulos grandes que conviene dividir: `player-context.tsx`,
-  `estudio/actions.ts`, `analytics.ts` y `episode-form.tsx`.
+  `analytics.ts` y `episode-form.tsx`.
 
 Mientras se migra, la regla práctica es:
 
