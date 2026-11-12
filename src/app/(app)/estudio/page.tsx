@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { ArrowUpRight, Mic2, Radio } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
-import { parseLinks } from "@/lib/links";
-import { storage } from "@/lib/storage";
 import { ButtonLink } from "@/components/ui/button-link";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioShellContent } from "@/lib/i18n/studio-shell";
 import { channelPath } from "@/lib/routes";
+import { getStudioDashboard } from "@/features/episodes/queries";
 
 export default async function StudioPage() {
   const [user, locale] = await Promise.all([requireUser(), getLocale()]);
@@ -50,24 +48,17 @@ export default async function StudioPage() {
   }
 
   const channel = user.channel;
-  const [episodes, playSum] = await Promise.all([
-    prisma.episode.count({ where: { channelId: channel.id } }),
-    prisma.episode.aggregate({
-      where: { channelId: channel.id },
-      _sum: { playCount: true },
-    }),
-  ]);
-  const plays = playSum._sum.playCount ?? 0;
-  const links = parseLinks(channel.links);
+  const { episodes, plays, links, avatarUrl } =
+    await getStudioDashboard(channel);
 
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-border bg-surface p-5 sm:p-6">
         <div className="flex items-start gap-4">
-          {channel.avatarKey ? (
+          {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={storage.url(channel.avatarKey)}
+              src={avatarUrl}
               alt=""
               className="size-20 shrink-0 rounded-full border border-border object-cover"
             />
