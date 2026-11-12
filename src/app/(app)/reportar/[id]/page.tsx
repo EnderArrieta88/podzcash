@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Flag } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { Input, Label, Textarea } from "@/components/ui/field";
 import { getLocale } from "@/lib/i18n/locale";
 import { reportContent } from "@/lib/i18n/report";
 import { episodePath } from "@/lib/routes";
-import { submitReportAction } from "../actions";
+import { submitReportAction } from "@/features/moderation/actions";
+import { getReportableEpisode } from "@/features/moderation/queries";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -32,12 +32,9 @@ export default async function ReportPage({
   ]);
   const content = reportContent[locale];
 
-  const episode = await prisma.episode.findUnique({
-    where: { id },
-    include: { channel: { select: { handle: true, displayName: true } } },
-  });
+  const episode = await getReportableEpisode(id);
 
-  if (!episode || episode.status !== "published") notFound();
+  if (!episode) notFound();
 
   return (
     <div className="mx-auto w-full max-w-xl">

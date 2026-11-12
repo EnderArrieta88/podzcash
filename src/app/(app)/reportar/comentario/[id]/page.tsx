@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Flag } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Label, Textarea } from "@/components/ui/field";
 import { getLocale } from "@/lib/i18n/locale";
 import { commentReportContent } from "@/lib/i18n/comment-report";
 import { episodePath } from "@/lib/routes";
-import { submitCommentReportAction } from "./actions";
+import { submitCommentReportAction } from "@/features/moderation/actions";
+import { getReportableComment } from "@/features/moderation/queries";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -33,22 +33,7 @@ export default async function ReportCommentPage({
   ]);
   const content = commentReportContent[locale];
 
-  const comment = await prisma.episodeComment.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      body: true,
-      user: { select: { name: true } },
-      episode: {
-        select: {
-          title: true,
-          slug: true,
-          status: true,
-          channel: { select: { handle: true } },
-        },
-      },
-    },
-  });
+  const comment = await getReportableComment(id);
 
   if (!comment) notFound();
 
