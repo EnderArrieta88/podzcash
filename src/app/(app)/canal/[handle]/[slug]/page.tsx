@@ -2,10 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Flag, Mic2, Radio, ShieldCheck } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { formatDate, formatDuration } from "@/lib/format";
-import { storage } from "@/lib/storage";
 import { PlayButton } from "@/components/player/play-button";
 import { DownloadButton } from "@/components/player/download-button";
 import { QueueButton } from "@/components/player/queue-button";
@@ -14,13 +12,7 @@ import { episodeContent } from "@/lib/i18n/episode";
 import { offlineAudioContent } from "@/lib/i18n/offline-audio";
 import { playerContent } from "@/lib/i18n/player";
 import { sharedLabels } from "@/lib/i18n/shared";
-import {
-  channelPath,
-  donatePath,
-  episodePath,
-  feedPath,
-  normalizeHandleParam,
-} from "@/lib/routes";
+import { channelPath, donatePath, episodePath, feedPath } from "@/lib/routes";
 import { episodeEmbedCode } from "@/lib/embed";
 import { EmbedCode } from "@/components/embed/embed-code";
 import {
@@ -33,35 +25,12 @@ import {
 import { pageParam } from "@/lib/pagination";
 import { listEpisodeComments } from "@/features/comments/queries";
 import { EpisodeComments } from "@/features/comments/components/episode-comments";
+import { getEpisodePageData } from "@/features/episodes/queries";
 
 type PageProps = {
   params: Promise<{ handle: string; slug: string }>;
   searchParams: Promise<{ comentarios?: string | string[] }>;
 };
-
-async function load(handle: string, slug: string) {
-  const channel = await prisma.channel.findUnique({
-    where: { handle: normalizeHandleParam(handle) },
-    select: {
-      id: true,
-      handle: true,
-      displayName: true,
-      avatarKey: true,
-      zcashAddress: true,
-    },
-  });
-
-  if (!channel) return null;
-
-  const episode = await prisma.episode.findUnique({
-    where: { channelId_slug: { channelId: channel.id, slug } },
-    include: { tags: { include: { tag: true } } },
-  });
-
-  if (!episode) return null;
-
-  return { channel, episode };
-}
 
 export async function generateMetadata({
   params,
@@ -69,34 +38,30 @@ export async function generateMetadata({
   const { handle, slug } = await params;
   const locale = await getLocale();
   const content = episodeContent[locale];
-  const data = await load(handle, slug);
+  const data = await getEpisodePageData(handle, slug);
 
   if (!data) return { title: content.notFound };
 
-  const cover = data.episode.coverKey
-    ? storage.url(data.episode.coverKey)
-    : data.channel.avatarKey
-      ? storage.url(data.channel.avatarKey)
-      : null;
+  const { episode, channel, ogImage } = data;
 
   const social = socialMetadata({
-    title: `${data.episode.title} · ${data.channel.displayName}`,
-    description: data.episode.description,
-    path: episodePath(data.channel.handle, data.episode.slug),
-    image: cover,
-    imageAlt: data.episode.title,
+    title: `${episode.title} · ${channel.displayName}`,
+    description: episode.description,
+    path: episodePath(channel.handle, episode.slug),
+    image: ogImage,
+    imageAlt: episode.title,
     locale,
     type: "article",
   });
 
   return {
-    title: `${data.episode.title} · ${data.channel.displayName}`,
-    description: data.episode.description ?? undefined,
+    title: `${episode.title} · ${channel.displayName}`,
+    description: episode.description ?? undefined,
     ...social,
     alternates: {
       ...social.alternates,
       types: {
-        "application/rss+xml": absoluteUrl(feedPath(data.channel.handle)),
+        "application/rss+xml": absoluteUrl(feedPath(channel.handle)),
       },
     },
   };
@@ -109,11 +74,11 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
   const download = offlineAudioContent[locale];
   const player = playerContent[locale];
   const kind = sharedLabels[locale];
-  const data = await load(handle, slug);
+  const data = await getEpisodePageData(handle, slug);
 
   if (!data) notFound();
 
-  const { channel, episode } = data;
+  const { channel, episode, cover, audioUrl, ogImage } = data;
 
   const viewer = await getCurrentUser();
   const isOwner = viewer?.channel?.id === channel.id;
@@ -124,11 +89,6 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
     episode.status === "published"
       ? await listEpisodeComments(episode.id, pageParam(query.comentarios))
       : null;
-
-  const cover = episode.coverKey ? storage.url(episode.coverKey) : null;
-  const audioUrl = storage.url(episode.audioPath);
-  const ogImage =
-    cover ?? (channel.avatarKey ? storage.url(channel.avatarKey) : null);
 
   const episodeLd = {
     "@context": "https://schema.org",
