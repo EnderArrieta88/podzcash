@@ -55,6 +55,28 @@ export async function getChannelPageData(handle: string) {
 }
 
 /**
+ * Canal y avatar para la página de donaciones.
+ */
+export async function getChannelDonationData(handle: string) {
+  const channel = await prisma.channel.findUnique({
+    where: { handle: normalizeHandleParam(handle) },
+    select: {
+      handle: true,
+      displayName: true,
+      avatarKey: true,
+      zcashAddress: true,
+    },
+  });
+
+  if (!channel) return null;
+
+  return {
+    channel,
+    avatarUrl: channel.avatarKey ? storage.url(channel.avatarKey) : null,
+  };
+}
+
+/**
  * Canal y episodios publicados para el feed RSS.
  */
 export async function getChannelFeedData(handle: string) {

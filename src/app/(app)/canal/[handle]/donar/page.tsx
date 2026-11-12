@@ -2,27 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, EyeOff, ShieldCheck, UserX } from "lucide-react";
-import { prisma } from "@/lib/db";
-import { storage } from "@/lib/storage";
 import { DonationBox } from "@/components/donate/donation-box";
 import { ButtonLink } from "@/components/ui/button-link";
 import { getLocale } from "@/lib/i18n/locale";
 import { donateContent } from "@/lib/i18n/donate";
-import { channelPath, normalizeHandleParam } from "@/lib/routes";
+import { channelPath } from "@/lib/routes";
+import { getChannelDonationData } from "@/features/channels/queries";
 
 type PageProps = { params: Promise<{ handle: string }> };
-
-async function loadChannel(handle: string) {
-  return prisma.channel.findUnique({
-    where: { handle: normalizeHandleParam(handle) },
-    select: {
-      handle: true,
-      displayName: true,
-      avatarKey: true,
-      zcashAddress: true,
-    },
-  });
-}
 
 export async function generateMetadata({
   params,
@@ -30,13 +17,13 @@ export async function generateMetadata({
   const { handle } = await params;
   const locale = await getLocale();
   const content = donateContent[locale];
-  const channel = await loadChannel(handle);
+  const data = await getChannelDonationData(handle);
 
-  if (!channel) return { title: content.notFound };
+  if (!data) return { title: content.notFound };
 
   return {
-    title: content.metaTitle(channel.displayName),
-    description: content.metaDescription(channel.displayName),
+    title: content.metaTitle(data.channel.displayName),
+    description: content.metaDescription(data.channel.displayName),
   };
 }
 
@@ -44,9 +31,11 @@ export default async function DonatePage({ params }: PageProps) {
   const { handle } = await params;
   const locale = await getLocale();
   const content = donateContent[locale];
-  const channel = await loadChannel(handle);
+  const data = await getChannelDonationData(handle);
 
-  if (!channel) notFound();
+  if (!data) notFound();
+
+  const { channel, avatarUrl } = data;
 
   if (!channel.zcashAddress) {
     return (
@@ -73,10 +62,10 @@ export default async function DonatePage({ params }: PageProps) {
       </Link>
 
       <div className="mt-6 flex items-center gap-4">
-        {channel.avatarKey ? (
+        {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={storage.url(channel.avatarKey)}
+            src={avatarUrl}
             alt=""
             className="size-14 rounded-full border border-border object-cover"
           />

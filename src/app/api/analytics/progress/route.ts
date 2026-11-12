@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import { recordProgress } from "@/lib/analytics";
 import { take } from "@/lib/rate-limit";
+import { findPublishedEpisodeChannel } from "@/features/playback/queries";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,10 +41,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const episode = await prisma.episode.findFirst({
-    where: { id, status: "published" },
-    select: { channelId: true },
-  });
+  const episode = await findPublishedEpisodeChannel(id);
 
   if (!episode) {
     return NextResponse.json({ ok: false }, { status: 404 });

@@ -1,14 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getDatabaseCounts } from "@/lib/health";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const [channels, episodes] = await Promise.all([
-      prisma.channel.count(),
-      prisma.episode.count(),
-    ]);
+    const { channels, episodes } = await getDatabaseCounts();
 
     return NextResponse.json({
       ok: true,
