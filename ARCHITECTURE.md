@@ -63,8 +63,7 @@ Reglas concretas:
 - `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
 - Ningún archivo de `app` importa Prisma directamente: todo pasa por
   `features/*/queries.ts` o `lib/*`.
-- Hay módulos grandes que conviene dividir: `player-context.tsx` y
-  `episode-form.tsx`.
+- Hay módulos grandes que conviene dividir: `player-context.tsx`.
 
 Mientras se migra, la regla práctica es:
 
