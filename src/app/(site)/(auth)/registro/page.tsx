@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { RegisterForm } from "@/features/auth/components/register-form";
+import { isFirstUser } from "@/features/auth/queries";
 import { getLocale } from "@/lib/i18n/locale";
 import { authContent } from "@/lib/i18n/auth";
 import { formatInviteCode, normalizeInviteCode } from "@/lib/links";
@@ -31,7 +31,7 @@ export default async function RegisterPage({
       ? formatInviteCode(rawInvite)
       : "";
 
-  const firstUser = (await prisma.user.count()) === 0;
+  const firstUser = await isFirstUser();
   const locale = await getLocale();
   const content = authContent[locale].register;
 

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { prisma } from "@/lib/db";
 import { emailFingerprint, verifyEmailToken } from "@/lib/auth/email-token";
 import { VerifyConfirm } from "@/features/auth/components/verify-confirm";
 import { ResendVerificationForm } from "@/features/auth/components/resend-verification-form";
+import { getVerificationUser } from "@/features/auth/queries";
 import { getLocale } from "@/lib/i18n/locale";
 import { authContent } from "@/lib/i18n/auth";
 
@@ -36,12 +36,7 @@ export default async function VerifyPage({ searchParams }: PageProps) {
   const email = rawEmail?.trim() ?? "";
 
   const payload = token ? verifyEmailToken(token) : null;
-  const user = payload
-    ? await prisma.user.findUnique({
-        where: { id: payload.userId },
-        select: { id: true, email: true, status: true },
-      })
-    : null;
+  const user = payload ? await getVerificationUser(payload.userId) : null;
 
   const valid = Boolean(
     payload &&
