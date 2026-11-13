@@ -98,10 +98,12 @@ ci: reintentar si Passenger devuelve 503
 | `feat` | Funcionalidad nueva | MINOR |
 | `fix` | Corrección de errores | PATCH |
 | `perf` | Mejora de rendimiento | PATCH |
-| `refactor` | Cambio interno sin alterar comportamiento | PATCH |
-| `docs` | Documentación | PATCH |
-| `style`, `test`, `ci`, `build`, `chore` | Mantenimiento | Sin release |
 | `feat!`, `fix!` o `BREAKING CHANGE:` | Cambio incompatible | MAJOR |
+| `refactor`, `docs`, `style`, `test`, `ci`, `build`, `chore` | Mantenimiento | Sin release |
+
+Los prefijos de mantenimiento igual aparecen en el historial de Git, pero no
+abren un PR de release por sí solos. Si un cambio interno debe publicarse como
+versión, se puede usar `fix:` o etiquetar el PR de release manualmente.
 
 Un commit debe poder explicarse solo. Si el cambio mezcla cosas distintas,
 conviene separarlo en commits o en PRs.
