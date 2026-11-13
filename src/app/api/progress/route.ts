@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { clampProgress } from "@/lib/playback-progress";
 import { take } from "@/lib/rate-limit";
+import {
+  clearPlaybackProgress,
+  episodeExists,
+  getPlaybackProgress,
+  savePlaybackProgress,
+} from "@/features/playback/queries";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,9 +29,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "invalid" }, { status: 400 });
   }
 
-  const progress = await prisma.playbackProgress.findUnique({
-    where: { userId_episodeId: { userId: user.id, episodeId } },
-  });
+  const progress = await getPlaybackProgress(user.id, episodeId);
 
   if (!progress) return NextResponse.json(null);
 
@@ -81,22 +84,19 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "rateLimited" }, { status: 429 });
   }
 
-  const episode = await prisma.episode.findUnique({
-    where: { id: episodeId },
-    select: { id: true },
-  });
+  const exists = await episodeExists(episodeId);
 
-  if (!episode) {
+  if (!exists) {
     return NextResponse.json({ error: "notFound" }, { status: 404 });
   }
 
   const position = clampProgress(positionSec, durationSec);
 
-  const progress = await prisma.playbackProgress.upsert({
-    where: { userId_episodeId: { userId: user.id, episodeId } },
-    update: { positionSec: position, durationSec },
-    create: { userId: user.id, episodeId, positionSec: position, durationSec },
-    select: { updatedAt: true },
+  const progress = await savePlaybackProgress({
+    userId: user.id,
+    episodeId,
+    positionSec: position,
+    durationSec,
   });
 
   return NextResponse.json({
@@ -110,9 +110,7 @@ export async function DELETE() {
 
   if (!user) return unauthorized();
 
-  const result = await prisma.playbackProgress.deleteMany({
-    where: { userId: user.id },
-  });
+  const result = await clearPlaybackProgress(user.id);
 
   return NextResponse.json({ ok: true, deleted: result.count });
 }

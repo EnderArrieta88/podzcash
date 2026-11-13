@@ -1,8 +1,11 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import { recordListenStart } from "@/lib/analytics";
 import { take } from "@/lib/rate-limit";
+import {
+  findPublishedEpisodeChannel,
+  incrementEpisodePlayCount,
+} from "@/features/playback/queries";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,19 +37,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const episode = await prisma.episode.findFirst({
-    where: { id, status: "published" },
-    select: { channelId: true },
-  });
+  const episode = await findPublishedEpisodeChannel(id);
 
   if (!episode) {
     return NextResponse.json({ ok: false });
   }
 
-  const result = await prisma.episode.updateMany({
-    where: { id, status: "published" },
-    data: { playCount: { increment: 1 } },
-  });
+  const result = await incrementEpisodePlayCount(id);
 
   if (result.count > 0) {
     recordListenStart({
