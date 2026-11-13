@@ -7,7 +7,7 @@ import {
   analyticsDay,
   getDashboardData,
   type BreakdownItem,
-} from "@/lib/analytics";
+} from "@/features/analytics";
 import { getStudioEpisodeSummary } from "@/features/episodes/queries";
 import { formatBytes } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";

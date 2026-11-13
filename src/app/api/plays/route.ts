@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { recordListenStart } from "@/lib/analytics";
+import { recordListenStart } from "@/features/analytics";
 import { take } from "@/lib/rate-limit";
 import {
   findPublishedEpisodeChannel,

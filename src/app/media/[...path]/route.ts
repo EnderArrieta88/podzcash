@@ -1,7 +1,7 @@
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { Readable } from "node:stream";
-import { isPrefetchRequest, recordMediaEvent } from "@/lib/analytics";
+import { isPrefetchRequest, recordMediaEvent } from "@/features/analytics";
 import { contentTypeFor } from "@/lib/media-types";
 import { resolveMediaPath } from "@/lib/storage";
 import { findEpisodeByAudioPath } from "@/features/episodes/queries";

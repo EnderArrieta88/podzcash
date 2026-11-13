@@ -63,8 +63,8 @@ Reglas concretas:
 - `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
 - Ningún archivo de `app` importa Prisma directamente: todo pasa por
   `features/*/queries.ts` o `lib/*`.
-- Hay módulos grandes que conviene dividir: `player-context.tsx`,
-  `analytics.ts` y `episode-form.tsx`.
+- Hay módulos grandes que conviene dividir: `player-context.tsx` y
+  `episode-form.tsx`.
 
 Mientras se migra, la regla práctica es:
 
@@ -94,7 +94,7 @@ Mientras se migra, la regla práctica es:
 
 - `src/lib/db.ts` es el único cliente Prisma.
 - Las consultas deben vivir en módulos de consulta (`catalog.ts`,
-  `comments.ts`, `analytics.ts`) o en `queries.ts` de cada feature.
+  `comments.ts`, `features/analytics/`) o en `queries.ts` de cada feature.
 - Las escrituras van en `actions.ts` con `"use server"`.
 - Los route handlers solo orquestan; la lógica reutilizable va a `lib`.
 

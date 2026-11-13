@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
-import { analyticsDay, getDashboardData } from "@/lib/analytics";
+import { analyticsDay, getDashboardData } from "@/features/analytics";
 import { getStudioEpisodeSummary } from "@/features/episodes/queries";
 
 export const runtime = "nodejs";

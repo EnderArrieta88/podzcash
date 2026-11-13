@@ -11,7 +11,7 @@ import { getLocale } from "@/lib/i18n/locale";
 import { studioAccountContent } from "@/lib/i18n/studio-account";
 import { take } from "@/lib/rate-limit";
 import { removeFromIndex } from "@/lib/search-index";
-import { purgeEpisodes } from "@/lib/analytics";
+import { purgeEpisodes } from "@/features/analytics";
 import { deleteUserPushSubscriptions } from "@/lib/push";
 import { storage } from "@/lib/storage";
 import { passwordChangeSchema } from "./schemas";
