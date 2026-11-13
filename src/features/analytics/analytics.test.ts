@@ -8,7 +8,7 @@ import {
   summarizeMediaEvents,
   type AnalyticsEvent,
   type ListenEvent,
-} from "./analytics";
+} from "./index";
 
 describe("classifyUserAgent", () => {
   it("detecta bots y crawlers", () => {

@@ -1,4 +1,4 @@
-import { getEpisodeStats } from "@/lib/analytics";
+import { getEpisodeStats } from "@/features/analytics";
 import { formatBytes } from "@/lib/format";
 import Link from "next/link";
 import type { StudioEpisodesContent } from "@/lib/i18n/studio-episodes";
