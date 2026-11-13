@@ -65,7 +65,8 @@ Reglas concretas:
   `features/*/queries.ts` o `lib/*`.
 - El reproductor se dividió en hooks (`use-progress-sync`,
   `use-restore-session`, `use-player-persistence`, `use-sleep-countdown` y
-  `use-player-shortcuts`) más tipos, constantes y claves de almacenamiento.
+  `use-player-shortcuts`) más tipos, constantes y claves de almacenamiento. La
+  barra vive en `player-bar.tsx` y sus piezas en `player-bar/`.
 
 Mientras se migra, la regla práctica es:
 
