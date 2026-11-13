@@ -82,7 +82,10 @@ export default async function ReportCommentPage({
       {!viewer ? (
         <div className="mt-6 rounded-xl border border-border bg-surface p-6 text-sm text-muted">
           {content.loginPrompt}{" "}
-          <Link href="/entrar" className="text-brand hover:underline">
+          <Link
+            href="/entrar"
+            className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+          >
             {content.loginLink}
           </Link>
         </div>

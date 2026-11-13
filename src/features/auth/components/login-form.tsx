@@ -18,7 +18,7 @@ export function LoginForm({ labels }: { labels: LoginLabels }) {
           {state.code === "unverified" && (
             <Link
               href="/verificar"
-              className="mt-1 inline-block font-medium text-brand hover:underline"
+              className="mt-1 inline-block font-medium text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
             >
               {labels.resendVerification}
             </Link>
@@ -64,7 +64,10 @@ export function LoginForm({ labels }: { labels: LoginLabels }) {
 
       <p className="text-center text-sm text-muted">
         {labels.invitePrompt}{" "}
-        <Link href="/registro" className="text-brand hover:underline">
+        <Link
+          href="/registro"
+          className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+        >
           {labels.createAccount}
         </Link>
       </p>

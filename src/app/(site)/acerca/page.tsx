@@ -81,7 +81,7 @@ export default async function AboutPage() {
           href={PROFILE_URL}
           target="_blank"
           rel="noreferrer noopener"
-          className="mt-2 inline-block text-sm text-brand hover:underline"
+          className="mt-2 inline-block text-sm text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
         >
           GitHub
         </a>
@@ -96,7 +96,7 @@ export default async function AboutPage() {
         </p>
         <Link
           href="/proyecto"
-          className="mt-2 inline-block text-sm text-brand hover:underline"
+          className="mt-2 inline-block text-sm text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
         >
           {content.links.project}
         </Link>
@@ -114,7 +114,7 @@ export default async function AboutPage() {
             href={REPO_URL}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-brand hover:underline"
+            className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
           >
             {content.links.repository}
           </a>
@@ -122,7 +122,7 @@ export default async function AboutPage() {
             href={`${REPO_URL}/blob/main/CONTRIBUTING.md`}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-brand hover:underline"
+            className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
           >
             {content.links.contributing}
           </a>
@@ -130,7 +130,7 @@ export default async function AboutPage() {
             href={`${REPO_URL}/blob/main/CODE_OF_CONDUCT.md`}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-brand hover:underline"
+            className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
           >
             {content.links.conduct}
           </a>
@@ -138,7 +138,7 @@ export default async function AboutPage() {
             href={`${REPO_URL}/blob/main/SECURITY.md`}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-brand hover:underline"
+            className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
           >
             {content.links.security}
           </a>
@@ -163,14 +163,17 @@ export default async function AboutPage() {
         </p>
         <a
           href="mailto:hola@podzcash.online"
-          className="mt-2 inline-block text-sm text-brand hover:underline"
+          className="mt-2 inline-block text-sm text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
         >
           hola@podzcash.online
         </a>
       </section>
 
       <p className="mt-10 text-sm text-muted">
-        <Link href="/" className="text-brand hover:underline">
+        <Link
+          href="/"
+          className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+        >
           {content.backHome}
         </Link>
       </p>

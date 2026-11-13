@@ -48,14 +48,17 @@ export function LegalPage({ content }: { content: LegalDocument }) {
         </p>
         <a
           href="mailto:hola@podzcash.online"
-          className="mt-2 inline-block text-sm text-brand hover:underline"
+          className="mt-2 inline-block text-sm text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
         >
           hola@podzcash.online
         </a>
       </section>
 
       <p className="mt-8 text-sm text-muted">
-        <Link href="/" className="text-brand hover:underline">
+        <Link
+          href="/"
+          className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+        >
           {content.backHome}
         </Link>
       </p>

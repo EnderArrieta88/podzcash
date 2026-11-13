@@ -21,7 +21,7 @@ export function ResetRequestForm({ labels }: { labels: ResetRequestLabels }) {
         </p>
         <Link
           href="/entrar"
-          className="mt-5 inline-block text-sm text-brand hover:underline"
+          className="mt-5 inline-block text-sm text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
         >
           {labels.backToLogin}
         </Link>
@@ -55,7 +55,10 @@ export function ResetRequestForm({ labels }: { labels: ResetRequestLabels }) {
       </SubmitButton>
 
       <p className="text-center text-sm text-muted">
-        <Link href="/entrar" className="text-brand hover:underline">
+        <Link
+          href="/entrar"
+          className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+        >
           {labels.backToLogin}
         </Link>
       </p>

@@ -21,7 +21,7 @@ export function WaitlistForm({ labels }: { labels: WaitlistContent }) {
         </p>
         <Link
           href="/"
-          className="mt-5 inline-block text-sm text-brand hover:underline"
+          className="mt-5 inline-block text-sm text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
         >
           {labels.backHome}
         </Link>

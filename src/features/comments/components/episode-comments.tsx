@@ -21,7 +21,7 @@ function PaginationLink({
 
   if (disabled) {
     return (
-      <span className={cn(className, "cursor-not-allowed text-subtle/50")}>
+      <span className={cn(className, "cursor-not-allowed text-muted/80")}>
         {children}
       </span>
     );
@@ -99,7 +99,10 @@ export function EpisodeComments({
       ) : (
         <p className="mt-4 border-b border-border pb-5 text-sm text-muted">
           {labels.loginPrompt}{" "}
-          <a href="/entrar" className="text-brand hover:underline">
+          <a
+            href="/entrar"
+            className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+          >
             {labels.loginLink}
           </a>
         </p>

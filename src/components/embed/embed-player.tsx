@@ -134,7 +134,7 @@ export function EmbedPlayer({
           href={href}
           target="_blank"
           rel="noreferrer noopener"
-          className="text-[11px] text-brand hover:underline"
+          className="text-[11px] text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
         >
           {text.listenOn}
         </a>
