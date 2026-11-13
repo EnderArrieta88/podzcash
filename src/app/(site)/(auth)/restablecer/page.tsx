@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { prisma } from "@/lib/db";
 import { verifyResetToken, passwordFingerprint } from "@/lib/auth/reset-token";
 import { ResetPasswordForm } from "@/features/auth/components/reset-password-form";
+import { getResetUser } from "@/features/auth/queries";
 import { getLocale } from "@/lib/i18n/locale";
 import { authContent } from "@/lib/i18n/auth";
 
@@ -27,12 +27,7 @@ export default async function ResetPasswordPage({ searchParams }: PageProps) {
   const token = rawToken?.trim() ?? "";
 
   const payload = token ? verifyResetToken(token) : null;
-  const user = payload
-    ? await prisma.user.findUnique({
-        where: { id: payload.userId },
-        select: { id: true, status: true, passwordHash: true },
-      })
-    : null;
+  const user = payload ? await getResetUser(payload.userId) : null;
 
   const valid =
     payload &&

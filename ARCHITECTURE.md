@@ -57,12 +57,12 @@ Reglas concretas:
 
 - La migración de acciones y componentes está completa para los dominios
   principales (`comments`, `auth`, `waitlist`, `episodes`, `channels`,
-  `account`, `invites`, `admin`, `moderation`). Las páginas de administración,
+  `account`, `invites`, `admin`, `moderation`, `playback`). Las páginas de administración,
   canal, episodio, estudio, reportes, exportación de cuenta y portada delegan en
   sus `queries.ts`.
 - `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
-- Todavía consultan Prisma directamente la página de diseño (`design`) y las
-  pantallas de autenticación (`registro`, `verificar`, `restablecer`).
+- Solo la página de diseño (`design`) consulta Prisma directamente; el resto de
+  `app` delega en `features/*/queries.ts` o `lib/*`.
 - Hay módulos grandes que conviene dividir: `player-context.tsx`,
   `analytics.ts` y `episode-form.tsx`.
 
