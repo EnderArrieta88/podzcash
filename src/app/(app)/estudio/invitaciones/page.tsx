@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/guards";
 import { formatInviteCode } from "@/lib/links";
 import { CopyButton } from "@/components/ui/copy-button";
 import { InviteForm } from "@/features/invites/components/invite-form";
 import { revokeInviteAction } from "@/features/invites/actions";
+import { listAdminInvites } from "@/features/invites/queries";
 import { formatDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioInvitesContent } from "@/lib/i18n/studio-invites";
@@ -19,11 +19,7 @@ export default async function InvitesPage() {
   const [admin, locale] = await Promise.all([requireAdmin(), getLocale()]);
   const content = studioInvitesContent[locale];
 
-  const invites = await prisma.invite.findMany({
-    where: { createdById: admin.id },
-    orderBy: { createdAt: "desc" },
-    include: { usedBy: { select: { name: true, email: true } } },
-  });
+  const invites = await listAdminInvites(admin.id);
 
   // Server component: se ejecuta una vez por petición, no en cada re-render.
   // eslint-disable-next-line react-hooks/purity

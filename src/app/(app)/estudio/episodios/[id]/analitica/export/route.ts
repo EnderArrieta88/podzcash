@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/session";
 import { analyticsDay, getDashboardData } from "@/lib/analytics";
+import { getStudioEpisodeSummary } from "@/features/episodes/queries";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,10 +27,7 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const { id } = await context.params;
-  const episode = await prisma.episode.findFirst({
-    where: { id, channelId: user.channel.id },
-    select: { id: true, slug: true },
-  });
+  const episode = await getStudioEpisodeSummary(user.channel.id, id);
 
   if (!episode) {
     return NextResponse.json({ error: "notFound" }, { status: 404 });

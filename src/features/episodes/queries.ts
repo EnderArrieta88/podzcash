@@ -60,6 +60,44 @@ type StudioChannel = {
 };
 
 /**
+ * Episodio del canal para el formulario de edición, con etiquetas y portada.
+ */
+export async function getStudioEpisode(channelId: string, id: string) {
+  const episode = await prisma.episode.findFirst({
+    where: { id, channelId },
+    include: { tags: { include: { tag: true } } },
+  });
+
+  if (!episode) return null;
+
+  return {
+    episode,
+    coverUrl: episode.coverKey ? storage.url(episode.coverKey) : null,
+  };
+}
+
+/**
+ * Datos mínimos del episodio para la página y la exportación de analítica.
+ */
+export async function getStudioEpisodeSummary(channelId: string, id: string) {
+  return prisma.episode.findFirst({
+    where: { id, channelId },
+    select: { id: true, title: true, slug: true, status: true },
+  });
+}
+
+/**
+ * Último episodio publicado del canal, usado en distribución.
+ */
+export async function getLatestChannelEpisode(channelId: string) {
+  return prisma.episode.findFirst({
+    where: { channelId, status: "published" },
+    orderBy: { publishedAt: "desc" },
+    select: { id: true, title: true },
+  });
+}
+
+/**
  * Resumen del panel del estudio: cantidad de episodios, reproducciones y datos
  * derivados del canal (avatar y enlaces).
  */
