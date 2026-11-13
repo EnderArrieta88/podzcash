@@ -1,5 +1,9 @@
 # PodZcash
 
+[![Release](https://img.shields.io/github/v/release/EnderArrieta88/podzcash)](https://github.com/EnderArrieta88/podzcash/releases)
+[![CI](https://github.com/EnderArrieta88/podzcash/actions/workflows/ci.yml/badge.svg)](https://github.com/EnderArrieta88/podzcash/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Plataforma de podcasts y música para el ecosistema Zcash: cada creador tiene su
 canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 
@@ -30,7 +34,6 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 - Analítica agregada de descargas, reproducciones y retención, sin cookies.
 - Aplicación instalable (PWA) con descargas para escuchar sin conexión.
 - Interfaz bilingüe ES/EN con selector por cookie.
-- Versiones y changelog automáticos con release-please.
 
 ## Stack actual
 
@@ -41,7 +44,6 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 - Analítica y rate limiting en bases SQLite independientes de la principal.
 - Deploy en hosting compartido con Node/Passenger, automatizado por GitHub
   Actions y FTP.
-- Versiones con SemVer, tags y changelog generados por release-please.
 
 La migración a Postgres, almacenamiento de objetos/CDN y el pipeline de audio
 siguen en la hoja de ruta. **Todavía no están implementados.** Los backups y la
@@ -151,6 +153,18 @@ fondos**: solo genera un QR y un enlace ZIP-321.
 - El QR se regenera en el navegador al cambiar monto o memo.
 - La plataforma no verifica transacciones ni custodia claves. La verificación
   privacy-preserving de donaciones está en la hoja de ruta.
+
+## Versiones
+
+PodZcash usa [versionado semántico](https://semver.org/lang/es/). Cada release
+se etiqueta como `vX.Y.Z`, se publica en
+[GitHub Releases](https://github.com/EnderArrieta88/podzcash/releases) y queda
+registrado en [CHANGELOG.md](CHANGELOG.md).
+
+El flujo lo automatiza
+[release-please](https://github.com/googleapis/release-please) a partir de los
+títulos de PR en Conventional Commits. Los detalles están en
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Flujo de trabajo
 

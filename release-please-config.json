@@ -13,7 +13,7 @@
     { "type": "fix", "section": "Corregido" },
     { "type": "perf", "section": "Rendimiento" },
     { "type": "refactor", "section": "Cambiado" },
-    { "type": "docs", "section": "Documentación" },
+    { "type": "docs", "section": "Documentación", "hidden": true },
     { "type": "deps", "section": "Dependencias" },
     { "type": "revert", "section": "Revertido" },
     { "type": "chore", "section": "Mantenimiento", "hidden": true },
