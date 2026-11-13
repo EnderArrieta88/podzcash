@@ -16,6 +16,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // Bundle autónomo para desplegar en hosting con Node (cPanel/Passenger).
   output: "standalone",
+  // El commit se inyecta al compilar y se muestra en /api/health.
+  env: {
+    APP_COMMIT: process.env.GIT_SHA?.slice(0, 7) ?? "dev",
+  },
   // No revelar el framework en las respuestas.
   poweredByHeader: false,
   // better-sqlite3 y sharp son módulos nativos: no deben pasar por el bundler.
