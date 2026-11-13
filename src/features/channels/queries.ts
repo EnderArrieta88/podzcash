@@ -93,6 +93,18 @@ export async function getChannelFeedData(handle: string) {
 }
 
 /**
+ * Canal con episodios publicados para el laboratorio de diseño.
+ */
+export async function getFeaturedChannel() {
+  return prisma.channel.findFirst({
+    where: { episodes: { some: { status: "published" } } },
+    include: {
+      _count: { select: { episodes: { where: { status: "published" } } } },
+    },
+  });
+}
+
+/**
  * Canales para el sitemap, ordenados por última actualización.
  */
 export async function listSitemapChannels() {
