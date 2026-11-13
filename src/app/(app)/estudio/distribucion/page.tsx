@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ExternalLink, Rss } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
 import { CopyButton } from "@/components/ui/copy-button";
+import { getLatestChannelEpisode } from "@/features/episodes/queries";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioDistributionContent } from "@/lib/i18n/studio-distribution";
 import { feedPath } from "@/lib/routes";
@@ -30,11 +30,7 @@ export default async function DistributionPage() {
   const channel = user.channel;
   const feedUrl = `${SITE}${feedPath(channel.handle)}`;
 
-  const latest = await prisma.episode.findFirst({
-    where: { channelId: channel.id, status: "published" },
-    orderBy: { publishedAt: "desc" },
-    select: { id: true, title: true },
-  });
+  const latest = await getLatestChannelEpisode(channel.id);
 
   const embedCode = latest
     ? episodeEmbedCode({ origin: SITE, id: latest.id, title: latest.title })

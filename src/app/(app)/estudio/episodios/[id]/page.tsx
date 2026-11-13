@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
-import { storage } from "@/lib/storage";
 import { EpisodeForm } from "@/features/episodes/components/episode-form";
+import { getStudioEpisode } from "@/features/episodes/queries";
 import type { EpisodeFormValues } from "@/features/episodes/types";
 import { EpisodeAnalytics } from "@/components/studio/episode-analytics";
 import { getLocale } from "@/lib/i18n/locale";
@@ -30,12 +29,11 @@ export default async function EditEpisodePage({
 
   const { id } = await params;
 
-  const episode = await prisma.episode.findFirst({
-    where: { id, channelId: user.channel.id },
-    include: { tags: { include: { tag: true } } },
-  });
+  const data = await getStudioEpisode(user.channel.id, id);
 
-  if (!episode) notFound();
+  if (!data) notFound();
+
+  const { episode, coverUrl } = data;
 
   const values: EpisodeFormValues = {
     id: episode.id,
@@ -55,7 +53,7 @@ export default async function EditEpisodePage({
       durationSec: episode.durationSec,
     },
     coverKey: episode.coverKey,
-    coverUrl: episode.coverKey ? storage.url(episode.coverKey) : null,
+    coverUrl,
   };
 
   return (

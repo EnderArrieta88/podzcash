@@ -61,10 +61,8 @@ Reglas concretas:
   canal, episodio, estudio, reportes, exportación de cuenta y portada delegan en
   sus `queries.ts`.
 - `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
-- Todavía consultan Prisma directamente algunas páginas y rutas fuera de los
-  dominios migrados: `design`, `distribucion`, `invitaciones`, edición de
-  episodio y analítica del estudio, y las pantallas de autenticación
-  (`registro`, `verificar`, `restablecer`).
+- Todavía consultan Prisma directamente la página de diseño (`design`) y las
+  pantallas de autenticación (`registro`, `verificar`, `restablecer`).
 - Hay módulos grandes que conviene dividir: `player-context.tsx`,
   `analytics.ts` y `episode-form.tsx`.
 

@@ -3,12 +3,12 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Download } from "lucide-react";
 import { requireUser } from "@/lib/auth/guards";
-import { prisma } from "@/lib/db";
 import {
   analyticsDay,
   getDashboardData,
   type BreakdownItem,
 } from "@/lib/analytics";
+import { getStudioEpisodeSummary } from "@/features/episodes/queries";
 import { formatBytes } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioAnalyticsContent } from "@/lib/i18n/studio-analytics";
@@ -103,10 +103,7 @@ export default async function EpisodeAnalyticsPage({
 
   const labels = studioAnalyticsContent[locale];
 
-  const episode = await prisma.episode.findFirst({
-    where: { id, channelId: user.channel.id },
-    select: { id: true, title: true, slug: true, status: true },
-  });
+  const episode = await getStudioEpisodeSummary(user.channel.id, id);
 
   if (!episode) notFound();
 
