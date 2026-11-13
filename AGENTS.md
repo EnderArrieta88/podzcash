@@ -12,7 +12,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 1. **Desarrollo y verificación en local.** Todo cambio se hace acá y se valida
    con `npx tsc --noEmit`, `npm run lint` y `npm run build` antes de seguir.
-2. **Commit y push a `main`** cuando el cambio está terminado.
+2. **Commit y push a `main`** cuando el cambio está terminado. Los mensajes y
+   los títulos de PR usan Conventional Commits (`feat:`, `fix:`, `refactor:`,
+   `docs:`, `chore:`); release-please genera la versión y el changelog.
 3. **Deploy manual y al final.** Solo se despliega cuando no habrá más cambios
    en esa tanda, desde GitHub → Actions → "Deploy a producción" → Run workflow
    → `deploy`. Nunca automático, nunca por cada cambio.

@@ -80,17 +80,47 @@ Nombres recomendados:
 
 ## 2. Commits
 
-Mensajes cortos, en imperativo y con prefijo:
+Los mensajes siguen [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/).
+Como el merge es squash, **el título del PR se convierte en el commit de
+`main`**, así que también debe llevar el prefijo correcto.
 
 ```text
 feat: agregar selector de idioma
 fix: corregir host del feed RSS
-i18n: traducir panel de administración
-deploy: reintentar si Passenger devuelve 503
+docs: actualizar guía de despliegue
+refactor: dividir el contexto del reproductor
+perf: reducir consultas del panel
+ci: reintentar si Passenger devuelve 503
 ```
+
+| Prefijo | Uso | Versión |
+| --- | --- | --- |
+| `feat` | Funcionalidad nueva | MINOR |
+| `fix` | Corrección de errores | PATCH |
+| `perf` | Mejora de rendimiento | PATCH |
+| `refactor` | Cambio interno sin alterar comportamiento | PATCH |
+| `docs` | Documentación | PATCH |
+| `style`, `test`, `ci`, `build`, `chore` | Mantenimiento | Sin release |
+| `feat!`, `fix!` o `BREAKING CHANGE:` | Cambio incompatible | MAJOR |
 
 Un commit debe poder explicarse solo. Si el cambio mezcla cosas distintas,
 conviene separarlo en commits o en PRs.
+
+### Versiones y changelog
+
+El proyecto usa [versionado semántico](https://semver.org/lang/es/) y
+[release-please](https://github.com/googleapis/release-please) para mantener el
+historial.
+
+1. Al fusionar PRs en `main`, el workflow `.github/workflows/release.yml`
+   agrupa los cambios y abre un **PR de release**.
+2. Ese PR actualiza `package.json` y `CHANGELOG.md` con la versión propuesta.
+3. Al fusionarlo se crea el tag `vX.Y.Z` y la **GitHub Release** con las notas.
+4. El despliegue se hace después, como siempre, desde Actions.
+
+No se edita `CHANGELOG.md` a mano: release-please lo reescribe en cada release.
+La versión publicada y el commit del build se pueden consultar en
+`/api/health`.
 
 ## 3. Abrir el Pull Request
 
