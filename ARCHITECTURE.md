@@ -20,7 +20,8 @@ src/
   app/                 rutas, layouts, páginas, route handlers y acciones
   components/          UI agrupada por dominio (auth, player, studio…)
     ui/                primitivas reutilizables (Button, Field, Copy…)
-  features/            dominios migrados a feature-based (comments, auth, waitlist, episodes, channels, account, invites, admin)
+  features/            dominios por funcionalidad (account, admin, analytics, auth,
+                       channels, comments, episodes, invites, moderation, playback, waitlist)
   lib/                 lógica de dominio, consultas, utilidades y acceso a datos
     auth/              sesión, guardas, contraseñas y tokens
     i18n/              contenido ES/EN con tipos derivados del español
@@ -53,13 +54,13 @@ Reglas concretas:
 5. Los módulos de servidor llevan `import "server-only"`. Así un componente
    cliente no puede arrastrarlos al bundle por error.
 
-### Deuda conocida
+### Estado de la migración
 
-- La migración de acciones y componentes está completa para los dominios
-  principales (`comments`, `auth`, `waitlist`, `episodes`, `channels`,
-  `account`, `invites`, `admin`, `moderation`, `playback`). Las páginas de administración,
-  canal, episodio, estudio, reportes, exportación de cuenta y portada delegan en
-  sus `queries.ts`.
+- La migración de acciones y componentes está completa para todos los dominios:
+  `comments`, `auth`, `waitlist`, `episodes`, `channels`, `account`, `invites`,
+  `admin`, `moderation`, `playback` y `analytics`.
+- Las páginas de administración, canal, episodio, estudio, reportes,
+  exportación de cuenta, portada y diseño delegan en sus `queries.ts`.
 - `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
 - Ningún archivo de `app` importa Prisma directamente: todo pasa por
   `features/*/queries.ts` o `lib/*`.
@@ -67,6 +68,15 @@ Reglas concretas:
   `use-restore-session`, `use-player-persistence`, `use-sleep-countdown` y
   `use-player-shortcuts`) más tipos, constantes y claves de almacenamiento. La
   barra vive en `player-bar.tsx` y sus piezas en `player-bar/`.
+
+### Deuda conocida
+
+- La versión y el commit del build se exponen en `/api/health` desde
+  `lib/version.ts`; release-please actualiza `package.json` y `CHANGELOG.md`.
+- `lib/auth` sigue siendo infraestructura compartida y no se mueve a un feature.
+- Quedan migraciones puente en `src/instrumentation.ts` por el historial de
+  producción.
+- Staging y auditoría externa siguen pendientes.
 
 Mientras se migra, la regla práctica es:
 
@@ -88,7 +98,7 @@ Mientras se migra, la regla práctica es:
 
 ### Lógica de negocio
 
-- `src/lib/**` y, a futuro, `src/features/<dominio>/**`.
+- `src/features/<dominio>/**` y `src/lib/**`.
 - Reglas de dominio, validación, permisos y casos de uso.
 - Los cálculos puros se separan de la persistencia para poder testearlos.
 
@@ -98,7 +108,8 @@ Mientras se migra, la regla práctica es:
 - Las consultas deben vivir en módulos de consulta (`catalog.ts`,
   `comments.ts`, `features/analytics/`) o en `queries.ts` de cada feature.
 - Las escrituras van en `actions.ts` con `"use server"`.
-- Los route handlers solo orquestan; la lógica reutilizable va a `lib`.
+- Los route handlers solo orquestan; la lógica reutilizable va a `features` o
+  `lib`.
 
 ## Validación
 
@@ -138,14 +149,14 @@ Mientras se migra, la regla práctica es:
 ## Tests y validación
 
 ```bash
-npm run check        # lint + tipos + tests unitarios
+npm run check        # lint + formato + tipos + tests unitarios
 npm run build
 npm run e2e          # requiere build y Chromium
 ```
 
 - Tests unitarios junto al módulo (`*.test.ts`).
 - E2E en `e2e/`.
-- El CI ejecuta lint, tipos, unitarios, build y E2E.
+- El CI ejecuta lint, formato, tipos, unitarios, build y E2E.
 
 ## Formato
 

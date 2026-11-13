@@ -27,7 +27,10 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 - Validación de direcciones transparentes, Sapling y unificadas.
 - Feed RSS 2.0 + Podcasting 2.0 por canal, con enlace de apoyo ZEC.
 - Panel de creador, invitaciones, moderación, reportes y administración.
+- Analítica agregada de descargas, reproducciones y retención, sin cookies.
+- Aplicación instalable (PWA) con descargas para escuchar sin conexión.
 - Interfaz bilingüe ES/EN con selector por cookie.
+- Versiones y changelog automáticos con release-please.
 
 ## Stack actual
 
@@ -35,11 +38,14 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 - **Prisma 7** con SQLite mediante `better-sqlite3`.
 - Audio y portadas en disco local (`MEDIA_ROOT`).
 - Búsqueda FTS5 en `.data/search.db`.
+- Analítica y rate limiting en bases SQLite independientes de la principal.
 - Deploy en hosting compartido con Node/Passenger, automatizado por GitHub
   Actions y FTP.
+- Versiones con SemVer, tags y changelog generados por release-please.
 
-La migración a Postgres, almacenamiento de objetos/CDN, backups automáticos y
-monitorización forma parte de la hoja de ruta. **Todavía no está implementada.**
+La migración a Postgres, almacenamiento de objetos/CDN y el pipeline de audio
+siguen en la hoja de ruta. **Todavía no están implementados.** Los backups y la
+monitorización ya están operativos; ver la sección **Operación**.
 
 ## Arranque local
 
@@ -75,6 +81,13 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `VAPID_PUBLIC_KEY` | Clave pública para Web Push de los avisos en el teléfono |
 | `VAPID_PRIVATE_KEY` | Clave privada de Web Push; no se versiona |
 | `VAPID_SUBJECT` | Contacto VAPID, por ejemplo `mailto:hola@podzcash.online` |
+| `ANALYTICS_DB_PATH` | Ruta de la base de analítica |
+| `ANALYTICS_SALT` | Sal para hashear IP y user agent en analítica |
+| `ANALYTICS_TIMEZONE` | Zona horaria para agrupar los días (UTC por defecto) |
+| `ANALYTICS_BOT_PATTERNS` | Patrones extra de bots, separados por coma |
+| `RATE_LIMIT_DB_PATH` | Ruta de la base del rate limiting |
+| `RATE_LIMIT_SALT` | Sal para hashear las claves de rate limiting |
+| `CSP_MODE` | `enforce` o `report-only` para la política CSP |
 
 ## Comandos
 
@@ -91,7 +104,7 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `npm run e2e` | Tests E2E con Playwright (requiere build y Chromium) |
 | `npm run e2e:setup` | Recrea la base y los medios aislados de E2E |
 | `npm run e2e:server` | Levanta el servidor de E2E en el puerto 3100 |
-| `npm run check` | Lint + tipos + tests |
+| `npm run check` | Lint + formato + tipos + tests |
 | `npx prisma studio` | Explorador de la base |
 | `npx prisma migrate dev --name <nombre>` | Nueva migración |
 
@@ -122,6 +135,7 @@ Los tests E2E corren contra una base y medios aislados. Ver [docs/e2e.md](docs/e
 | `/canal/@[handle]/feed.xml` | Feed RSS del canal |
 | `/embed/[id]` | Reproductor embebible |
 | `/reportar/[id]` | Formulario público de reporte |
+| `/api/health` | Estado, versión publicada y commit del build |
 
 Las URLs antiguas `/c/...` redirigen de forma permanente a `/canal/@...`.
 
@@ -143,13 +157,16 @@ fondos**: solo genera un QR y un enlace ZIP-321.
 `main` es la rama estable y está protegida. Cada cambio entra por Pull Request:
 
 1. Crear una rama (`feat/`, `fix/`, `i18n/`, `deploy/`, `docs/`).
-2. Abrir un PR con la plantilla.
-3. Pasar **Validar PR** (lint, tipos y build).
+2. Abrir un PR con la plantilla y un título en Conventional Commits.
+3. Pasar **Validar PR** (lint, formato, tipos, tests, build y E2E).
 4. Fusionar con Squash.
-5. Desplegar manualmente desde `main`.
+5. release-please abre un PR de versión; al fusionarlo se crea el tag
+   `vX.Y.Z` y la GitHub Release con el changelog.
+6. Desplegar manualmente la versión ya etiquetada desde `main`.
 
 El deploy no es automático: se ejecuta desde GitHub Actions → **Deploy a
 producción**, escribe `deploy` y requiere aprobación del entorno `production`.
+La versión desplegada y el commit se pueden comprobar en `/api/health`.
 
 Los secretos FTP se configuran en GitHub (`FTP_SERVER`, `FTP_USERNAME`,
 `FTP_PASSWORD`, `FTP_SERVER_DIR`). El deploy excluye `prisma/dev.db`, `.media`,
@@ -221,6 +238,8 @@ hosting puede terminar las instancias huérfanas y decir cuántas había.
 - **Reproductor:** cola, siguiente/anterior, temporizador de sueño y
   sincronización de posición entre dispositivos. Ver
   [docs/reproductor.md](docs/reproductor.md).
+- **Push:** notificaciones de lista de espera y suscripciones. Ver
+  [docs/push.md](docs/push.md).
 - **Staging:** pendiente de un segundo hosting/base de datos.
 
 ## Seguridad
@@ -245,8 +264,11 @@ prisma/
 src/
   app/                 Rutas y páginas
   components/          UI y componentes de cliente
-  features/            Dominios migrados (comments, auth, waitlist, episodes, channels, account, invites, admin)
+  features/            Dominios migrados: account, admin, analytics, auth, channels,
+                       comments, episodes, invites, moderation, playback y waitlist
   lib/db.ts            Cliente Prisma
+  lib/version.ts       Versión publicada y commit del build
+  lib/health.ts        Conteos del chequeo de salud
   lib/i18n/            Contenido ES/EN
   lib/routes.ts        URLs de canales y episodios
   lib/storage.ts       Abstracción de almacenamiento
