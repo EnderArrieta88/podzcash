@@ -146,9 +146,11 @@ Cada PR a `main` ejecuta `.github/workflows/ci.yml`:
 1. `npm ci`
 2. `npx prisma generate`
 3. `npm run lint`
-4. `npm run typecheck`
-5. `npm test`
-6. `npm run build`
+4. `npm run format:check`
+5. `npm run typecheck`
+6. `npm test`
+7. `npm run build`
+8. `npm run e2e`
 
 Si algo falla, el PR no debe fusionarse. En local se puede reproducir con:
 
@@ -169,14 +171,19 @@ npm run build
 gh pr merge --squash --delete-branch
 ```
 
-## 6. Desplegar
+## 6. Publicar la versión y desplegar
 
-El deploy es **manual** y no se dispara al fusionar un PR:
+El deploy es **manual** y no se dispara al fusionar un PR. Antes de desplegar,
+la versión debe estar etiquetada por release-please:
 
-1. GitHub → Actions → **Deploy a producción** → Run workflow.
-2. Elegir la rama `main` y escribir `deploy` para confirmar.
-3. Aprobar el entorno **production** (solo el mantenedor puede hacerlo).
-4. Esperar a que termine correctamente.
+1. Fusionar el PR de release (`chore(main): release X.Y.Z`) que abrió
+   release-please.
+2. Eso crea el tag `vX.Y.Z` y la GitHub Release con el changelog.
+3. GitHub → Actions → **Deploy a producción** → Run workflow.
+4. Elegir la rama `main` y escribir `deploy` para confirmar.
+5. Aprobar el entorno **production** (solo el mantenedor puede hacerlo).
+6. Esperar a que termine y comprobar `/api/health`: debe mostrar la versión y
+   el commit desplegados.
 
 El workflow de deploy:
 
@@ -186,17 +193,16 @@ El workflow de deploy:
 - Tiene permisos de solo lectura sobre el repositorio.
 - No recibe secretos en PRs de forks.
 
-Después del deploy conviene crear una etiqueta de versión:
+### PR de release y CI
 
-```powershell
-git switch main
-git pull
-git tag -a v2026.11.05 -m "Deploy: i18n y URLs /canal/@"
-git push origin v2026.11.05
-```
+Los PRs de release los crea `GITHUB_TOKEN`, y GitHub no ejecuta workflows con
+ese token. Por eso ese PR no pasa por **Validar PR** y se fusiona con permisos
+de administrador. Si se quiere que sí pase por CI, hay que crear un
+`RELEASE_PLEASE_TOKEN` (PAT con escritura en el repositorio); el workflow
+`.github/workflows/release.yml` lo usa automáticamente si existe.
 
-Las Releases de GitHub permiten generar notas automáticas con los PRs y commits
-incluidos.
+No se crean tags a mano: el tag y la release los genera release-please al
+fusionar su PR.
 
 ## 7. Correcciones urgentes
 
@@ -237,6 +243,8 @@ Además, en Settings → Actions → General:
 - **Fork pull request workflows**: exigir aprobación para todos los
   colaboradores externos.
 - **Workflow permissions**: solo lectura por defecto.
+- **Allow GitHub Actions to create and approve pull requests**: activado, para
+  que release-please pueda abrir su PR de release.
 
 ### Resultado
 
