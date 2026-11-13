@@ -63,7 +63,9 @@ Reglas concretas:
 - `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
 - Ningún archivo de `app` importa Prisma directamente: todo pasa por
   `features/*/queries.ts` o `lib/*`.
-- Hay módulos grandes que conviene dividir: `player-context.tsx`.
+- El reproductor se dividió en hooks (`use-progress-sync`,
+  `use-restore-session`, `use-player-persistence`, `use-sleep-countdown` y
+  `use-player-shortcuts`) más tipos, constantes y claves de almacenamiento.
 
 Mientras se migra, la regla práctica es:
 
