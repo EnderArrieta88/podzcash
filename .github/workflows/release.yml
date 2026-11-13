@@ -1,0 +1,32 @@
+name: Release
+
+# Agrupa los cambios de main en un PR de release. Al fusionarlo se crea el
+# tag vX.Y.Z y la GitHub Release con el CHANGELOG actualizado.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # RELEASE_PLEASE_TOKEN es un token con permisos de escritura (PAT o app)
+      # para que el PR de release dispare CI. Si no existe, se usa el token
+      # por defecto de GitHub Actions.
+      - uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
