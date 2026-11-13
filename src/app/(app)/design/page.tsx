@@ -10,12 +10,12 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { getLatestEpisodes } from "@/lib/catalog";
 import { formatDuration } from "@/lib/format";
 import { storage } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 import { episodePath } from "@/lib/routes";
+import { getFeaturedChannel } from "@/features/channels/queries";
 
 export const metadata: Metadata = { title: "Sistema de diseño" };
 
@@ -60,12 +60,7 @@ export default async function DesignPage() {
 
   const [episodes, channel] = await Promise.all([
     getLatestEpisodes(4),
-    prisma.channel.findFirst({
-      where: { episodes: { some: { status: "published" } } },
-      include: {
-        _count: { select: { episodes: { where: { status: "published" } } } },
-      },
-    }),
+    getFeaturedChannel(),
   ]);
 
   const featured = episodes[0];

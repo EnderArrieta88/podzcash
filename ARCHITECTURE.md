@@ -61,8 +61,8 @@ Reglas concretas:
   canal, episodio, estudio, reportes, exportación de cuenta y portada delegan en
   sus `queries.ts`.
 - `lib/auth` se mantiene como infraestructura de sesión, tokens y contraseñas.
-- Solo la página de diseño (`design`) consulta Prisma directamente; el resto de
-  `app` delega en `features/*/queries.ts` o `lib/*`.
+- Ningún archivo de `app` importa Prisma directamente: todo pasa por
+  `features/*/queries.ts` o `lib/*`.
 - Hay módulos grandes que conviene dividir: `player-context.tsx`,
   `analytics.ts` y `episode-form.tsx`.
 
