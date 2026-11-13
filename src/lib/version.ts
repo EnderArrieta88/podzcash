@@ -8,6 +8,6 @@ import pkg from "../../package.json";
 export const APP_VERSION = pkg.version;
 
 /**
- * Commit con el que se compiló el build. Se inyecta en el despliegue.
+ * Commit con el que se compiló el build. next.config lo inyecta al compilar.
  */
-export const APP_COMMIT = process.env.GIT_SHA?.slice(0, 7) ?? "dev";
+export const APP_COMMIT = process.env.APP_COMMIT || "dev";
