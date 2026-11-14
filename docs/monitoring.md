@@ -3,7 +3,8 @@
 El workflow **Monitor de producción** (`.github/workflows/healthcheck.yml`)
 comprueba cada 15 minutos:
 
-- `https://podzcash.online/api/health` responde y devuelve `ok: true`.
+- `https://podzcash.online/api/health` responde y devuelve `ok: true`, además
+  de la versión publicada y el commit del build.
 - La página de inicio responde correctamente.
 
 Si falla, el workflow queda en rojo. GitHub notifica al propietario según su
