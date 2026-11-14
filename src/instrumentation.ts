@@ -8,31 +8,6 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
-  try {
-    const { ensureFeedSchema } = await import("./lib/feed-migration");
-    ensureFeedSchema();
-  } catch (error) {
-    console.error("[instrumentation] No se pudo migrar el feed:", error);
-  }
-
-  try {
-    const { ensureCommentsSchema } = await import("./lib/comments-migration");
-    ensureCommentsSchema();
-  } catch (error) {
-    console.error(
-      "[instrumentation] No se pudo migrar los comentarios:",
-      error,
-    );
-  }
-
-  try {
-    const { ensurePlaybackProgressSchema } =
-      await import("./lib/progress-migration");
-    ensurePlaybackProgressSchema();
-  } catch (error) {
-    console.error(
-      "[instrumentation] No se pudo migrar el progreso de reproducción:",
-      error,
-    );
-  }
+  const { runSchemaMigrations } = await import("./lib/schema-migrations");
+  await runSchemaMigrations();
 }
