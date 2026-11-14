@@ -30,7 +30,7 @@ export async function generateMetadata({
 
   if (!data) return { title: content.notFound };
 
-  const { channel, image } = data;
+  const { channel } = data;
   const description =
     channel.bio ?? content.metaDescription(channel.displayName);
 
@@ -38,7 +38,7 @@ export async function generateMetadata({
     title: channel.displayName,
     description,
     path: channelPath(channel.handle),
-    image,
+    image: `${channelPath(channel.handle)}/og`,
     imageAlt: channel.displayName,
     locale,
   });

@@ -42,13 +42,13 @@ export async function generateMetadata({
 
   if (!data) return { title: content.notFound };
 
-  const { episode, channel, ogImage } = data;
+  const { episode, channel } = data;
 
   const social = socialMetadata({
     title: `${episode.title} · ${channel.displayName}`,
     description: episode.description,
     path: episodePath(channel.handle, episode.slug),
-    image: ogImage,
+    image: `${episodePath(channel.handle, episode.slug)}/og`,
     imageAlt: episode.title,
     locale,
     type: "article",
