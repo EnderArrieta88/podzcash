@@ -23,9 +23,17 @@ Si el secreto no existe, el workflow termina con un aviso y no genera backup.
 2. Copia `.media` (audio y portadas).
 3. Ejecuta `PRAGMA integrity_check` sobre la base.
 4. Empaqueta todo y lo cifra con AES-256 usando `BACKUP_PASSPHRASE`.
-5. Guarda el archivo `.tar.gz.gpg` como artefacto durante **7 días**.
+5. Descifra el artefacto y **lo restaura en un directorio temporal**.
+6. Ejecuta `PRAGMA integrity_check` sobre la base restaurada y comprueba que
+   existen usuarios, episodios y el directorio de medios.
+7. Guarda el archivo `.tar.gz.gpg` como artefacto durante **7 días**.
 
-## Restaurar
+Si cualquier paso falla, el workflow falla y GitHub envía la notificación
+habitual al mantenedor.
+
+## Restaurar en producción
+
+Tiempo estimado: 20–40 minutos, según el tamaño de `.media`.
 
 1. Descargar el artefacto desde **Actions → Backup de producción**.
 2. Descifrar:
@@ -36,10 +44,24 @@ Si el secreto no existe, el workflow termina con un aviso y no genera backup.
    ```bash
    tar -xzf backup.tar.gz
    ```
-4. Hacer un backup del estado actual del servidor antes de sobrescribir.
-5. Subir `prisma/dev.db` y `.media` al servidor por FTP.
-6. Reiniciar Passenger tocando `tmp/restart.txt`.
-7. Verificar `https://podzcash.online/api/health` y una página pública.
+4. Verificar antes de tocar producción:
+   ```bash
+   sqlite3 backup/prisma/dev.db "PRAGMA integrity_check;"
+   sqlite3 backup/prisma/dev.db 'SELECT count(*) FROM "User";'
+   ```
+5. Hacer un backup del estado actual del servidor antes de sobrescribir.
+6. Poner la app en mantenimiento desde cPanel si es posible.
+7. Subir `prisma/dev.db` y `.media` al servidor por FTP.
+8. Reiniciar Passenger tocando `tmp/restart.txt` o desde cPanel.
+9. Verificar `/api/health`, una página pública y un inicio de sesión.
+10. Documentar la restauración en el issue o en el historial de incidentes.
+
+## Escalado
+
+- Si `integrity_check` falla, probar el backup anterior.
+- Si faltan medios, restaurar solo `.media` y conservar la base actual.
+- Si el sitio no arranca, revisar `stderr.log` y el límite de procesos del
+  hosting antes de repetir el deploy.
 
 ## Limitaciones
 
@@ -50,3 +72,4 @@ Si el secreto no existe, el workflow termina con un aviso y no genera backup.
 - Un backup en GitHub Actions no sustituye una copia fuera de línea. Descargar
   periódicamente el artefacto y guardarlo en un almacenamiento cifrado.
 - Probar una restauración completa antes de considerar el backup verificado.
+  El workflow ya descifra, extrae y valida la base restaurada en cada ejecución.

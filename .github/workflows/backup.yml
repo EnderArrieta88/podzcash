@@ -84,7 +84,7 @@ jobs:
           rm backup.tar.gz
           ls -lh "$name"
 
-      - name: Verificar el backup cifrado
+      - name: Verificar el backup cifrado y la restauración
         if: steps.config.outputs.configured == 'true'
         env:
           BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
@@ -95,8 +95,22 @@ jobs:
             --batch --yes --passphrase-fd 0 \
             --decrypt "$file" > verify.tar.gz
           tar -tzf verify.tar.gz > /dev/null
-          rm verify.tar.gz
-          echo "backup descifrado y verificado: $file"
+
+          mkdir -p restore
+          tar -xzf verify.tar.gz -C restore
+          test -s restore/prisma/dev.db
+          test -d restore/media
+
+          result=$(sqlite3 restore/prisma/dev.db "PRAGMA integrity_check;")
+          echo "integrity_check restaurado: $result"
+          test "$result" = "ok"
+
+          users=$(sqlite3 restore/prisma/dev.db 'SELECT count(*) FROM "User";')
+          episodes=$(sqlite3 restore/prisma/dev.db 'SELECT count(*) FROM "Episode";')
+          echo "restauración: $users usuarios, $episodes episodios"
+
+          rm -rf restore verify.tar.gz
+          echo "backup descifrado y restauración verificada: $file"
 
       - name: Guardar backup cifrado
         if: steps.config.outputs.configured == 'true'
