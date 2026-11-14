@@ -157,7 +157,25 @@ Si algo falla, el PR no debe fusionarse. En local se puede reproducir con:
 ```powershell
 npm run check
 npm run build
+npm run e2e
 ```
+
+O todo junto con:
+
+```powershell
+npm run verify
+```
+
+### Hook de pre-commit
+
+Para ejecutar lint, formato y tipos antes de cada commit:
+
+```powershell
+npm run hooks:install
+```
+
+El hook omite los commits que solo tocan Markdown y se puede saltar con
+`git commit --no-verify`.
 
 ## 5. Fusionar
 
