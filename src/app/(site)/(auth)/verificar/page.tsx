@@ -113,7 +113,10 @@ export default async function VerifyPage({ searchParams }: PageProps) {
         </div>
 
         <p className="mt-5 text-center text-sm text-muted">
-          <Link href="/entrar" className="text-brand hover:underline">
+          <Link
+            href="/entrar"
+            className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+          >
             {content.backToLogin}
           </Link>
         </p>

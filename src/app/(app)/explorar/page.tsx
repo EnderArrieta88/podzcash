@@ -267,7 +267,11 @@ export default async function ExplorePage({
             <Panel
               title={content.panels.channels}
               action={
-                <Link href="/explorar" className="text-subtle hover:text-text">
+                <Link
+                  href="/explorar"
+                  aria-label={content.panels.channels}
+                  className="text-subtle hover:text-text"
+                >
                   <ArrowRight size={14} />
                 </Link>
               }

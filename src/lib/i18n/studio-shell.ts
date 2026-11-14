@@ -34,6 +34,19 @@ const es = {
     nextTitle: "Siguiente: subir tu primer audio",
     nextBody: "Tu canal ya está listo para recibir tu primer episodio.",
     edit: "Editar canal",
+    onboarding: {
+      title: "Primeros pasos",
+      intro: "Completa estos pasos para que tu canal despegue.",
+      channel: "Completa tu canal",
+      channelHint: "Avatar, bio y enlaces.",
+      episode: "Sube tu primer episodio",
+      episodeHint: "Audio y portada en el formulario.",
+      publish: "Publica el primer episodio",
+      publishHint: "Elige «Publicar» al guardar.",
+      feed: "Comparte tu feed",
+      feedHint: "Copia el enlace en Distribución.",
+      done: "Todo listo",
+    },
   },
 };
 
@@ -73,6 +86,19 @@ const en: StudioShellContent = {
     nextTitle: "Next: upload your first audio",
     nextBody: "Your channel is ready for your first episode.",
     edit: "Edit channel",
+    onboarding: {
+      title: "Getting started",
+      intro: "Complete these steps to get your channel going.",
+      channel: "Complete your channel",
+      channelHint: "Avatar, bio and links.",
+      episode: "Upload your first episode",
+      episodeHint: "Audio and cover in the form.",
+      publish: "Publish the first episode",
+      publishHint: "Choose “Publish” when saving.",
+      feed: "Share your feed",
+      feedHint: "Copy the link in Distribution.",
+      done: "All set",
+    },
   },
 };
 

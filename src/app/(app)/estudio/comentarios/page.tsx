@@ -155,7 +155,7 @@ export default async function StudioCommentsPage({
                     {content.on}{" "}
                     <Link
                       href={episodeHref}
-                      className="text-brand hover:underline"
+                      className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
                     >
                       {comment.episode.title}
                     </Link>

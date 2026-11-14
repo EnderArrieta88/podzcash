@@ -71,7 +71,7 @@ export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
         onClick={toggle}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={label}
+        aria-label={`${label}: ${current.label}`}
         className="inline-flex h-9 items-center gap-2 rounded-xl border border-border bg-surface px-2.5 text-xs text-muted transition-colors hover:border-border-strong hover:text-text"
       >
         <Languages size={14} className="text-brand" />

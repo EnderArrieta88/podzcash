@@ -265,7 +265,7 @@ export default async function AdminPage({
                       {target && (
                         <Link
                           href={episodePath(target.channel.handle, target.slug)}
-                          className="mt-1 inline-block text-xs text-brand hover:underline"
+                          className="mt-1 inline-block text-xs text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
                         >
                           {content.reports.view}
                         </Link>

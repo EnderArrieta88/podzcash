@@ -98,11 +98,17 @@ export function RegisterForm({
           />
           <span>
             {labels.termsPrefix}{" "}
-            <Link href="/terminos" className="text-brand hover:underline">
+            <Link
+              href="/terminos"
+              className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+            >
               {labels.termsLabel}
             </Link>{" "}
             {labels.termsJoin}{" "}
-            <Link href="/privacidad" className="text-brand hover:underline">
+            <Link
+              href="/privacidad"
+              className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+            >
               {labels.privacyLabel}
             </Link>
             .
@@ -132,7 +138,10 @@ export function RegisterForm({
 
       <p className="text-center text-sm text-muted">
         {labels.loginPrompt}{" "}
-        <Link href="/entrar" className="text-brand hover:underline">
+        <Link
+          href="/entrar"
+          className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+        >
           {labels.signIn}
         </Link>
       </p>

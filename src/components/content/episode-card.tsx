@@ -24,6 +24,7 @@ export function EpisodeCard({
       <div className="relative">
         <Link
           href={href}
+          aria-label={episode.title}
           className="block aspect-square overflow-hidden rounded-xl border border-border bg-surface-2"
         >
           {cover ? (
@@ -31,6 +32,8 @@ export function EpisodeCard({
             <img
               src={cover}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (

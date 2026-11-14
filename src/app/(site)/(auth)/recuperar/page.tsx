@@ -43,7 +43,7 @@ export default async function ResetRequestPage() {
             </p>
             <Link
               href="/entrar"
-              className="mt-4 inline-block text-sm text-brand hover:underline"
+              className="mt-4 inline-block text-sm text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
             >
               {content.backToLogin}
             </Link>

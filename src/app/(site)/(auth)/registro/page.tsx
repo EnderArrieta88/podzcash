@@ -55,7 +55,10 @@ export default async function RegisterPage({
       {!firstUser && (
         <p className="mt-4 text-center text-sm text-muted">
           {content.waitlistPrompt}{" "}
-          <Link href="/lista-de-espera" className="text-brand hover:underline">
+          <Link
+            href="/lista-de-espera"
+            className="text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+          >
             {content.waitlistLink}
           </Link>
         </p>

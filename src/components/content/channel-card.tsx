@@ -24,6 +24,8 @@ export function ChannelCard({
         <img
           src={storage.url(channel.avatarKey)}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="size-9 shrink-0 rounded-full border border-border object-cover"
         />
       ) : (

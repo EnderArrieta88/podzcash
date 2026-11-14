@@ -10,6 +10,13 @@ const es = {
     home: "Volver al inicio",
     signIn: "Entrar",
   },
+  error: {
+    title: "Algo salió mal",
+    body: "No pudimos cargar esta página. Intenta de nuevo o vuelve al inicio.",
+    retry: "Reintentar",
+    home: "Volver al inicio",
+  },
+  loading: "Cargando…",
   nav: {
     explore: "Explorar",
     how: "Cómo funciona",
@@ -46,6 +53,13 @@ const en: CommonContent = {
     home: "Back to home",
     signIn: "Sign in",
   },
+  error: {
+    title: "Something went wrong",
+    body: "We could not load this page. Try again or go back home.",
+    retry: "Try again",
+    home: "Back to home",
+  },
+  loading: "Loading…",
   nav: {
     explore: "Explore",
     how: "How it works",

@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$staged" ]; then
+  exit 0
+fi
+
+# Un cambio solo de documentación no necesita lint, formato ni tipos.
+if ! printf '%s\n' "$staged" | grep -qvE '\.md$'; then
+  exit 0
+fi
+
+npm run lint
+npm run format:check
+npm run typecheck

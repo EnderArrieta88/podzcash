@@ -6,7 +6,10 @@ import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { env } from "@/lib/env";
 
-const MEDIA_ROOT = path.resolve(process.cwd(), env.MEDIA_ROOT);
+const MEDIA_ROOT = path.resolve(
+  /* turbopackIgnore: true */ process.cwd(),
+  env.MEDIA_ROOT,
+);
 
 export { contentTypeFor } from "@/lib/media-types";
 
@@ -16,7 +19,10 @@ export { contentTypeFor } from "@/lib/media-types";
  */
 export function resolveMediaPath(relativePath: string): string {
   const normalized = relativePath.replaceAll("\\", "/");
-  const absolute = path.resolve(MEDIA_ROOT, normalized);
+  const absolute = path.resolve(
+    /* turbopackIgnore: true */ MEDIA_ROOT,
+    normalized,
+  );
 
   if (absolute !== MEDIA_ROOT && !absolute.startsWith(MEDIA_ROOT + path.sep)) {
     throw new Error("Ruta fuera de MEDIA_ROOT");

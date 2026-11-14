@@ -76,7 +76,7 @@ export function LinksEditor({
         <button
           type="button"
           onClick={() => setLinks((current) => [...current, { ...EMPTY }])}
-          className="inline-flex items-center gap-1.5 text-sm text-brand hover:underline"
+          className="inline-flex items-center gap-1.5 text-sm text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
         >
           <Plus size={14} /> {labels.addLink}
         </button>
