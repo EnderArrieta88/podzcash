@@ -16,10 +16,10 @@ export async function getEpisodeOgData(handle: string, slug: string) {
 
   const episode = await prisma.episode.findUnique({
     where: { channelId_slug: { channelId: channel.id, slug } },
-    select: { title: true },
+    select: { title: true, status: true },
   });
 
-  if (!episode) return null;
+  if (!episode || episode.status !== "published") return null;
 
   return { channel, episode };
 }

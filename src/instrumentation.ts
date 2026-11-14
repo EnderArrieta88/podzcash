@@ -8,6 +8,13 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
-  const { runSchemaMigrations } = await import("./lib/schema-migrations");
-  await runSchemaMigrations();
+  try {
+    const { runSchemaMigrations } = await import("./lib/schema-migrations");
+    await runSchemaMigrations();
+  } catch (error) {
+    console.error(
+      "[instrumentation] No se pudieron ejecutar las migraciones:",
+      error,
+    );
+  }
 }
