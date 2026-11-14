@@ -12,6 +12,7 @@ const publicPages = [
     path: "/canal/@e2e-canal/episodio-de-prueba-e2e",
     name: "episodio",
   },
+  { path: "/canal/@e2e-canal/donar", name: "donar" },
   { path: "/entrar", name: "entrar" },
 ];
 

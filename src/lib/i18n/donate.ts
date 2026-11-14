@@ -36,6 +36,7 @@ const es = {
     optional: "(opcional)",
     other: "Otro",
     amountAria: "Monto en ZEC",
+    amountInvalid: "Ingresa un monto mayor que 0 y menor que 1.000.000.",
     memoLabel: "Mensaje en el memo",
     memoPlaceholder: "Gracias por el episodio",
     memoHint:
@@ -86,6 +87,7 @@ const en: DonateContent = {
     optional: "(optional)",
     other: "Other",
     amountAria: "Amount in ZEC",
+    amountInvalid: "Enter an amount greater than 0 and less than 1,000,000.",
     memoLabel: "Memo message",
     memoPlaceholder: "Thanks for the episode",
     memoHint:

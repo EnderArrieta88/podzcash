@@ -24,8 +24,13 @@ export function DonationBox({
   const [copied, setCopied] = useState<"address" | "uri" | null>(null);
 
   const parsedAmount = Number.parseFloat(amount.replace(",", "."));
+  const amountInvalid =
+    amount.trim() !== "" &&
+    (!Number.isFinite(parsedAmount) ||
+      parsedAmount <= 0 ||
+      parsedAmount > 1_000_000);
   const amountValue =
-    Number.isFinite(parsedAmount) && parsedAmount > 0
+    !amountInvalid && Number.isFinite(parsedAmount) && parsedAmount > 0
       ? parsedAmount
       : undefined;
 
@@ -67,6 +72,9 @@ export function DonationBox({
 
   return (
     <div className="grid gap-6 rounded-2xl border border-border bg-surface p-5 sm:grid-cols-[auto_1fr] sm:p-6">
+      <span aria-live="polite" className="sr-only">
+        {copied ? labels.copied : ""}
+      </span>
       <div className="mx-auto sm:mx-0">
         <div className="flex size-56 items-center justify-center overflow-hidden rounded-xl bg-[#f5f1e8] p-2">
           {qr ? (
@@ -152,13 +160,29 @@ export function DonationBox({
                 onChange={(event) => setAmount(event.target.value)}
                 placeholder={labels.other}
                 aria-label={labels.amountAria}
-                className="h-9 w-24 rounded-lg border border-border bg-surface-2 px-3 pr-9 font-mono text-xs tabular text-text placeholder:text-subtle outline-none focus:border-brand"
+                aria-invalid={amountInvalid || undefined}
+                aria-describedby={
+                  amountInvalid ? "donation-amount-error" : undefined
+                }
+                className={cn(
+                  "h-9 w-24 rounded-lg border border-border bg-surface-2 px-3 pr-9 font-mono text-xs tabular text-text placeholder:text-subtle outline-none focus:border-brand",
+                  amountInvalid && "border-danger focus:border-danger",
+                )}
               />
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-subtle">
                 ZEC
               </span>
             </div>
           </div>
+
+          {amountInvalid && (
+            <p
+              id="donation-amount-error"
+              className="mt-1.5 text-xs text-danger"
+            >
+              {labels.amountInvalid}
+            </p>
+          )}
         </div>
 
         <div>
