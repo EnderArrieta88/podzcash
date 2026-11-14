@@ -33,6 +33,7 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 - Panel de creador, invitaciones, moderación, reportes y administración.
 - Analítica agregada de descargas, reproducciones y retención, sin cookies.
 - Aplicación instalable (PWA) con descargas para escuchar sin conexión.
+- Imágenes sociales y metadatos propios por canal y episodio.
 - Interfaz bilingüe ES/EN con selector por cookie.
 
 ## Stack actual
@@ -254,6 +255,13 @@ hosting puede terminar las instancias huérfanas y decir cuántas había.
   [docs/reproductor.md](docs/reproductor.md).
 - **Push:** notificaciones de lista de espera y suscripciones. Ver
   [docs/push.md](docs/push.md).
+- **Rendimiento:** línea base, presupuesto y cómo medir. Ver
+  [docs/performance.md](docs/performance.md).
+- **SEO:** metadatos, imágenes OG, sitemap y JSON-LD. Ver
+  [docs/seo.md](docs/seo.md).
+- **Migraciones:** esquema, puentes e inventario. Ver
+  [docs/migraciones.md](docs/migraciones.md).
+- **Decisiones:** registro de ADRs. Ver [docs/adr/README.md](docs/adr/README.md).
 - **Staging:** pendiente de un segundo hosting/base de datos.
 
 ## Seguridad

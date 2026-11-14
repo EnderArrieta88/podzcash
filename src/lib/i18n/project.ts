@@ -170,6 +170,10 @@ const es = {
             label: "Analíticas",
             text: "reproducciones, retención, país, dispositivo, app y CSV",
           },
+          {
+            label: "Accesibilidad",
+            text: "contraste, navegación por teclado, estados claros y pruebas axe",
+          },
         ],
       },
       {
@@ -198,6 +202,14 @@ const es = {
           {
             label: "Lista de espera",
             text: "solicitudes con aviso por email y push en el teléfono",
+          },
+          {
+            label: "Versiones y operación",
+            text: "releases con changelog, health con versión y backups con restauración verificada",
+          },
+          {
+            label: "Compartir y SEO",
+            text: "imágenes OG por canal y episodio, sitemap, canonical y JSON-LD",
           },
         ],
       },
@@ -682,6 +694,10 @@ const en: ProjectContent = {
             label: "Analytics",
             text: "plays, retention, country, device, app and CSV",
           },
+          {
+            label: "Accessibility",
+            text: "contrast, keyboard navigation, clear states and axe tests",
+          },
         ],
       },
       {
@@ -710,6 +726,14 @@ const en: ProjectContent = {
           {
             label: "Waitlist",
             text: "requests with email alerts and push notifications on the phone",
+          },
+          {
+            label: "Versions and operations",
+            text: "releases with changelog, health with version, and backups with verified restore",
+          },
+          {
+            label: "Sharing and SEO",
+            text: "OG images per channel and episode, sitemap, canonical and JSON-LD",
           },
         ],
       },
