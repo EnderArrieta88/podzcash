@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Mic2, Radio } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Circle, Mic2, Radio } from "lucide-react";
 import { requireUser } from "@/lib/auth/guards";
 import { ButtonLink } from "@/components/ui/button-link";
 import { getLocale } from "@/lib/i18n/locale";
@@ -48,8 +48,37 @@ export default async function StudioPage() {
   }
 
   const channel = user.channel;
-  const { episodes, plays, links, avatarUrl } =
+  const { episodes, publishedEpisodes, plays, links, avatarUrl } =
     await getStudioDashboard(channel);
+
+  const onboarding = content.onboarding;
+  const steps = [
+    {
+      done: Boolean(channel.avatarKey && channel.bio),
+      title: onboarding.channel,
+      hint: onboarding.channelHint,
+      href: "/estudio/canal",
+    },
+    {
+      done: episodes > 0,
+      title: onboarding.episode,
+      hint: onboarding.episodeHint,
+      href: "/estudio/episodios/nuevo",
+    },
+    {
+      done: publishedEpisodes > 0,
+      title: onboarding.publish,
+      hint: onboarding.publishHint,
+      href: "/estudio/episodios",
+    },
+    {
+      done: publishedEpisodes > 0,
+      title: onboarding.feed,
+      hint: onboarding.feedHint,
+      href: "/estudio/distribucion",
+    },
+  ];
+  const onboardingDone = steps.every((step) => step.done);
 
   return (
     <div className="space-y-6">
@@ -98,6 +127,47 @@ export default async function StudioPage() {
           </div>
         </div>
       </div>
+
+      {!onboardingDone && (
+        <section className="rounded-xl border border-brand/25 bg-brand-soft/30 p-5">
+          <h2 className="font-heading text-sm font-semibold">
+            {onboarding.title}
+          </h2>
+          <p className="mt-1 text-xs text-muted">{onboarding.intro}</p>
+
+          <ul className="mt-4 space-y-2">
+            {steps.map((step) => (
+              <li key={step.title}>
+                <Link
+                  href={step.href}
+                  className="flex items-start gap-2.5 rounded-lg px-1 py-1 text-sm transition-colors hover:bg-surface-2/60"
+                >
+                  {step.done ? (
+                    <CheckCircle2
+                      size={16}
+                      className="mt-0.5 shrink-0 text-jade"
+                    />
+                  ) : (
+                    <Circle size={16} className="mt-0.5 shrink-0 text-subtle" />
+                  )}
+                  <span className="min-w-0">
+                    <span
+                      className={
+                        step.done ? "text-muted line-through" : "text-text"
+                      }
+                    >
+                      {step.title}
+                    </span>
+                    <span className="block text-xs text-subtle">
+                      {step.hint}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-surface p-5">

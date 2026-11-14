@@ -102,8 +102,11 @@ export async function getLatestChannelEpisode(channelId: string) {
  * derivados del canal (avatar y enlaces).
  */
 export async function getStudioDashboard(channel: StudioChannel) {
-  const [episodes, playSum] = await Promise.all([
+  const [episodes, publishedEpisodes, playSum] = await Promise.all([
     prisma.episode.count({ where: { channelId: channel.id } }),
+    prisma.episode.count({
+      where: { channelId: channel.id, status: "published" },
+    }),
     prisma.episode.aggregate({
       where: { channelId: channel.id },
       _sum: { playCount: true },
@@ -112,6 +115,7 @@ export async function getStudioDashboard(channel: StudioChannel) {
 
   return {
     episodes,
+    publishedEpisodes,
     plays: playSum._sum.playCount ?? 0,
     links: parseLinks(channel.links),
     avatarUrl: channel.avatarKey ? storage.url(channel.avatarKey) : null,

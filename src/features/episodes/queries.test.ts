@@ -149,7 +149,7 @@ describe("episodes queries", () => {
   });
 
   it("suma reproducciones del panel del estudio", async () => {
-    db.episode.count.mockResolvedValueOnce(5);
+    db.episode.count.mockResolvedValueOnce(5).mockResolvedValueOnce(3);
     db.episode.aggregate.mockResolvedValueOnce({ _sum: { playCount: 42 } });
 
     await expect(
@@ -160,6 +160,7 @@ describe("episodes queries", () => {
       }),
     ).resolves.toEqual({
       episodes: 5,
+      publishedEpisodes: 3,
       plays: 42,
       links: [],
       avatarUrl: "/media/avatars/canal.jpg",
