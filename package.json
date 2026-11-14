@@ -1,6 +1,6 @@
 {
   "name": "podzcash",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "Plataforma de podcasts y música con donaciones directas en ZEC.",
   "license": "MIT",
