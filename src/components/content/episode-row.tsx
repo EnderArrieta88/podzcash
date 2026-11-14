@@ -32,7 +32,13 @@ export function EpisodeRow({
       <div className="size-11 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2">
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={cover} alt="" className="size-full object-cover" />
+          <img
+            src={cover}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover"
+          />
         ) : (
           <span className="flex size-full items-center justify-center text-subtle">
             <Mic2 size={16} />

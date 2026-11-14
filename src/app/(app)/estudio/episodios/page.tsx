@@ -77,6 +77,8 @@ export default async function EpisodesPage() {
                         <img
                           src={episode.coverUrl}
                           alt=""
+                          loading="lazy"
+                          decoding="async"
                           className="size-full object-cover"
                         />
                       ) : (

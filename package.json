@@ -22,6 +22,7 @@
     "e2e": "playwright test",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm run test",
     "verify": "npm run check && npm run build && npm run e2e",
+    "perf": "node scripts/perf-report.mjs",
     "hooks:install": "git config core.hooksPath .githooks"
   },
   "dependencies": {
