@@ -83,6 +83,42 @@ export const inviteEmailContent: Record<Locale, EmailCopy> = {
   en: inviteEn,
 };
 
+export type AddressChangedEmailCopy = {
+  subject: string;
+  intro: (channel: string) => string;
+  previous: string;
+  next: string;
+  none: string;
+  warning: string;
+  footer: string;
+};
+
+export const addressChangedEmailContent: Record<
+  Locale,
+  AddressChangedEmailCopy
+> = {
+  es: {
+    subject: "Cambió la dirección Zcash de tu canal",
+    intro: (channel) => `La dirección Zcash de ${channel} cambió.`,
+    previous: "Dirección anterior",
+    next: "Dirección nueva",
+    none: "Sin dirección",
+    warning:
+      "Si no hiciste este cambio, cambia tu contraseña de inmediato y revisa el acceso a tu cuenta.",
+    footer: "PodZcash · Audio para Zcash",
+  },
+  en: {
+    subject: "Your channel's Zcash address changed",
+    intro: (channel) => `The Zcash address for ${channel} changed.`,
+    previous: "Previous address",
+    next: "New address",
+    none: "No address",
+    warning:
+      "If you did not make this change, reset your password immediately and review access to your account.",
+    footer: "PodZcash · Audio for Zcash",
+  },
+};
+
 export type CommentEmailCopy = {
   subject: (episode: string) => string;
   intro: (author: string, episode: string) => string;

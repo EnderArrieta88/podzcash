@@ -26,6 +26,7 @@
     "hooks:install": "git config core.hooksPath .githooks"
   },
   "dependencies": {
+    "@noble/hashes": "^2.4.0",
     "@prisma/adapter-better-sqlite3": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "clsx": "^2.1.1",

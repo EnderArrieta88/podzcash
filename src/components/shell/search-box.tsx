@@ -16,7 +16,6 @@ function isApplePlatform() {
  * cuando el buscador superior se oculta en /explorar.
  */
 export function SearchShortcut() {
-  const pathname = usePathname();
   const isApple = useSyncExternalStore(
     subscribeToPlatform,
     isApplePlatform,
@@ -28,11 +27,16 @@ export function SearchShortcut() {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
 
-        const selector =
-          pathname === "/explorar"
-            ? "[data-search-primary]"
-            : "[data-global-search]";
-        const target = document.querySelector<HTMLInputElement>(selector);
+        const candidates = Array.from(
+          document.querySelectorAll<HTMLInputElement>(
+            "[data-search-primary], [data-global-search]",
+          ),
+        );
+        const target =
+          candidates.find(
+            (input) =>
+              !input.closest("[hidden]") && input.getClientRects().length > 0,
+          ) ?? candidates[0];
 
         target?.focus();
         target?.select();
@@ -53,8 +57,10 @@ export function SearchShortcut() {
 
     window.addEventListener("keydown", onKeyDown);
 
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [pathname]);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
 
   return (
     <span

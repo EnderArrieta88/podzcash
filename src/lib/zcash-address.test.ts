@@ -1,8 +1,74 @@
 import { describe, expect, it } from "vitest";
 import { validateZcashAddress } from "./zcash-address";
 import { addressMessages } from "./i18n/address";
+import { f4Jumble } from "./f4jumble";
 
 const es = addressMessages.es;
+
+const CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+const BECH32M_CONST = 0x2bc830a3;
+
+function polymod(values: number[]): number {
+  const generators = [
+    0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3,
+  ];
+  let checksum = 1;
+
+  for (const value of values) {
+    const top = checksum >> 25;
+    checksum = ((checksum & 0x1ffffff) << 5) ^ value;
+
+    for (let index = 0; index < 5; index += 1) {
+      if ((top >> index) & 1) checksum ^= generators[index];
+    }
+  }
+
+  return checksum;
+}
+
+function hrpExpand(hrp: string): number[] {
+  const high = [...hrp].map((char) => char.charCodeAt(0) >> 5);
+  const low = [...hrp].map((char) => char.charCodeAt(0) & 31);
+  return [...high, 0, ...low];
+}
+
+function toWords(bytes: Uint8Array): number[] {
+  let accumulator = 0;
+  let bits = 0;
+  const result: number[] = [];
+
+  for (const byte of bytes) {
+    accumulator = (accumulator << 8) | byte;
+    bits += 8;
+
+    while (bits >= 5) {
+      bits -= 5;
+      result.push((accumulator >> bits) & 31);
+    }
+  }
+
+  if (bits > 0) result.push((accumulator << (5 - bits)) & 31);
+  return result;
+}
+
+function encodeUnified(raw: Uint8Array): string {
+  const padding = new Uint8Array(16);
+  padding.set(new TextEncoder().encode("u"));
+
+  const jumbled = f4Jumble(Uint8Array.from([...raw, ...padding]));
+  const words = toWords(jumbled);
+  const values = [...hrpExpand("u"), ...words, 0, 0, 0, 0, 0, 0];
+  const check = polymod(values) ^ BECH32M_CONST;
+  const checksum = [0, 1, 2, 3, 4, 5].map(
+    (index) => (check >> (5 * (5 - index))) & 31,
+  );
+
+  return `u1${[...words, ...checksum].map((word) => CHARSET[word]).join("")}`;
+}
+
+function item(typecode: number, length: number): Uint8Array {
+  return Uint8Array.from([typecode, length, ...new Uint8Array(length)]);
+}
 
 const UNIFIED =
   "u1xfe95y0lw3eznadwvv5k4f26xq0h5ppucyeucmnzuff2r8l2jmg7v5pqlvnvkl645ucpejjvsgg8rh2zpw9f055cp0zpl7w8hqt6pwsy";
@@ -22,6 +88,38 @@ describe("validateZcashAddress", () => {
       ok: true,
       kind: "unified",
       address: UNIFIED,
+    });
+  });
+
+  it("rechaza una unificada que solo contiene un receptor transparente", () => {
+    const address = encodeUnified(item(0x00, 20));
+
+    expect(validateZcashAddress(address)).toEqual({
+      ok: false,
+      error: es.unified,
+    });
+  });
+
+  it("acepta una unificada con receptor transparente y shielded", () => {
+    const address = encodeUnified(
+      Uint8Array.from([...item(0x00, 20), ...item(0x02, 43)]),
+    );
+
+    expect(validateZcashAddress(address)).toEqual({
+      ok: true,
+      kind: "unified",
+      address,
+    });
+  });
+
+  it("rechaza una unificada con typecodes duplicados", () => {
+    const address = encodeUnified(
+      Uint8Array.from([...item(0x02, 43), ...item(0x02, 43)]),
+    );
+
+    expect(validateZcashAddress(address)).toEqual({
+      ok: false,
+      error: es.unified,
     });
   });
 

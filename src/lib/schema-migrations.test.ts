@@ -66,7 +66,11 @@ describe("runSchemaMigrations", () => {
       .get() as { episodeNumber: number | null };
 
     expect(tableNames).toEqual(
-      expect.arrayContaining(["EpisodeComment", "PlaybackProgress"]),
+      expect.arrayContaining([
+        "EpisodeComment",
+        "PlaybackProgress",
+        "ChannelAddressChange",
+      ]),
     );
     expect(channelColumns).toEqual(
       expect.arrayContaining([

@@ -55,6 +55,24 @@ export async function getChannelPageData(handle: string) {
 }
 
 /**
+ * Historial reciente de cambios de la dirección ZEC de un canal.
+ */
+export async function listAddressChanges(channelId: string, limit = 10) {
+  return prisma.channelAddressChange.findMany({
+    where: { channelId },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      previousAddress: true,
+      newAddress: true,
+      ip: true,
+      createdAt: true,
+    },
+  });
+}
+
+/**
  * Canal y avatar para la página de donaciones.
  */
 export async function getChannelDonationData(handle: string) {

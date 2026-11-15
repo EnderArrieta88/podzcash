@@ -33,6 +33,14 @@ export async function runSchemaMigrations(): Promise<void> {
         ensurePlaybackProgressSchema();
       },
     },
+    {
+      name: "address-changes",
+      run: async () => {
+        const { ensureAddressChangeSchema } =
+          await import("./address-change-migration");
+        ensureAddressChangeSchema();
+      },
+    },
   ];
 
   for (const step of steps) {

@@ -3,7 +3,8 @@ import { expect, test } from "@playwright/test";
 test("Ctrl+K o Cmd+K enfoca el buscador de Explorar", async ({ page }) => {
   await page.goto("/explorar");
 
-  const search = page.locator("[data-search-primary]");
+  const search = page.locator("[data-search-primary]:visible");
+  await expect(search).toBeVisible();
   await page.keyboard.press("Control+K");
   await expect(search).toBeFocused();
 
@@ -19,6 +20,7 @@ test("Ctrl+K o Cmd+K enfoca el buscador global fuera de Explorar", async ({
   await page.goto("/canal/@e2e-canal");
 
   const search = page.locator("[data-global-search]");
+  await expect(search).toBeVisible();
   await page.keyboard.press("Control+K");
   await expect(search).toBeFocused();
 });

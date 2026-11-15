@@ -62,6 +62,10 @@ export function ChannelForm({ channel, links, labels }: ChannelFormProps) {
     setValues((current) => ({ ...current, [field]: value }));
   }
 
+  const addressChanged =
+    Boolean(channel) &&
+    values.zcashAddress.trim() !== (channel?.zcashAddress ?? "");
+
   return (
     <form action={action} className="space-y-6">
       {state?.ok && (
@@ -180,6 +184,20 @@ export function ChannelForm({ channel, links, labels }: ChannelFormProps) {
         />
         <FieldError>{state?.fields?.zcashAddress}</FieldError>
         <FieldHint>{labels.zcashHint}</FieldHint>
+
+        {addressChanged && (
+          <div className="mt-4 rounded-lg border border-brand/25 bg-brand-soft/20 p-3">
+            <Label htmlFor="currentPassword">{labels.currentPassword}</Label>
+            <Input
+              id="currentPassword"
+              name="currentPassword"
+              type="password"
+              autoComplete="current-password"
+            />
+            <FieldError>{state?.fields?.currentPassword}</FieldError>
+            <FieldHint>{labels.currentPasswordHint}</FieldHint>
+          </div>
+        )}
       </div>
 
       <div className="rounded-xl border border-border bg-surface-2/60 p-4">
