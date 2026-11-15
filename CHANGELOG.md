@@ -5,6 +5,13 @@ Todos los cambios relevantes de PodZcash se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y el proyecto usa [versionado semántico](https://semver.org/lang/es/).
 
+## [0.2.3](https://github.com/EnderArrieta88/podzcash/compare/v0.2.2...v0.2.3) (2026-11-15)
+
+
+### Dependencias
+
+* bump the minor-and-patch group across 1 directory with 2 updates ([#197](https://github.com/EnderArrieta88/podzcash/issues/197)) ([82e44fe](https://github.com/EnderArrieta88/podzcash/commit/82e44fefdaac0e83baf19db3e17ede06d6a827d5))
+
 ## [0.2.2](https://github.com/EnderArrieta88/podzcash/compare/v0.2.1...v0.2.2) (2026-11-15)
 
 
