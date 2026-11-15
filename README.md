@@ -157,15 +157,7 @@ fondos**: solo genera un QR y un enlace ZIP-321.
 
 ## Versiones
 
-PodZcash usa [versionado semántico](https://semver.org/lang/es/). Cada release
-se etiqueta como `vX.Y.Z`, se publica en
-[GitHub Releases](https://github.com/EnderArrieta88/podzcash/releases) y queda
-registrado en [CHANGELOG.md](CHANGELOG.md).
-
-El flujo lo automatiza
-[release-please](https://github.com/googleapis/release-please) a partir de los
-títulos de PR en Conventional Commits. Los detalles están en
-[CONTRIBUTING.md](CONTRIBUTING.md).
+Consulta el historial de versiones en [CHANGELOG.md](CHANGELOG.md).
 
 ## Flujo de trabajo
 
