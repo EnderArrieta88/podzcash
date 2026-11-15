@@ -12,6 +12,9 @@ const es = {
   episodeNotFound: "Ese episodio no existe.",
   audioRequired: "Sube un archivo de audio antes de guardar.",
   episodeSaveFailed: "No se pudo guardar el episodio. Inténtalo otra vez.",
+  currentPasswordRequired:
+    "Escribe tu contraseña actual para cambiar la dirección Zcash.",
+  currentPasswordIncorrect: "La contraseña no es correcta.",
 };
 
 type StudioErrors = typeof es;
@@ -28,6 +31,9 @@ const en: StudioErrors = {
   episodeNotFound: "That episode does not exist.",
   audioRequired: "Upload an audio file before saving.",
   episodeSaveFailed: "Could not save the episode. Try again.",
+  currentPasswordRequired:
+    "Enter your current password to change the Zcash address.",
+  currentPasswordIncorrect: "The password is not correct.",
 };
 
 export const studioErrors: Record<Locale, StudioErrors> = { es, en };

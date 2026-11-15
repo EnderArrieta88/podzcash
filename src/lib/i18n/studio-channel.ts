@@ -29,6 +29,9 @@ const es = {
     zcashPlaceholder: "u1… · zs1… · t1… · t3…",
     zcashHint:
       "Activa las donaciones de tu canal. Solo aceptamos direcciones protegidas: unificada (u1…) o Sapling (zs1…). Validamos el checksum al guardar y rechazamos las transparentes (t1, t3).",
+    currentPassword: "Contraseña actual",
+    currentPasswordHint:
+      "La pedimos para confirmar un cambio en la dirección de donaciones.",
     save: "Guardar cambios",
     create: "Crear canal",
     saving: "Guardando…",
@@ -61,6 +64,16 @@ const es = {
     newFeedUrl: "URL nueva del feed",
     newFeedUrlHint:
       "Opcional. Solo para migrar el feed; Apple redirige a los suscriptores.",
+  },
+  history: {
+    title: "Historial de dirección Zcash",
+    intro: "Los últimos cambios de la dirección de donaciones.",
+    empty: "Todavía no hay cambios registrados.",
+    previous: "Anterior",
+    next: "Nueva",
+    none: "Sin dirección",
+    date: "Fecha",
+    ip: "IP",
   },
 };
 
@@ -96,6 +109,9 @@ const en: ChannelSettingsContent = {
     zcashPlaceholder: "u1… · zs1… · t1… · t3…",
     zcashHint:
       "Enables donations for your channel. We only accept shielded addresses: unified (u1…) or Sapling (zs1…). We validate the checksum on save and reject transparent addresses (t1, t3).",
+    currentPassword: "Current password",
+    currentPasswordHint:
+      "We ask for it to confirm a change in the donation address.",
     save: "Save changes",
     create: "Create channel",
     saving: "Saving…",
@@ -128,6 +144,16 @@ const en: ChannelSettingsContent = {
     newFeedUrl: "New feed URL",
     newFeedUrlHint:
       "Optional. Only for feed migrations; Apple redirects subscribers.",
+  },
+  history: {
+    title: "Zcash address history",
+    intro: "The latest changes to the donation address.",
+    empty: "No changes recorded yet.",
+    previous: "Previous",
+    next: "New",
+    none: "No address",
+    date: "Date",
+    ip: "IP",
   },
 };
 

@@ -3,7 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { Check, Copy, ExternalLink, ShieldCheck } from "lucide-react";
-import { AMOUNT_PRESETS, buildPaymentUri } from "@/lib/zip321";
+import {
+  AMOUNT_PRESETS,
+  buildPaymentUri,
+  MAX_MEMO_BYTES,
+  memoByteLength,
+} from "@/lib/zip321";
 import { cn } from "@/lib/utils";
 import type { DonationBoxLabels } from "@/lib/i18n/donate";
 
@@ -33,13 +38,20 @@ export function DonationBox({
     !amountInvalid && Number.isFinite(parsedAmount) && parsedAmount > 0
       ? parsedAmount
       : undefined;
+  const memoBytes = memoByteLength(memo);
+  const memoInvalid = memoBytes > MAX_MEMO_BYTES;
 
   const uri = useMemo(
-    () => buildPaymentUri({ address, amount: amountValue, memo }),
-    [address, amountValue, memo],
+    () =>
+      memoInvalid
+        ? null
+        : buildPaymentUri({ address, amount: amountValue, memo }),
+    [address, amountValue, memo, memoInvalid],
   );
 
   useEffect(() => {
+    if (!uri) return;
+
     let cancelled = false;
 
     QRCode.toDataURL(uri, {
@@ -77,7 +89,7 @@ export function DonationBox({
       </span>
       <div className="mx-auto sm:mx-0">
         <div className="flex size-56 items-center justify-center overflow-hidden rounded-xl bg-[#f5f1e8] p-2">
-          {qr ? (
+          {uri && qr ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={qr}
@@ -85,7 +97,9 @@ export function DonationBox({
               className="size-full"
             />
           ) : (
-            <span className="text-xs text-[#6b655f]">{labels.generating}</span>
+            <span className="text-xs text-[#6b655f]">
+              {uri ? labels.generating : labels.qrInvalid}
+            </span>
           )}
         </div>
         <p className="mt-2 text-center font-mono text-[11px] text-subtle">
@@ -199,26 +213,57 @@ export function DonationBox({
             id="donation-memo"
             value={memo}
             onChange={(event) => setMemo(event.target.value)}
-            maxLength={200}
+            maxLength={2000}
             placeholder={labels.memoPlaceholder}
-            className="mt-2 h-10 w-full rounded-xl border border-border bg-surface-2 px-3 text-sm text-text placeholder:text-subtle outline-none focus:border-brand focus:ring-4 focus:ring-brand/15"
+            aria-invalid={memoInvalid || undefined}
+            aria-describedby={memoInvalid ? "donation-memo-error" : undefined}
+            className={cn(
+              "mt-2 h-10 w-full rounded-xl border border-border bg-surface-2 px-3 text-sm text-text placeholder:text-subtle outline-none focus:border-brand focus:ring-4 focus:ring-brand/15",
+              memoInvalid && "border-danger focus:border-danger",
+            )}
           />
-          <p className="mt-1.5 text-xs text-subtle">{labels.memoHint}</p>
+          <div className="mt-1.5 flex items-start justify-between gap-3">
+            <p className="text-xs text-subtle">{labels.memoHint}</p>
+            <span
+              className={cn(
+                "shrink-0 font-mono text-[10px] tabular",
+                memoInvalid ? "text-danger" : "text-subtle",
+              )}
+            >
+              {labels.memoCounter(memoBytes)}
+            </span>
+          </div>
+          {memoInvalid && (
+            <p id="donation-memo-error" className="mt-1 text-xs text-danger">
+              {labels.memoTooLong}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
-          <a
-            href={uri}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
-          >
-            {labels.openWallet}
-            <ExternalLink size={14} />
-          </a>
+          {uri ? (
+            <a
+              href={uri}
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
+            >
+              {labels.openWallet}
+              <ExternalLink size={14} />
+            </a>
+          ) : (
+            <span
+              aria-disabled="true"
+              className="inline-flex h-10 cursor-not-allowed items-center gap-2 rounded-xl bg-brand/40 px-5 text-sm font-semibold text-[#17130a]/60"
+            >
+              {labels.openWallet}
+              <ExternalLink size={14} />
+            </span>
+          )}
 
           <button
             type="button"
-            onClick={() => copy(uri, "uri")}
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-surface-2 px-4 text-sm transition-colors hover:bg-surface-3"
+            disabled={!uri}
+            onClick={() => uri && copy(uri, "uri")}
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-surface-2 px-4 text-sm transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {copied === "uri" ? (
               <Check size={14} className="text-jade" />

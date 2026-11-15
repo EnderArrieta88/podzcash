@@ -3,8 +3,11 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
+import { verifyPassword } from "@/lib/auth/password";
+import { sendAddressChangedEmail } from "@/lib/email";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioErrors } from "@/lib/i18n/studio-errors";
 import { channelSchema } from "./schemas";
@@ -63,6 +66,22 @@ export async function saveChannelAction(
     }
 
     zcashAddress = address.address;
+  }
+
+  const currentAddress = user.channel?.zcashAddress ?? null;
+  const addressChanged =
+    Boolean(user.channel) && zcashAddress !== currentAddress;
+
+  if (addressChanged) {
+    const currentPassword = String(formData.get("currentPassword") ?? "");
+
+    if (!currentPassword) {
+      return { fields: { currentPassword: errors.currentPasswordRequired } };
+    }
+
+    if (!(await verifyPassword(currentPassword, user.passwordHash))) {
+      return { fields: { currentPassword: errors.currentPasswordIncorrect } };
+    }
   }
 
   const clash = await prisma.channel.findFirst({
@@ -166,6 +185,42 @@ export async function saveChannelAction(
       where: { id: user.channel.id },
       data,
     });
+
+    if (addressChanged) {
+      const requestHeaders = await headers();
+      const forwarded = requestHeaders.get("x-forwarded-for");
+      const ip =
+        forwarded?.split(",")[0]?.trim() ||
+        requestHeaders.get("x-real-ip") ||
+        null;
+
+      await prisma.channelAddressChange
+        .create({
+          data: {
+            channelId: user.channel.id,
+            changedById: user.id,
+            previousAddress: currentAddress,
+            newAddress: zcashAddress,
+            ip,
+          },
+        })
+        .catch((error) => {
+          console.error("[address] No se pudo registrar el cambio:", error);
+        });
+
+      void sendAddressChangedEmail({
+        to: user.email,
+        channelName: displayName,
+        previousAddress: currentAddress,
+        newAddress: zcashAddress,
+        locale,
+      }).catch((error) => {
+        console.error(
+          "[email] No se pudo avisar del cambio de dirección:",
+          error,
+        );
+      });
+    }
 
     if (user.channel.displayName !== displayName) {
       await reindexChannel(user.channel.id);

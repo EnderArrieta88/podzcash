@@ -5,6 +5,16 @@ export type PaymentRequest = {
   message?: string;
 };
 
+export const MAX_MEMO_BYTES = 512;
+
+/**
+ * Longitud real del memo en UTF-8. ZIP-321 limita el memo a 512 bytes, no a
+ * 512 caracteres: un emoji puede ocupar 4 bytes.
+ */
+export function memoByteLength(memo: string): number {
+  return new TextEncoder().encode(memo).length;
+}
+
 function formatAmount(amount: number): string {
   return amount.toFixed(8).replace(/0+$/, "").replace(/\.$/, "");
 }
@@ -15,6 +25,13 @@ function formatAmount(amount: number): string {
  */
 export function encodeMemo(memo: string): string {
   const bytes = new TextEncoder().encode(memo);
+
+  if (bytes.length > MAX_MEMO_BYTES) {
+    throw new RangeError(
+      `El memo supera los ${MAX_MEMO_BYTES} bytes permitidos por ZIP-321.`,
+    );
+  }
+
   let binary = "";
 
   for (const byte of bytes) binary += String.fromCharCode(byte);

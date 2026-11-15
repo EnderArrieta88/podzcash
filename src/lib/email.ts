@@ -6,6 +6,7 @@ import {
   commentEmailContent,
   resetEmailContent,
   verificationEmailContent,
+  addressChangedEmailContent,
   type EmailCopy,
 } from "@/lib/i18n/email";
 import type { Locale } from "@/lib/i18n/config";
@@ -249,6 +250,48 @@ export async function sendWaitlistNotificationEmail({
   return sendEmail({
     to,
     subject: "Nueva solicitud en la lista de espera",
+    text,
+    html,
+  });
+}
+
+export async function sendAddressChangedEmail({
+  to,
+  channelName,
+  previousAddress,
+  newAddress,
+  locale,
+}: {
+  to: string;
+  channelName: string;
+  previousAddress: string | null;
+  newAddress: string | null;
+  locale: Locale;
+}): Promise<boolean> {
+  if (!isEmailConfigured()) return false;
+
+  const content = addressChangedEmailContent[locale];
+  const previous = previousAddress ?? content.none;
+  const next = newAddress ?? content.none;
+  const text = `${content.intro(channelName)}\n\n${content.previous}: ${previous}\n${content.next}: ${next}\n\n${content.warning}\n\n${content.footer}`;
+  const html = `<!doctype html>
+<html lang="${locale}">
+  <body style="margin:0;padding:24px;background:#0b0d11;color:#e6e7ec;font-family:Arial,sans-serif">
+    <div style="max-width:560px;margin:0 auto;background:#14171d;border:1px solid #2a2f39;border-radius:16px;padding:28px">
+      <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#c7ccd6">${escapeHtml(content.intro(channelName))}</p>
+      <p style="margin:0 0 8px;font-size:12px;color:#9aa3b2">${escapeHtml(content.previous)}</p>
+      <p style="margin:0 0 16px;font-family:monospace;font-size:12px;word-break:break-all;color:#e6e7ec">${escapeHtml(previous)}</p>
+      <p style="margin:0 0 8px;font-size:12px;color:#9aa3b2">${escapeHtml(content.next)}</p>
+      <p style="margin:0 0 24px;font-family:monospace;font-size:12px;word-break:break-all;color:#e6e7ec">${escapeHtml(next)}</p>
+      <p style="margin:0;font-size:12px;line-height:1.6;color:#f4b728">${escapeHtml(content.warning)}</p>
+      <p style="margin:24px 0 0;font-size:11px;color:#6b7484">${escapeHtml(content.footer)}</p>
+    </div>
+  </body>
+</html>`;
+
+  return sendEmail({
+    to,
+    subject: content.subject,
     text,
     html,
   });

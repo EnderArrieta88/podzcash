@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/i18n/config";
 import { addressMessages } from "@/lib/i18n/address";
+import { f4JumbleInverse } from "@/lib/f4jumble";
 
 export type AddressKind = "sapling" | "unified";
 
@@ -77,38 +78,126 @@ function convertBits(
 }
 
 /**
- * Verifica el checksum Bech32/Bech32m y, opcionalmente, el largo del payload.
- * Sapling (zs1) usa Bech32 sobre 43 bytes; Unified (u1) usa Bech32m.
+ * Verifica el checksum Bech32/Bech32m y devuelve el payload en bytes.
  */
-function hasValidBech32Checksum(
+function decodeBech32(
   address: string,
   expectedHrp: string,
   expectedConst: number,
-  expectedPayloadBytes?: number,
-): boolean {
+): Uint8Array | null {
   const separator = address.lastIndexOf("1");
-  if (separator < 1 || separator + 7 > address.length) return false;
+  if (separator < 1 || separator + 7 > address.length) return null;
 
   const hrp = address.slice(0, separator);
-  if (hrp !== expectedHrp) return false;
+  if (hrp !== expectedHrp) return null;
 
   const dataPart = address.slice(separator + 1);
   const values: number[] = [];
 
   for (const char of dataPart) {
     const value = BECH32_CHARSET.indexOf(char);
-    if (value === -1) return false;
+    if (value === -1) return null;
     values.push(value);
   }
 
-  if (polymod([...hrpExpand(hrp), ...values]) !== expectedConst) return false;
+  if (polymod([...hrpExpand(hrp), ...values]) !== expectedConst) return null;
 
-  if (expectedPayloadBytes !== undefined) {
-    const payload = convertBits(values.slice(0, -6), 5, 8, false);
-    if (!payload || payload.length !== expectedPayloadBytes) return false;
+  const payload = convertBits(values.slice(0, -6), 5, 8, false);
+  return payload ? Uint8Array.from(payload) : null;
+}
+
+function readCompactSize(
+  bytes: Uint8Array,
+  offset: number,
+): { value: number; offset: number } | null {
+  if (offset >= bytes.length) return null;
+
+  const first = bytes[offset];
+  offset += 1;
+
+  if (first < 0xfd) return { value: first, offset };
+
+  const size = first === 0xfd ? 2 : first === 0xfe ? 4 : 8;
+  if (offset + size > bytes.length) return null;
+
+  let value = 0;
+  for (let index = 0; index < size; index += 1) {
+    value += bytes[offset + index] * 2 ** (8 * index);
   }
 
-  return true;
+  const minimum =
+    first === 0xfd ? 0xfd : first === 0xfe ? 0x10000 : 0x100000000;
+  if (value < minimum || value > 0x2000000) return null;
+
+  return { value, offset: offset + size };
+}
+
+/**
+ * Comprueba que una Unified Address (Revision 0) contenga al menos un receptor
+ * protegido y respete el orden y los tamaños de ZIP-316.
+ */
+function isValidUnifiedPayload(payload: Uint8Array): boolean {
+  let unjumbled: Uint8Array;
+
+  try {
+    unjumbled = f4JumbleInverse(payload);
+  } catch {
+    return false;
+  }
+
+  const padding = new Uint8Array(16);
+  padding.set(new TextEncoder().encode("u"));
+
+  if (unjumbled.length < 16) return false;
+
+  for (let index = 0; index < padding.length; index += 1) {
+    if (
+      unjumbled[unjumbled.length - padding.length + index] !== padding[index]
+    ) {
+      return false;
+    }
+  }
+
+  const raw = unjumbled.slice(0, -padding.length);
+  let offset = 0;
+  let previous = -1;
+  let items = 0;
+  let hasShielded = false;
+  let hasP2pkh = false;
+  let hasP2sh = false;
+
+  while (offset < raw.length) {
+    const typecode = readCompactSize(raw, offset);
+    if (!typecode) return false;
+    offset = typecode.offset;
+
+    const length = readCompactSize(raw, offset);
+    if (!length) return false;
+    offset = length.offset;
+
+    if (typecode.value <= previous) return false;
+    if (length.value < 0 || offset + length.value > raw.length) return false;
+
+    // Revision 0 no admite Items MUST-understand.
+    if (typecode.value >= 0xe0 && typecode.value <= 0xfc) return false;
+
+    if (typecode.value === 0x00) {
+      if (length.value !== 20) return false;
+      hasP2pkh = true;
+    } else if (typecode.value === 0x01) {
+      if (length.value !== 20) return false;
+      hasP2sh = true;
+    } else if (typecode.value === 0x02 || typecode.value === 0x03) {
+      if (length.value !== 43) return false;
+      hasShielded = true;
+    }
+
+    previous = typecode.value;
+    items += 1;
+    offset += length.value;
+  }
+
+  return items > 0 && !(hasP2pkh && hasP2sh) && hasShielded;
 }
 
 /**
@@ -173,14 +262,18 @@ export function validateZcashAddress(
   }
 
   if (isSapling) {
-    if (!hasValidBech32Checksum(lower, "zs", BECH32_CONST, 43)) {
+    const payload = decodeBech32(lower, "zs", BECH32_CONST);
+
+    if (!payload || payload.length !== 43) {
       return { ok: false, error: m.sapling };
     }
 
     return { ok: true, kind: "sapling", address: lower };
   }
 
-  if (!hasValidBech32Checksum(lower, "u", BECH32M_CONST)) {
+  const payload = decodeBech32(lower, "u", BECH32M_CONST);
+
+  if (!payload || !isValidUnifiedPayload(payload)) {
     return { ok: false, error: m.unified };
   }
 

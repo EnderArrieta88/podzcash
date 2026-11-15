@@ -6,6 +6,7 @@ const db = vi.hoisted(() => ({
     findFirst: vi.fn(),
     findMany: vi.fn(),
   },
+  channelAddressChange: { findMany: vi.fn() },
 }));
 
 vi.mock("@/lib/db", () => ({ prisma: db }));
@@ -15,6 +16,7 @@ import {
   getChannelFeedData,
   getChannelPageData,
   getFeaturedChannel,
+  listAddressChanges,
   listSitemapChannels,
 } from "./queries";
 
@@ -96,5 +98,24 @@ describe("channels queries", () => {
         where: { episodes: { some: { status: "published" } } },
       }),
     );
+  });
+
+  it("lista el historial de direcciones del canal", async () => {
+    const changes = [{ id: "a1", newAddress: "u1nueva" }];
+    db.channelAddressChange.findMany.mockResolvedValueOnce(changes);
+
+    await expect(listAddressChanges("ch1")).resolves.toBe(changes);
+    expect(db.channelAddressChange.findMany).toHaveBeenCalledWith({
+      where: { channelId: "ch1" },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        previousAddress: true,
+        newAddress: true,
+        ip: true,
+        createdAt: true,
+      },
+    });
   });
 });
