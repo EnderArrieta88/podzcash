@@ -41,7 +41,7 @@ const es = {
     memoPlaceholder: "Gracias por el episodio",
     memoHint:
       "Solo funciona con transacciones protegidas y algunas wallets lo ignoran.",
-    memoCounter: (bytes: number) => `${bytes} / 512 bytes`,
+    memoCounterSuffix: " / 512 bytes",
     memoTooLong: "El memo supera los 512 bytes permitidos por ZIP-321.",
     qrInvalid: "Corrige el mensaje para generar el QR.",
     openWallet: "Abrir en wallet",
@@ -95,7 +95,7 @@ const en: DonateContent = {
     memoPlaceholder: "Thanks for the episode",
     memoHint:
       "Only works with shielded transactions and some wallets ignore it.",
-    memoCounter: (bytes: number) => `${bytes} / 512 bytes`,
+    memoCounterSuffix: " / 512 bytes",
     memoTooLong: "The memo exceeds the 512 bytes allowed by ZIP-321.",
     qrInvalid: "Fix the message to generate the QR code.",
     openWallet: "Open in wallet",

@@ -230,7 +230,8 @@ export function DonationBox({
                 memoInvalid ? "text-danger" : "text-subtle",
               )}
             >
-              {labels.memoCounter(memoBytes)}
+              {memoBytes}
+              {labels.memoCounterSuffix}
             </span>
           </div>
           {memoInvalid && (
