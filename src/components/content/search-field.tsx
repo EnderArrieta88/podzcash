@@ -26,6 +26,8 @@ export function SearchField({
         placeholder={placeholder}
         autoFocus={autoFocus}
         aria-label={ariaLabel}
+        aria-keyshortcuts="Meta+K Control+K"
+        data-search-primary
         className="h-12 w-full rounded-full border border-border bg-surface pr-[6.5rem] pl-11 text-sm text-text placeholder:text-subtle transition-colors outline-none focus:border-brand focus:ring-4 focus:ring-brand/15"
       />
       <button

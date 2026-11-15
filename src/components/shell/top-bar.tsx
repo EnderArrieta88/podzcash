@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Search, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { AccountMenu } from "@/components/shell/account-menu";
 import { MobileMenu } from "@/components/shell/mobile-menu";
+import { SearchBox, SearchShortcut } from "@/components/shell/search-box";
 import type { RailUser } from "@/components/shell/side-rail";
 import type { Locale } from "@/lib/i18n/config";
 import type { ShellContent } from "@/lib/i18n/shell";
@@ -60,25 +61,11 @@ export function TopBar({
           </span>
         </Link>
 
-        <form
-          action="/explorar"
-          className="relative hidden w-full max-w-xl md:block"
-        >
-          <Search
-            size={16}
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-subtle"
-          />
-          <input
-            type="search"
-            name="q"
-            placeholder={labels.searchPlaceholder}
-            aria-label={labels.searchLabel}
-            className="h-10 w-full rounded-xl border border-transparent bg-surface-2 pl-10 pr-16 text-sm text-text placeholder:text-subtle transition-colors outline-none focus:border-brand/50 focus:bg-surface-3"
-          />
-          <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[10px] text-subtle xl:block">
-            ⌘K
-          </kbd>
-        </form>
+        <SearchShortcut />
+        <SearchBox
+          placeholder={labels.searchPlaceholder}
+          label={labels.searchLabel}
+        />
 
         <div className="ml-auto flex items-center gap-2">
           <span className="hidden whitespace-nowrap items-center gap-1.5 rounded-full border border-jade/25 bg-jade-soft px-3 py-1.5 text-[11px] text-jade-bright xl:flex">

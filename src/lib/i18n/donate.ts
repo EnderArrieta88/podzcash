@@ -28,7 +28,7 @@ const es = {
   box: {
     qrAlt: "Código QR para donar a",
     generating: "Generando QR…",
-    scanHint: "Escanea con Zashi, Zingo o Ywallet",
+    scanHint: "Escanea con ZODL, Zingo o Ywallet",
     addressLabel: "Dirección Zcash",
     verified: "verificada",
     copyAria: "Copiar dirección",
@@ -79,7 +79,7 @@ const en: DonateContent = {
   box: {
     qrAlt: "QR code to donate to",
     generating: "Generating QR…",
-    scanHint: "Scan with Zashi, Zingo or Ywallet",
+    scanHint: "Scan with ZODL, Zingo or Ywallet",
     addressLabel: "Zcash address",
     verified: "verified",
     copyAria: "Copy address",
