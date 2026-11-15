@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { E2E_AUTH_SECRET } from "./e2e/totp.mjs";
 
 const PORT = 3100;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
@@ -39,8 +40,7 @@ export default defineConfig({
       ANALYTICS_DB_PATH: "./.data-e2e/analytics.db",
       RATE_LIMIT_DB_PATH: "./.data-e2e/rate-limit.db",
       CSP_MODE: "enforce",
-      AUTH_SECRET:
-        "e2e-secret-0123456789abcdef0123456789abcdef0123456789abcdef",
+      AUTH_SECRET: E2E_AUTH_SECRET,
       SITE_URL: BASE_URL,
       EMAIL_FROM: "PodZcash E2E <e2e@podzcash.local>",
       VAPID_PUBLIC_KEY:

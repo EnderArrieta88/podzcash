@@ -1,19 +1,10 @@
-import { test, expect, type Page } from "@playwright/test";
-
-const PASSWORD = "e2e-password-123";
-
-async function loginAs(page: Page, email: string) {
-  await page.goto("/entrar");
-  await page.fill("#email", email);
-  await page.fill("#password", PASSWORD);
-  await page.getByRole("button", { name: "Entrar", exact: true }).click();
-  await page.waitForURL("**/estudio");
-}
+import { test, expect } from "@playwright/test";
+import { loginAsAdmin } from "./auth";
 
 test("solo la sección más específica queda activa en el menú", async ({
   page,
 }) => {
-  await loginAs(page, "e2e-admin@podzcash.local");
+  await loginAsAdmin(page);
   await page.goto("/estudio/admin");
 
   const rail = page.locator("aside[data-rail]");

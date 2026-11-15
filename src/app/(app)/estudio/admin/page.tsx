@@ -49,6 +49,7 @@ export default async function AdminPage({
     searchParams,
     getLocale(),
   ]);
+
   const content = adminContent[locale];
   const rateLimit = getRateLimitMetrics();
   const reasonLabels = new Map(

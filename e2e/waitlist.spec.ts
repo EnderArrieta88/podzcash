@@ -1,16 +1,7 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { loginAsAdmin } from "./auth";
 
 const EMAIL = "waitlist-e2e@podzcash.local";
-const ADMIN_EMAIL = "e2e-admin@podzcash.local";
-const PASSWORD = "e2e-password-123";
-
-async function loginAdmin(page: Page) {
-  await page.goto("/entrar");
-  await page.fill("#email", ADMIN_EMAIL);
-  await page.fill("#password", PASSWORD);
-  await page.getByRole("button", { name: "Entrar", exact: true }).click();
-  await page.waitForURL("**/estudio");
-}
 
 test("la lista de espera guarda una solicitud y aparece en administración", async ({
   page,
@@ -24,7 +15,7 @@ test("la lista de espera guarda una solicitud y aparece en administración", asy
 
   await expect(page.getByText("Estás en la lista")).toBeVisible();
 
-  await loginAdmin(page);
+  await loginAsAdmin(page);
   await page.goto("/estudio/admin");
 
   await expect(page.getByText(EMAIL)).toBeVisible();

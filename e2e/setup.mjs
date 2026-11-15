@@ -3,6 +3,13 @@ import { randomBytes, scryptSync } from "node:crypto";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import Database from "better-sqlite3";
+import {
+  E2E_AUTH_SECRET,
+  TOTP_RECOVERY_CODE,
+  TOTP_SECRET,
+  encryptTotpSecret,
+  hashRecoveryCode,
+} from "./totp.mjs";
 
 const root = process.cwd();
 const databaseFile = path.join(root, "prisma", "e2e.db");
@@ -102,12 +109,24 @@ function insertUser(id, email, name, role) {
 
 insertUser(userId, "e2e@podzcash.local", "E2E Tester", "creator");
 insertUser("e2e_author", "e2e-author@podzcash.local", "E2E Author", "creator");
+insertUser("e2e_totp", "e2e-totp@podzcash.local", "E2E TOTP", "creator");
 insertUser("e2e_admin", "e2e-admin@podzcash.local", "Admin E2E", "admin");
 insertUser(
   "e2e_delete_user",
   "e2e-delete@podzcash.local",
   "E2E Delete",
   "creator",
+);
+
+// El admin de E2E usa 2FA: el panel de administración lo exige.
+const totpAuthSecret = process.env.AUTH_SECRET ?? E2E_AUTH_SECRET;
+
+db.prepare(
+  `UPDATE "User" SET "totpSecret" = ?, "totpEnabled" = 1, "totpRecoveryCodes" = ? WHERE "id" = ?`,
+).run(
+  encryptTotpSecret(TOTP_SECRET, totpAuthSecret),
+  JSON.stringify([hashRecoveryCode(TOTP_RECOVERY_CODE, totpAuthSecret)]),
+  "e2e_admin",
 );
 
 db.prepare(
