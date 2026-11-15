@@ -242,12 +242,6 @@ export default async function ChannelPage({ params }: PageProps) {
               <p className="mt-1 text-xs leading-relaxed text-jade-bright/70">
                 {content.supportPanelBody}
               </p>
-              <Link
-                href={donatePath(channel.handle)}
-                className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-xl bg-brand text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong"
-              >
-                {content.sendZec}
-              </Link>
             </div>
           ) : (
             <div className="rounded-xl border border-border bg-surface p-4">
