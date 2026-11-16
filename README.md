@@ -20,6 +20,7 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 ## Qué incluye
 
 - Registro por invitación y sesiones con cookie httpOnly.
+- Verificación en dos pasos (TOTP) opcional para creadores y obligatoria para administradores, con códigos de recuperación.
 - Verificación de email por enlace firmado antes de activar la cuenta.
 - Lista de espera para creadores que todavía no tienen invitación, con aviso por email y notificación push en el teléfono.
 - Recuperación de contraseña por email con enlaces firmados y caducidad.
@@ -29,11 +30,12 @@ canal, publica audio y recibe donaciones directas en ZEC sin custodia.
 - Conteo agregado de reproducciones por episodio, sin cookies.
 - Donaciones ZEC con QR y enlace ZIP-321, sin custodia.
 - Validación de direcciones transparentes, Sapling y unificadas.
-- Feed RSS 2.0 + Podcasting 2.0 por canal, con enlace de apoyo ZEC.
+- Feed RSS 2.0 con etiquetas Podcasting 2.0 (`locked`, `guid`, `funding`) y enlace de apoyo ZEC.
 - Panel de creador, invitaciones, moderación, reportes y administración.
 - Analítica agregada de descargas, reproducciones y retención, sin cookies.
 - Aplicación instalable (PWA) con descargas para escuchar sin conexión.
 - Imágenes sociales y metadatos propios por canal y episodio.
+- Accesibilidad WCAG 2.2 AA (fase 1): enlace para saltar al contenido, foco visible, etiquetas, contraste y suite axe automatizada.
 - Interfaz bilingüe ES/EN con selector por cookie.
 
 ## Stack actual
@@ -77,7 +79,7 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `FEED_OWNER_EMAIL` | Email de propietario en el feed RSS |
 | `MEDIA_ROOT` | Carpeta de audio y portadas |
 | `SEARCH_DB_PATH` | Ruta del índice FTS5 |
-| `AUTH_SECRET` | Firma los enlaces de verificación y recuperación |
+| `AUTH_SECRET` | Firma los enlaces de verificación/recuperación, cifra los secretos 2FA y sirve de sal de respaldo para analítica y rate limiting |
 | `RESEND_API_KEY` | API key de Resend para emails transaccionales |
 | `EMAIL_FROM` | Remitente verificado en Resend |
 | `WAITLIST_NOTIFY_EMAIL` | Destino de los avisos de la lista de espera |
@@ -108,6 +110,8 @@ partir de ahí el registro es por invitación; los códigos se generan en
 | `npm run e2e:setup` | Recrea la base y los medios aislados de E2E |
 | `npm run e2e:server` | Levanta el servidor de E2E en el puerto 3100 |
 | `npm run check` | Lint + formato + tipos + tests |
+| `npm run verify` | Check completo + build + E2E |
+| `npm run perf` | Informe de rendimiento |
 | `npx prisma studio` | Explorador de la base |
 | `npx prisma migrate dev --name <nombre>` | Nueva migración |
 
@@ -123,9 +127,11 @@ Los tests E2E corren contra una base y medios aislados. Ver [docs/e2e.md](docs/e
 | `/acerca` | Quién construye el proyecto y cómo colaborar |
 | `/privacidad` | Política de privacidad |
 | `/terminos` | Términos del servicio |
+| `/accesibilidad` | Declaración de accesibilidad |
 | `/registro` | Crear cuenta con invitación |
 | `/entrar` | Iniciar sesión |
 | `/estudio` | Panel del creador |
+| `/estudio/cuenta` | Cuenta, contraseña, 2FA, exportación y borrado |
 | `/estudio/episodios` | Episodios y borradores |
 | `/estudio/episodios/nuevo` | Subir episodio |
 | `/estudio/canal` | Crear o editar el canal |
@@ -236,8 +242,10 @@ hosting puede terminar las instancias huérfanas y decir cuántas había.
   [docs/rate-limit.md](docs/rate-limit.md).
 - **CSP y HSTS:** política global con nonce, reportes y HSTS endurecido. Ver
   [docs/csp.md](docs/csp.md).
-- **Cuenta:** exportación de datos y eliminación con reautenticación. Ver
+- **Cuenta:** exportación, eliminación con reautenticación y verificación en dos pasos. Ver
   [docs/cuenta.md](docs/cuenta.md).
+- **Accesibilidad:** WCAG 2.2 AA, suite axe y declaración pública. Ver
+  [docs/accesibilidad.md](docs/accesibilidad.md).
 - **PWA:** app instalable, service worker, pantalla offline y descargas de audio.
   Ver [docs/pwa.md](docs/pwa.md).
 - **App nativa / CarPlay:** ADR con opciones, costes y recomendación. Ver
@@ -262,11 +270,12 @@ hosting puede terminar las instancias huérfanas y decir cuántas había.
 - `security.txt`: `/.well-known/security.txt`.
 - Dependencias de producción sin vulnerabilidades conocidas en `npm audit`
   al momento de esta revisión; el tooling de desarrollo puede mostrar avisos.
-- Tests unitarios para rutas, ZIP-321, RSS, validación y utilidades.
+- Tests unitarios para rutas, ZIP-321, RSS, TOTP, validación y utilidades.
 - Backups diarios cifrados con restauración verificada.
 - Monitor de disponibilidad cada 15 minutos.
 - Recuperación de contraseña con enlaces firmados y Resend.
 - Verificación de email para activar cuentas nuevas.
+- Verificación en dos pasos (TOTP) con secreto cifrado y códigos de recuperación hasheados; el panel de administración la exige.
 - Pendientes: auditoría externa y staging (cuando el hosting lo permita).
 
 ## Estructura
@@ -280,6 +289,7 @@ src/
   components/          UI y componentes de cliente
   features/            Dominios migrados: account, admin, analytics, auth, channels,
                        comments, episodes, invites, moderation, playback y waitlist
+  lib/auth/            Sesiones, contraseñas, tokens y TOTP
   lib/db.ts            Cliente Prisma
   lib/version.ts       Versión publicada y commit del build
   lib/health.ts        Conteos del chequeo de salud

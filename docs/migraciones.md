@@ -17,6 +17,8 @@ actualiza al arrancar el proceso con migraciones puente idempotentes.
 | feed | `src/lib/feed-migration.ts` | Columnas de feed, GUID y numeración de episodios |
 | comments | `src/lib/comments-migration.ts` | Avisos de comentarios, autor de reportes y tabla `EpisodeComment` |
 | playback-progress | `src/lib/progress-migration.ts` | Tabla `PlaybackProgress` e índice por usuario |
+| address-changes | `src/lib/address-change-migration.ts` | Historial de cambios de dirección ZEC |
+| totp | `src/lib/totp-migration.ts` | Columnas de 2FA TOTP en `User` |
 
 Cada paso abre la base, agrega solo lo que falta y cierra. Se pueden ejecutar
 varias veces sin duplicar datos.
@@ -25,7 +27,8 @@ varias veces sin duplicar datos.
 
 - `comments-migration.test.ts`, `feed-migration.test.ts` y
   `progress-migration.test.ts` verifican columnas y idempotencia.
-- `schema-migrations.test.ts` ejecuta todos los pasos juntos dos veces.
+- `schema-migrations.test.ts` ejecuta todos los pasos juntos dos veces y cubre
+  también `address-changes` y `totp`.
 
 ## Pendiente
 
