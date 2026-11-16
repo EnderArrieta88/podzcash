@@ -55,7 +55,7 @@ export function TotpSettings({
     confirmState?.recoveryCodes ?? manageState?.recoveryCodes;
 
   return (
-    <section className="mt-6 rounded-xl border border-border bg-surface p-6">
+    <section className="rounded-xl border border-border bg-surface p-6">
       <div className="flex items-start gap-3">
         <ShieldCheck size={18} className="mt-0.5 text-jade" />
         <div>
