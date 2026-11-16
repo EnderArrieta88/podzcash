@@ -106,7 +106,7 @@ export function PlayerBar({ locale }: { locale: Locale }) {
                 changeRate(PLAYBACK_RATES[(index + 1) % PLAYBACK_RATES.length]);
               }}
               className="ml-1 hidden h-8 min-w-11 items-center justify-center rounded-full border border-border px-2 font-mono text-xs tabular text-muted transition-colors hover:border-border-strong hover:text-text sm:inline-flex"
-              aria-label={labels.speed}
+              aria-label={`${labels.speed}: ${rate}×`}
             >
               {rate}×
             </button>

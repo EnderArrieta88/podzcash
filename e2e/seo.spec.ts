@@ -57,6 +57,7 @@ test("el sitemap incluye canal y episodio", async ({ page }) => {
 
   expect(xml).toContain(`/canal/@${CHANNEL}`);
   expect(xml).toContain(`/canal/@${CHANNEL}/${EPISODE}`);
+  expect(xml).toContain("/accesibilidad");
 });
 
 test("el JSON-LD de canal y episodio es válido", async ({ page }) => {

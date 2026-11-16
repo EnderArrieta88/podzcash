@@ -111,6 +111,7 @@ export function AudioField({
         ref={inputRef}
         type="file"
         accept="audio/*"
+        aria-label={labels.audio}
         className="sr-only"
         onChange={(event) => {
           const file = event.target.files?.[0];

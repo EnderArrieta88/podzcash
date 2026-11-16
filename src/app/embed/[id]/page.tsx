@@ -37,7 +37,7 @@ export default async function EmbedPage({ params }: PageProps) {
   );
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-bg p-2">
+    <main className="flex min-h-dvh items-center justify-center bg-bg p-2">
       <EmbedPlayer
         track={{
           id: episode.id,
@@ -52,6 +52,6 @@ export default async function EmbedPage({ params }: PageProps) {
         href={`${origin}${episodePath(episode.channel.handle, episode.slug)}`}
         locale={locale}
       />
-    </div>
+    </main>
   );
 }

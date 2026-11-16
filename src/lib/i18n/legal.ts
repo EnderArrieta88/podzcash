@@ -53,6 +53,7 @@ export type SiteLegalContent = {
   about: AboutContent;
   privacy: LegalDocument;
   terms: LegalDocument;
+  accessibility: LegalDocument;
 };
 
 const es: SiteLegalContent = {
@@ -323,6 +324,68 @@ const es: SiteLegalContent = {
       "Para consultas sobre estos términos, escribe a hola@podzcash.online.",
     backHome: "Volver al inicio",
   },
+  accessibility: {
+    metaTitle: "Accesibilidad",
+    metaDescription:
+      "Declaración de accesibilidad de PodZcash: estado WCAG 2.2 AA, medidas implementadas y cómo reportar barreras.",
+    title: "Declaración de accesibilidad",
+    updated: "Actualizado: 15 de noviembre de 2026",
+    intro:
+      "PodZcash quiere que escuchar, publicar y donar sea posible para todas las personas. Esta declaración resume el estado actual, las medidas aplicadas y las limitaciones conocidas.",
+    sections: [
+      {
+        title: "1. Estado de conformidad",
+        paragraphs: [
+          "La interfaz se revisa con pruebas automatizadas axe en las rutas principales y con recorridos manuales de teclado. Consideramos que cumple la mayor parte de WCAG 2.2 nivel AA, pero no contamos con una certificación externa y todavía hay limitaciones.",
+        ],
+        bullets: [
+          "Rutas públicas, estudio, cuenta y administración cubiertas por pruebas automatizadas.",
+          "Formularios, navegación y reproductor revisados con teclado y foco visible.",
+          "Las transcripciones, capítulos y descripciones de audio siguen pendientes.",
+        ],
+      },
+      {
+        title: "2. Medidas implementadas",
+        bullets: [
+          "HTML semántico, landmarks y un enlace para saltar al contenido.",
+          "Etiquetas asociadas a los campos y mensajes de error legibles.",
+          "Contraste revisado en textos, botones, enlaces y estados de foco.",
+          "Reproductor operable con teclado y respeto a prefers-reduced-motion.",
+          "Idioma del documento declarado y contenido disponible en español e inglés.",
+        ],
+      },
+      {
+        title: "3. Limitaciones conocidas",
+        bullets: [
+          "No hay una auditoría manual con lectores de pantalla como NVDA, JAWS o VoiceOver.",
+          "Las transcripciones, capítulos y descripciones de audio aún no están disponibles.",
+          "Algunos contenidos incrustados o enlaces externos dependen de terceros.",
+          "Los documentos legales y esta declaración se revisan periódicamente.",
+        ],
+      },
+      {
+        title: "4. Evaluación",
+        paragraphs: [
+          "La revisión automatizada se ejecuta con axe-core y Playwright sobre las rutas principales en cada cambio. Los problemas críticos y graves se corrigen antes de desplegar. La revisión manual de teclado cubre inicio, acceso, estudio, cuenta y reproductor.",
+        ],
+        bullets: [
+          "Herramientas: axe-core, Playwright y revisión manual.",
+          "Última revisión: 15 de noviembre de 2026.",
+          "Entorno: build de producción con datos de prueba.",
+        ],
+      },
+      {
+        title: "5. Cómo reportar una barrera",
+        paragraphs: [
+          "Si encuentras una barrera, escríbenos con la página, el navegador, el lector de pantalla si aplica y los pasos para reproducirla. Priorizamos los bloqueos que impiden usar la plataforma.",
+        ],
+      },
+    ],
+    contactTitle: "Contacto",
+    contactBody:
+      "Puedes escribir a hola@podzcash.online o abrir un issue en el repositorio.",
+    backHome: "Volver al inicio",
+  },
 };
 
 const en: SiteLegalContent = {
@@ -591,6 +654,68 @@ const en: SiteLegalContent = {
     contactTitle: "Contact",
     contactBody:
       "For questions about these terms, write to hola@podzcash.online.",
+    backHome: "Back to home",
+  },
+  accessibility: {
+    metaTitle: "Accessibility",
+    metaDescription:
+      "PodZcash accessibility statement: WCAG 2.2 AA status, implemented measures and how to report barriers.",
+    title: "Accessibility statement",
+    updated: "Last updated: November 15, 2026",
+    intro:
+      "PodZcash wants listening, publishing and donating to be possible for everyone. This statement summarizes the current status, the measures we apply and the known limitations.",
+    sections: [
+      {
+        title: "1. Conformance status",
+        paragraphs: [
+          "The interface is reviewed with automated axe tests on the main routes and with manual keyboard walkthroughs. We consider it meets most of WCAG 2.2 level AA, but we do not have external certification and some limitations remain.",
+        ],
+        bullets: [
+          "Public routes, studio, account and administration covered by automated tests.",
+          "Forms, navigation and player reviewed with keyboard and visible focus.",
+          "Transcripts, chapters and audio descriptions are still pending.",
+        ],
+      },
+      {
+        title: "2. Implemented measures",
+        bullets: [
+          "Semantic HTML, landmarks and a skip-to-content link.",
+          "Labels associated with fields and readable error messages.",
+          "Contrast reviewed on text, buttons, links and focus states.",
+          "Player operable with the keyboard and respectful of prefers-reduced-motion.",
+          "Document language declared and content available in Spanish and English.",
+        ],
+      },
+      {
+        title: "3. Known limitations",
+        bullets: [
+          "There is no manual screen reader audit with NVDA, JAWS or VoiceOver yet.",
+          "Transcripts, chapters and audio descriptions are not available yet.",
+          "Some embedded content or external links depend on third parties.",
+          "Legal documents and this statement are reviewed periodically.",
+        ],
+      },
+      {
+        title: "4. Evaluation",
+        paragraphs: [
+          "The automated review runs with axe-core and Playwright on the main routes for every change. Critical and serious issues are fixed before deployment. The manual keyboard review covers home, sign-in, studio, account and player.",
+        ],
+        bullets: [
+          "Tools: axe-core, Playwright and manual review.",
+          "Last review: November 15, 2026.",
+          "Environment: production build with test data.",
+        ],
+      },
+      {
+        title: "5. How to report a barrier",
+        paragraphs: [
+          "If you find a barrier, write to us with the page, browser, screen reader if applicable and steps to reproduce it. We prioritize blockers that prevent people from using the platform.",
+        ],
+      },
+    ],
+    contactTitle: "Contact",
+    contactBody:
+      "You can write to hola@podzcash.online or open an issue in the repository.",
     backHome: "Back to home",
   },
 };

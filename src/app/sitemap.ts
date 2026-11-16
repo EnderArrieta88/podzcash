@@ -24,6 +24,7 @@ const staticPaths: Array<{
   { path: "/lista-de-espera", changeFrequency: "monthly", priority: 0.6 },
   { path: "/privacidad", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terminos", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/accesibilidad", changeFrequency: "yearly", priority: 0.3 },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

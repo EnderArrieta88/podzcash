@@ -69,6 +69,7 @@ export function CoverField({
         ref={inputRef}
         type="file"
         accept="image/*"
+        aria-label={labels.chooseCover}
         className="sr-only"
         onChange={(event) => {
           const file = event.target.files?.[0];

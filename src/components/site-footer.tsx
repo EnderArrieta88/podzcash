@@ -48,6 +48,12 @@ export async function SiteFooter() {
             >
               {content.footer.terms}
             </Link>
+            <Link
+              href="/accesibilidad"
+              className="transition-colors hover:text-text"
+            >
+              {content.footer.accessibility}
+            </Link>
           </nav>
         </div>
 
