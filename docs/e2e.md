@@ -5,6 +5,7 @@ Smoke tests de Playwright para los flujos críticos de PodZcash. Corren contra u
 ## Qué cubren
 
 - Login.
+- 2FA TOTP: activación, login con código, código de recuperación y desactivación.
 - Edición de canal y rechazo de direcciones Zcash transparentes.
 - Creación de un episodio en borrador, publicación y apertura de la página pública.
 - Comentario en un episodio.
@@ -53,12 +54,16 @@ El workflow `.github/workflows/ci.yml` instala Chromium y ejecuta `npm run e2e` 
 | Base de datos | `prisma/e2e.db` |
 | Medios | `.media-e2e/` |
 | Índice de búsqueda | `.data-e2e/search.db` |
+| Analítica | `.data-e2e/analytics.db` |
+| Rate limiting | `.data-e2e/rate-limit.db` |
 
 Esas rutas están en `.gitignore` y se regeneran en cada ejecución.
 
 ## Credenciales de prueba
 
 - Email: `e2e@podzcash.local`
+- Admin: `e2e-admin@podzcash.local` (2FA activo; usar `loginAsAdmin` de `e2e/auth.ts`)
+- Usuario 2FA: `e2e-totp@podzcash.local`
 - Contraseña: `e2e-password-123`
 
 Solo existen en la base E2E.
@@ -67,7 +72,8 @@ Solo existen en la base E2E.
 
 1. Crear o editar un archivo `e2e/*.spec.ts`.
 2. Usar `test` y `expect` de `@playwright/test`.
-3. Reutilizar el helper `login` o crear datos propios.
+3. Reutilizar los helpers de `e2e/auth.ts` (`loginAs`, `loginAsAdmin`) o crear
+   datos propios.
 4. Evitar depender de IDs aleatorios: el episodio base es `e2e_episode` y el canal `e2e-canal`.
 
 Los tests corren en serie (`workers: 1`) porque comparten la misma base.

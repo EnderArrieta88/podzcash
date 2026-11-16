@@ -16,6 +16,21 @@ No incluye datos de otras personas ni contenido de otros usuarios. La respuesta
 lleva `Cache-Control: no-store` y `Content-Disposition: attachment`. Hay un
 límite de 5 exportaciones por hora.
 
+## Verificación en dos pasos (2FA)
+
+- Es opcional para creadores y obligatoria para administradores.
+- El secreto TOTP se guarda cifrado con AES-256-GCM usando `AUTH_SECRET`; los
+  códigos de recuperación se guardan con HMAC-SHA256 y son de un solo uso.
+- Activar exige la contraseña actual. Desactivar y regenerar códigos exigen
+  contraseña y un código válido.
+- El login pide el código después de la contraseña. También se puede usar un
+  código de recuperación.
+- Si un administrador no tiene 2FA, `/estudio/admin` redirige a
+  `/estudio/cuenta?totp=1`.
+- Recomendamos Aegis y Proton Authenticator. Si se usa Google Authenticator,
+  conviene no vincular los códigos a la cuenta de Google.
+- Tests: `src/lib/auth/totp.test.ts` y `e2e/totp.spec.ts`.
+
 ## Eliminar la cuenta
 
 Desde **Estudio → Cuenta → Eliminar cuenta**:
@@ -32,6 +47,7 @@ Desde **Estudio → Cuenta → Eliminar cuenta**:
 - Canal, episodios, etiquetas, comentarios del usuario y comentarios de otros en
   sus episodios (cascade).
 - Progreso de reproducción.
+- Secretos TOTP, códigos de recuperación y suscripciones push.
 - Archivos de audio, portadas, avatar y banner.
 - Eventos y agregados de analítica de sus episodios.
 - Entradas del índice de búsqueda.
