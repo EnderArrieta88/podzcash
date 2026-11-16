@@ -11,5 +11,6 @@ export async function requireUser(): Promise<CurrentUser> {
 export async function requireAdmin(): Promise<CurrentUser> {
   const user = await requireUser();
   if (user.role !== "admin") redirect("/estudio");
+  if (!user.totpEnabled) redirect("/estudio/cuenta?totp=1");
   return user;
 }

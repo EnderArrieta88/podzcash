@@ -1,18 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
+import { loginAs, loginAsAdmin } from "./auth";
 
-const PASSWORD = "e2e-password-123";
 const CHANNEL = "e2e-canal";
 const EPISODE_SLUG = "episodio-de-prueba-e2e";
 
 test.describe.configure({ mode: "serial" });
-
-async function loginAs(page: Page, email: string) {
-  await page.goto("/entrar");
-  await page.fill("#email", email);
-  await page.fill("#password", PASSWORD);
-  await page.getByRole("button", { name: "Entrar", exact: true }).click();
-  await page.waitForURL("**/estudio");
-}
 
 const login = (page: Page) => loginAs(page, "e2e@podzcash.local");
 
@@ -58,7 +50,7 @@ test("un usuario reporta un comentario y llega a la cola", async ({ page }) => {
 });
 
 test("el admin resuelve el reporte y borra el comentario", async ({ page }) => {
-  await loginAs(page, "e2e-admin@podzcash.local");
+  await loginAsAdmin(page);
   await page.goto("/estudio/admin");
 
   const report = page

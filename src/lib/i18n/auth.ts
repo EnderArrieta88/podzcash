@@ -8,6 +8,9 @@ const es = {
     email: "Email",
     emailPlaceholder: "tu@email.com",
     password: "Contraseña",
+    totp: "Código de verificación",
+    totpHint:
+      "Introduce el código de tu app de autenticación o un código de recuperación.",
     submit: "Entrar",
     pending: "Entrando…",
     forgotPassword: "¿Olvidaste tu contraseña?",
@@ -20,6 +23,8 @@ const es = {
       suspended: "Esta cuenta está suspendida.",
       unverified:
         "Tu cuenta todavía no está verificada. Revisa tu correo para activarla.",
+      totpRequired: "Escribe el código de tu app de autenticación.",
+      totpInvalid: "El código no es válido o ya caducó.",
     },
   },
   register: {
@@ -140,6 +145,8 @@ const en: AuthContent = {
     email: "Email",
     emailPlaceholder: "you@email.com",
     password: "Password",
+    totp: "Verification code",
+    totpHint: "Enter the code from your authenticator app or a recovery code.",
     submit: "Sign in",
     pending: "Signing in…",
     forgotPassword: "Forgot your password?",
@@ -152,6 +159,8 @@ const en: AuthContent = {
       suspended: "This account is suspended.",
       unverified:
         "Your account is not verified yet. Check your email to activate it.",
+      totpRequired: "Enter the code from your authenticator app.",
+      totpInvalid: "The code is invalid or expired.",
     },
   },
   register: {

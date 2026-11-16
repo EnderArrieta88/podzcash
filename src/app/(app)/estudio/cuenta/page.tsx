@@ -4,12 +4,14 @@ import { requireUser } from "@/lib/auth/guards";
 import { Input, Label } from "@/components/ui/field";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { DeleteAccountForm } from "@/features/account/components/delete-account-form";
+import { TotpSettings } from "@/features/account/components/totp-settings";
 import {
   changePasswordAction,
   clearPlaybackHistoryAction,
 } from "@/features/account/actions";
 import { getLocale } from "@/lib/i18n/locale";
 import { studioAccountContent } from "@/lib/i18n/studio-account";
+import { studioSecurityContent } from "@/lib/i18n/studio-security";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -20,7 +22,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AccountPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ok?: string; error?: string; historial?: string }>;
+  searchParams: Promise<{
+    ok?: string;
+    error?: string;
+    historial?: string;
+    totp?: string;
+  }>;
 }) {
   const [user, locale, params] = await Promise.all([
     requireUser(),
@@ -28,6 +35,8 @@ export default async function AccountPage({
     searchParams,
   ]);
   const content = studioAccountContent[locale];
+  const { recoveryCount: recoveryCountLabel, ...security } =
+    studioSecurityContent[locale];
 
   const errorKey = params.error;
   const error =
@@ -37,6 +46,15 @@ export default async function AccountPage({
         ? content.errors.generic
         : null;
   const done = params.ok === "1";
+  const totpRequired = params.totp === "1";
+
+  let recoveryCount = 0;
+  try {
+    const codes: unknown = JSON.parse(user.totpRecoveryCodes ?? "[]");
+    if (Array.isArray(codes)) recoveryCount = codes.length;
+  } catch {
+    // Códigos corruptos: se muestran como cero.
+  }
 
   return (
     <div className="max-w-lg">
@@ -111,6 +129,13 @@ export default async function AccountPage({
           </div>
         </form>
       </div>
+
+      <TotpSettings
+        enabled={user.totpEnabled}
+        recoveryLabel={recoveryCountLabel(recoveryCount)}
+        required={totpRequired}
+        labels={security}
+      />
 
       <div className="mt-6 rounded-xl border border-border bg-surface p-6">
         <h2 className="font-heading text-sm font-semibold">

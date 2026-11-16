@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { loginAction } from "@/features/auth/actions";
 import { Input, Label, FieldError } from "@/components/ui/field";
@@ -9,6 +9,11 @@ import type { LoginLabels } from "@/lib/i18n/auth";
 
 export function LoginForm({ labels }: { labels: LoginLabels }) {
   const [state, action] = useActionState(loginAction, null);
+  const [values, setValues] = useState({ email: "", password: "", totp: "" });
+
+  function update(field: keyof typeof values, value: string) {
+    setValues((current) => ({ ...current, [field]: value }));
+  }
 
   return (
     <form action={action} className="space-y-5">
@@ -35,6 +40,8 @@ export function LoginForm({ labels }: { labels: LoginLabels }) {
           autoComplete="email"
           required
           placeholder={labels.emailPlaceholder}
+          value={values.email}
+          onChange={(event) => update("email", event.target.value)}
         />
         <FieldError>{state?.fields?.email}</FieldError>
       </div>
@@ -47,10 +54,31 @@ export function LoginForm({ labels }: { labels: LoginLabels }) {
           type="password"
           autoComplete="current-password"
           required
-          placeholder="••••••••"
+          placeholder=""
+          value={values.password}
+          onChange={(event) => update("password", event.target.value)}
         />
         <FieldError>{state?.fields?.password}</FieldError>
       </div>
+
+      {state?.code === "totpRequired" && (
+        <div>
+          <Label htmlFor="totp">{labels.totp}</Label>
+          <Input
+            id="totp"
+            name="totp"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={20}
+            autoFocus
+            placeholder="123456"
+            value={values.totp}
+            onChange={(event) => update("totp", event.target.value)}
+          />
+          <p className="mt-1 text-xs text-subtle">{labels.totpHint}</p>
+          <FieldError>{state?.fields?.totp}</FieldError>
+        </div>
+      )}
 
       <div className="text-right">
         <Link href="/recuperar" className="text-xs text-muted hover:text-text">

@@ -29,6 +29,7 @@ import {
   isEmailTokenConfigured,
   verifyEmailToken,
 } from "@/lib/auth/email-token";
+import { verifyLoginTotp } from "@/features/account/totp-login";
 import {
   isEmailConfigured,
   sendPasswordResetEmail,
@@ -174,6 +175,7 @@ export async function loginAction(
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
+    totp: formData.get("totp") ?? undefined,
   });
 
   if (!parsed.success) {
@@ -203,6 +205,18 @@ export async function loginAction(
 
   if (user.status !== "active") {
     return { error: content.errors.suspended };
+  }
+
+  if (user.totpEnabled) {
+    const code = parsed.data.totp?.trim() ?? "";
+
+    if (!code) {
+      return { code: "totpRequired", error: content.errors.totpRequired };
+    }
+
+    if (!(await verifyLoginTotp(user, code))) {
+      return { code: "totpRequired", error: content.errors.totpInvalid };
+    }
   }
 
   clearLimit(limitKey);

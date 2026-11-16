@@ -136,6 +136,7 @@ const es: SiteLegalContent = {
         ],
         bullets: [
           "Datos de cuenta: nombre, email y hash de la contraseña. Nunca guardamos la contraseña en texto plano.",
+          "Seguridad de la cuenta: si activas la verificación en dos pasos, guardamos el secreto TOTP cifrado y los códigos de recuperación con hash.",
           "Datos del canal: nombre visible, nombre de usuario, bio, enlaces, avatar, portada y dirección Zcash pública, si el creador decide añadirla.",
           "Contenido: audio, portadas, títulos, descripciones y etiquetas que el creador sube o publica.",
           "Datos técnicos: cookies funcionales, dirección IP y datos de la conexión usados para autenticar, limitar abuso y proteger el servicio.",
@@ -405,6 +406,7 @@ const en: SiteLegalContent = {
         ],
         bullets: [
           "Account data: name, email and password hash. We never store passwords in plain text.",
+          "Account security: if you enable two-step verification, we store the encrypted TOTP secret and hashed recovery codes.",
           "Channel data: display name, username, bio, links, avatar, cover and public Zcash address if the creator chooses to add one.",
           "Content: audio, covers, titles, descriptions and tags uploaded or published by the creator.",
           "Technical data: functional cookies, IP address and connection data used to authenticate, rate-limit abuse and protect the service.",

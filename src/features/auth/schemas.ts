@@ -14,6 +14,7 @@ export const loginSchema = z.object({
     .email("emailInvalid")
     .transform((value) => value.trim().toLowerCase()),
   password: z.string().min(1, "loginPasswordRequired"),
+  totp: z.string().trim().max(20).optional(),
 });
 
 export const resetRequestSchema = z.object({

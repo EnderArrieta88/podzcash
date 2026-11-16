@@ -41,6 +41,13 @@ export async function runSchemaMigrations(): Promise<void> {
         ensureAddressChangeSchema();
       },
     },
+    {
+      name: "totp",
+      run: async () => {
+        const { ensureTotpSchema } = await import("./totp-migration");
+        ensureTotpSchema();
+      },
+    },
   ];
 
   for (const step of steps) {

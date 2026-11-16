@@ -25,6 +25,11 @@ model User {
   status       String    @default("active")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  // 2FA TOTP. El secreto se guarda cifrado; los códigos se guardan hasheados.
+  totpSecret        String?
+  totpEnabled       Boolean @default(false)
+  totpRecoveryCodes String?
+  totpPendingSecret String?
 
   channel          Channel?
   sessions         Session[]

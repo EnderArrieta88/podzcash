@@ -61,6 +61,11 @@ describe("runSchemaMigrations", () => {
         name: string;
       }>
     ).map((column) => column.name);
+    const userColumns = (
+      db.prepare(`PRAGMA table_info("User")`).all() as Array<{
+        name: string;
+      }>
+    ).map((column) => column.name);
     const episode = db
       .prepare(`SELECT "episodeNumber" FROM "Episode" WHERE "id" = 'e1'`)
       .get() as { episodeNumber: number | null };
@@ -80,6 +85,14 @@ describe("runSchemaMigrations", () => {
       ]),
     );
     expect(reportColumns).toContain("reporterId");
+    expect(userColumns).toEqual(
+      expect.arrayContaining([
+        "totpSecret",
+        "totpEnabled",
+        "totpRecoveryCodes",
+        "totpPendingSecret",
+      ]),
+    );
     expect(episode.episodeNumber).toBe(1);
 
     db.close();
