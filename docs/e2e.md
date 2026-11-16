@@ -9,6 +9,8 @@ Smoke tests de Playwright para los flujos críticos de PodZcash. Corren contra u
 - Creación de un episodio en borrador, publicación y apertura de la página pública.
 - Comentario en un episodio.
 - Reproductor y reproductor embebible.
+- Accesibilidad WCAG 2.2 AA en las rutas principales, el estudio, la
+  administración, el embed y el reproductor. Ver `docs/accesibilidad.md`.
 
 ## Requisitos
 

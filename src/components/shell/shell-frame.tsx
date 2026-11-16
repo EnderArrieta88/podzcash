@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SideRail, type RailUser } from "@/components/shell/side-rail";
 import { TopBar } from "@/components/shell/top-bar";
+import { SkipLink } from "@/components/skip-link";
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 import type { ShellContent } from "@/lib/i18n/shell";
@@ -53,6 +54,8 @@ export function ShellFrame({
 
   return (
     <div className="min-h-dvh bg-bg">
+      <SkipLink label={labels.skipToContent} />
+
       <SideRail
         user={user}
         collapsed={collapsed}
@@ -68,7 +71,11 @@ export function ShellFrame({
         )}
       >
         <TopBar user={user} locale={locale} labels={labels} />
-        <main className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6">
+        <main
+          id="contenido"
+          tabIndex={-1}
+          className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6"
+        >
           {children}
         </main>
       </div>

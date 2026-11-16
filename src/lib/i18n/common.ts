@@ -17,6 +17,7 @@ const es = {
     home: "Volver al inicio",
   },
   loading: "Cargando…",
+  skipToContent: "Saltar al contenido",
   nav: {
     explore: "Explorar",
     how: "Cómo funciona",
@@ -36,6 +37,7 @@ const es = {
     waitlist: "Lista de espera",
     privacy: "Privacidad",
     terms: "Términos",
+    accessibility: "Accesibilidad",
     disclaimer:
       "Proyecto independiente hecho en Venezuela. No afiliado a Zcash Foundation ni a Electric Coin Company. Zcash es una marca de Zcash Foundation.",
   },
@@ -60,6 +62,7 @@ const en: CommonContent = {
     home: "Back to home",
   },
   loading: "Loading…",
+  skipToContent: "Skip to content",
   nav: {
     explore: "Explore",
     how: "How it works",
@@ -79,6 +82,7 @@ const en: CommonContent = {
     waitlist: "Waitlist",
     privacy: "Privacy",
     terms: "Terms",
+    accessibility: "Accessibility",
     disclaimer:
       "Independent project made in Venezuela. Not affiliated with the Zcash Foundation or Electric Coin Company. Zcash is a trademark of the Zcash Foundation.",
   },
