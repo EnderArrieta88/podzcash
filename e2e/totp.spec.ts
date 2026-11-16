@@ -21,6 +21,16 @@ test("activa 2FA, entra con código y usa un código de recuperación", async ({
     .locator("section")
     .filter({ has: page.getByRole("heading", { name: "Seguridad" }) });
 
+  await expect(card.getByText("Apps recomendadas")).toBeVisible();
+  await expect(
+    card.getByRole("link", { name: "Aegis", exact: true }),
+  ).toHaveAttribute("href", "https://getaegis.app/");
+  await expect(
+    card.getByRole("link", { name: "Proton Authenticator", exact: true }),
+  ).toHaveAttribute("href", "https://proton.me/authenticator");
+  await expect(card.getByText("Si usas Google Authenticator")).toBeVisible();
+  await expect(card.getByText(/Evita vincular tus 2FA/)).toBeVisible();
+
   await page.fill("#totp-start-password", PASSWORD);
   await card.getByRole("button", { name: "Activar 2FA" }).click();
   await expect(card.getByText("Clave manual")).toBeVisible();
@@ -33,7 +43,7 @@ test("activa 2FA, entra con código y usa un código de recuperación", async ({
 
   await expect(page.getByText("2FA activo")).toBeVisible();
 
-  const codes = card.locator("ul li");
+  const codes = card.locator("ul.font-mono li");
   await expect(codes).toHaveCount(8);
   const recoveryCode = (await codes.first().innerText()).trim();
 
