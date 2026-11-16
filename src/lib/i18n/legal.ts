@@ -96,7 +96,7 @@ const es: SiteLegalContent = {
     teamRole: "Fundador y desarrollador",
     statusTitle: "Estado actual",
     statusBody:
-      "Beta cerrada en producción, bilingüe español/inglés. El plan de producto y financiamiento está publicado en la página del proyecto.",
+      "Beta cerrada en producción, bilingüe español/inglés, con verificación en dos pasos y una declaración pública de accesibilidad. El plan de producto y financiamiento está publicado en la página del proyecto.",
     collaborateTitle: "Cómo colaborar",
     collaborateBody:
       "Puedes abrir un issue o un pull request en GitHub. Antes de contribuir, revisa la guía de contribución y el código de conducta.",
@@ -120,7 +120,7 @@ const es: SiteLegalContent = {
     metaDescription:
       "Qué datos trata PodZcash, para qué los usa, cuánto tiempo los conserva y cómo ejercer tus derechos.",
     title: "Política de privacidad",
-    updated: "Última actualización: 5 de noviembre de 2026",
+    updated: "Última actualización: 16 de noviembre de 2026",
     intro:
       "Esta política explica qué datos personales trata PodZcash, con qué finalidad y cómo puedes ejercer tus derechos. Está escrita para que se entienda sin jerga innecesaria.",
     sections: [
@@ -140,7 +140,9 @@ const es: SiteLegalContent = {
           "Seguridad de la cuenta: si activas la verificación en dos pasos, guardamos el secreto TOTP cifrado y los códigos de recuperación con hash.",
           "Datos del canal: nombre visible, nombre de usuario, bio, enlaces, avatar, portada y dirección Zcash pública, si el creador decide añadirla.",
           "Contenido: audio, portadas, títulos, descripciones y etiquetas que el creador sube o publica.",
-          "Datos técnicos: cookies funcionales, dirección IP y datos de la conexión usados para autenticar, limitar abuso y proteger el servicio.",
+          "Datos técnicos: cookies funcionales (idioma y sesión), dirección IP y datos de la conexión usados para autenticar, limitar abuso y proteger el servicio. En rate limiting y analítica, la IP se guarda solo como hash.",
+          "Analítica agregada: peticiones de audio, inicios de escucha e hitos de progreso. La IP y el user-agent se guardan solo como hashes con sal diaria y no se vinculan a tu cuenta.",
+          "Notificaciones push: si eres administrador y activas los avisos, guardamos la suscripción del navegador (endpoint y claves) para enviar avisos de la lista de espera.",
           "Historial de reproducción: posición y duración del episodio por usuario, solo si tienes sesión iniciada, para continuar en otro dispositivo. Puedes borrarlo desde tu cuenta.",
           "Comunicaciones: mensajes que nos envías para soporte, reportes o seguridad.",
         ],
@@ -151,6 +153,8 @@ const es: SiteLegalContent = {
           "Crear y mantener tu cuenta, autenticarte y gestionar tu canal.",
           "Almacenar y servir el audio, las portadas, el feed RSS y el reproductor embebido.",
           "Generar el QR y el enlace ZIP-321 de donación cuando el creador añade una dirección Zcash.",
+          "Medir reproducciones, descargas y retención de forma agregada para mostrar analíticas a los creadores.",
+          "Enviar correos de verificación, recuperación y avisos de la lista de espera, y notificaciones push a administradores que las activen.",
           "Prevenir spam, abuso, fraude y accesos no autorizados.",
           "Responder consultas, reportes de contenido y reportes de seguridad.",
           "Cumplir obligaciones legales que resulten aplicables.",
@@ -159,20 +163,20 @@ const es: SiteLegalContent = {
       {
         title: "4. Base jurídica",
         paragraphs: [
-          "Según el caso, tratamos datos para ejecutar el servicio que solicitas, con tu consentimiento (por ejemplo, la cookie de idioma), por interés legítimo en mantener la plataforma segura y, cuando corresponda, para cumplir una obligación legal.",
+          "Según el caso, tratamos datos para ejecutar el servicio que solicitas, con tu consentimiento (por ejemplo, la cookie de idioma), por interés legítimo en mantener la plataforma segura y ofrecer estadísticas agregadas a los creadores y, cuando corresponda, para cumplir una obligación legal.",
         ],
       },
       {
         title: "5. Conservación",
         paragraphs: [
           "Mantenemos los datos mientras tu cuenta esté activa. Si solicitas el borrado, eliminamos o anonimizamos los datos asociados, salvo aquellos que debamos conservar por obligación legal o por copias de seguridad técnicas, que se sobrescriben en el ciclo habitual.",
-          "Los datos técnicos de rate limiting se mantienen en memoria y no se usan para publicidad ni para elaborar perfiles.",
+          "Los contadores de rate limiting se guardan como hashes HMAC en una base SQLite separada; las métricas agregadas se conservan 90 días. Los eventos crudos de analítica se conservan 90 días y los agregados diarios, sin IP ni user-agent, se conservan indefinidamente. Las suscripciones push se conservan mientras estén activas o hasta que las desactives. No usamos estos datos para publicidad ni para elaborar perfiles.",
         ],
       },
       {
         title: "6. Terceros y transferencias",
         paragraphs: [
-          "Usamos proveedores de hosting y almacenamiento para operar el servicio. No vendemos datos personales ni los compartimos con anunciantes.",
+          "Usamos proveedores de hosting y almacenamiento, Resend para el envío de correos transaccionales y los servicios push del navegador para las notificaciones. No vendemos datos personales ni los compartimos con anunciantes.",
           "El código fuente se aloja en GitHub. Las direcciones y transacciones de Zcash son públicas por naturaleza; si se usa una dirección transparente, el monto y el memo pueden ser visibles en la blockchain. Por eso la plataforma recomienda direcciones protegidas.",
           "PodZcash no custodia fondos, no ejecuta pagos y no recibe claves privadas de los creadores.",
         ],
@@ -180,33 +184,41 @@ const es: SiteLegalContent = {
       {
         title: "7. Cookies",
         paragraphs: [
-          "Usamos una cookie funcional llamada podzcash_locale para recordar tu idioma (español o inglés). No usamos cookies publicitarias ni rastreadores de terceros.",
-          "Puedes borrar la cookie desde tu navegador. La plataforma seguirá funcionando y volverá al idioma predeterminado.",
+          "Usamos dos cookies funcionales: podzcash_locale para recordar tu idioma (español o inglés) y podzcash_session para mantener la sesión iniciada. La cookie de sesión es httpOnly, SameSite=Lax y Secure en producción. No usamos cookies publicitarias ni rastreadores de terceros.",
+          "Puedes borrar las cookies desde tu navegador. Si borras la de sesión, tendrás que iniciar sesión de nuevo; si borras la de idioma, la plataforma volverá al idioma predeterminado.",
         ],
       },
       {
-        title: "8. Donaciones",
+        title: "8. Analítica",
+        paragraphs: [
+          "Medimos descargas de audio, inicios de escucha e hitos de progreso para mostrar a cada creador estadísticas agregadas de su audiencia.",
+          "No usamos cookies de terceros, píxeles publicitarios ni redes de anuncios. La IP y el user-agent se guardan solo como hashes SHA-256 con una sal diaria; los hashes cambian cada día y no permiten reconstruir la IP.",
+          "Los eventos crudos se conservan 90 días. Los agregados diarios, sin IP ni user-agent, se conservan indefinidamente. La analítica no está certificada por IAB Tech Lab.",
+        ],
+      },
+      {
+        title: "9. Donaciones",
         paragraphs: [
           "Las donaciones son transferencias directas entre el oyente y el creador. PodZcash solo genera un QR y un enlace ZIP-321; no procesa, retiene ni reembolsa pagos.",
           "La información de una transacción puede ser pública en la blockchain de Zcash. La plataforma no puede eliminarla ni modificarla.",
         ],
       },
       {
-        title: "9. Tus derechos",
+        title: "10. Tus derechos",
         paragraphs: [
           "Puedes solicitar acceso, rectificación, eliminación, portabilidad u oposición al tratamiento de tus datos, y retirar un consentimiento cuando sea la base jurídica. Escríbenos a hola@podzcash.online.",
-          "También puedes exportar tus datos y eliminar tu cuenta desde Estudio → Cuenta. Al eliminarla se borran cuenta, canal, episodios, comentarios, progreso y archivos; los reportes enviados se conservan anonimizados. Las copias de seguridad cifradas se sobrescriben en el ciclo habitual y las donaciones en ZEC ya enviadas no se pueden borrar.",
+          "También puedes exportar tus datos y eliminar tu cuenta desde Estudio → Cuenta. Al eliminarla se borran cuenta, canal, episodios, comentarios, progreso, suscripciones push y archivos; los reportes enviados se conservan anonimizados. Las copias de seguridad cifradas se sobrescriben en el ciclo habitual y las donaciones en ZEC ya enviadas no se pueden borrar.",
           "También puedes presentar una reclamación ante la autoridad de protección de datos que corresponda en tu jurisdicción.",
         ],
       },
       {
-        title: "10. Seguridad",
+        title: "11. Seguridad",
         paragraphs: [
-          "Aplicamos medidas razonables: hash de contraseñas con scrypt, cookies de sesión httpOnly, límites de intentos y controles de permisos. Ningún sistema es completamente infalible; si detectas un problema, usa el canal privado de SECURITY.md.",
+          "Aplicamos medidas razonables: hash de contraseñas con scrypt, cookies de sesión httpOnly, límites de intentos persistentes, controles de permisos y verificación en dos pasos (TOTP) con secreto cifrado y códigos de recuperación hasheados. El panel de administración exige 2FA. Ningún sistema es completamente infalible; si detectas un problema, usa el canal privado de SECURITY.md.",
         ],
       },
       {
-        title: "11. Cambios",
+        title: "12. Cambios",
         paragraphs: [
           "Podemos actualizar esta política para reflejar cambios en el servicio o en la ley. Publicaremos la versión vigente en esta página con su fecha de actualización.",
         ],
@@ -222,7 +234,7 @@ const es: SiteLegalContent = {
     metaDescription:
       "Reglas de uso de PodZcash: cuentas, contenido, donaciones, moderación y responsabilidad.",
     title: "Términos del servicio",
-    updated: "Última actualización: 5 de noviembre de 2026",
+    updated: "Última actualización: 16 de noviembre de 2026",
     intro:
       "Estos términos describen las reglas para usar PodZcash. Al crear una cuenta, publicar contenido o usar la plataforma, aceptas estas condiciones.",
     sections: [
@@ -244,7 +256,9 @@ const es: SiteLegalContent = {
         title: "3. Cuentas",
         bullets: [
           "El registro es por invitación. Debes proporcionar información veraz y mantenerla actualizada.",
-          "Eres responsable de la seguridad de tu contraseña y de la actividad de tu cuenta.",
+          "Eres responsable de la seguridad de tu contraseña, de tu segundo factor y de la actividad de tu cuenta.",
+          "Puedes activar la verificación en dos pasos (2FA). Si la activas, debes guardar tus códigos de recuperación y mantener seguro tu dispositivo; si pierdes ambos, podrías perder el acceso a la cuenta.",
+          "El panel de administración exige 2FA.",
           "No puedes vender, transferir ni compartir tu cuenta sin autorización.",
           "Podemos suspender o limitar una cuenta por incumplimiento, abuso o riesgo para la plataforma o para terceros.",
         ],
@@ -329,7 +343,7 @@ const es: SiteLegalContent = {
     metaDescription:
       "Declaración de accesibilidad de PodZcash: estado WCAG 2.2 AA, medidas implementadas y cómo reportar barreras.",
     title: "Declaración de accesibilidad",
-    updated: "Actualizado: 15 de noviembre de 2026",
+    updated: "Actualizado: 16 de noviembre de 2026",
     intro:
       "PodZcash quiere que escuchar, publicar y donar sea posible para todas las personas. Esta declaración resume el estado actual, las medidas aplicadas y las limitaciones conocidas.",
     sections: [
@@ -340,7 +354,7 @@ const es: SiteLegalContent = {
         ],
         bullets: [
           "Rutas públicas, estudio, cuenta y administración cubiertas por pruebas automatizadas.",
-          "Formularios, navegación y reproductor revisados con teclado y foco visible.",
+          "Formularios, navegación, cuenta, 2FA y reproductor revisados con teclado y foco visible.",
           "Las transcripciones, capítulos y descripciones de audio siguen pendientes.",
         ],
       },
@@ -349,6 +363,7 @@ const es: SiteLegalContent = {
         bullets: [
           "HTML semántico, landmarks y un enlace para saltar al contenido.",
           "Etiquetas asociadas a los campos y mensajes de error legibles.",
+          "La sección de seguridad y 2FA usa etiquetas y estados claros.",
           "Contraste revisado en textos, botones, enlaces y estados de foco.",
           "Reproductor operable con teclado y respeto a prefers-reduced-motion.",
           "Idioma del documento declarado y contenido disponible en español e inglés.",
@@ -366,11 +381,11 @@ const es: SiteLegalContent = {
       {
         title: "4. Evaluación",
         paragraphs: [
-          "La revisión automatizada se ejecuta con axe-core y Playwright sobre las rutas principales en cada cambio. Los problemas críticos y graves se corrigen antes de desplegar. La revisión manual de teclado cubre inicio, acceso, estudio, cuenta y reproductor.",
+          "La revisión automatizada se ejecuta con axe-core y Playwright sobre las rutas principales en cada cambio; la suite actual tiene 33 pruebas. Los problemas críticos y graves se corrigen antes de desplegar. La revisión manual de teclado cubre inicio, acceso, estudio, cuenta, 2FA y reproductor.",
         ],
         bullets: [
           "Herramientas: axe-core, Playwright y revisión manual.",
-          "Última revisión: 15 de noviembre de 2026.",
+          "Última revisión: 16 de noviembre de 2026.",
           "Entorno: build de producción con datos de prueba.",
         ],
       },
@@ -428,7 +443,7 @@ const en: SiteLegalContent = {
     teamRole: "Founder and developer",
     statusTitle: "Current status",
     statusBody:
-      "Closed beta in production, bilingual Spanish/English. The product and funding plan is published on the project page.",
+      "Closed beta in production, bilingual Spanish/English, with two-step verification and a public accessibility statement. The product and funding plan is published on the project page.",
     collaborateTitle: "How to contribute",
     collaborateBody:
       "You can open an issue or a pull request on GitHub. Before contributing, read the contribution guide and the code of conduct.",
@@ -452,7 +467,7 @@ const en: SiteLegalContent = {
     metaDescription:
       "What data PodZcash processes, why, how long it keeps it and how to exercise your rights.",
     title: "Privacy policy",
-    updated: "Last updated: November 5, 2026",
+    updated: "Last updated: November 16, 2026",
     intro:
       "This policy explains what personal data PodZcash processes, for what purpose and how you can exercise your rights. It is written to be understood without unnecessary jargon.",
     sections: [
@@ -472,7 +487,9 @@ const en: SiteLegalContent = {
           "Account security: if you enable two-step verification, we store the encrypted TOTP secret and hashed recovery codes.",
           "Channel data: display name, username, bio, links, avatar, cover and public Zcash address if the creator chooses to add one.",
           "Content: audio, covers, titles, descriptions and tags uploaded or published by the creator.",
-          "Technical data: functional cookies, IP address and connection data used to authenticate, rate-limit abuse and protect the service.",
+          "Technical data: functional cookies (language and session), IP address and connection data used to authenticate, rate-limit abuse and protect the service. For rate limiting and analytics, the IP is stored only as a hash.",
+          "Aggregated analytics: audio requests, listening starts and progress milestones. The IP and user-agent are stored only as hashes with a daily salt and are not linked to your account.",
+          "Push notifications: if you are an administrator and enable alerts, we store the browser subscription (endpoint and keys) to send waitlist alerts.",
           "Listening history: per-user episode position and duration, only when signed in, to continue on another device. You can delete it from your account.",
           "Communications: messages you send us for support, reports or security.",
         ],
@@ -483,6 +500,8 @@ const en: SiteLegalContent = {
           "Create and maintain your account, authenticate you and manage your channel.",
           "Store and serve audio, covers, the RSS feed and the embeddable player.",
           "Generate the donation QR and ZIP-321 link when a creator adds a Zcash address.",
+          "Measure plays, downloads and retention in aggregate to show analytics to creators.",
+          "Send verification, recovery and waitlist emails, and push notifications to administrators who enable them.",
           "Prevent spam, abuse, fraud and unauthorized access.",
           "Respond to support requests, content reports and security reports.",
           "Comply with legal obligations where applicable.",
@@ -491,20 +510,20 @@ const en: SiteLegalContent = {
       {
         title: "4. Legal basis",
         paragraphs: [
-          "Depending on the case, we process data to perform the service you request, with your consent (for example, the language cookie), for our legitimate interest in keeping the platform secure and, where applicable, to comply with a legal obligation.",
+          "Depending on the case, we process data to perform the service you request, with your consent (for example, the language cookie), for our legitimate interest in keeping the platform secure and providing aggregated statistics to creators and, where applicable, to comply with a legal obligation.",
         ],
       },
       {
         title: "5. Retention",
         paragraphs: [
           "We keep data while your account is active. If you request deletion, we delete or anonymize the associated data, except where we must keep it for a legal obligation or technical backups, which are overwritten in the normal cycle.",
-          "Technical rate-limiting data is kept in memory and is not used for advertising or profiling.",
+          "Rate-limit counters are stored as HMAC hashes in a separate SQLite database; aggregated metrics are kept for 90 days. Raw analytics events are kept for 90 days and daily aggregates, without IP or user-agent, are kept indefinitely. Push subscriptions are kept while active or until you disable them. We do not use this data for advertising or profiling.",
         ],
       },
       {
         title: "6. Third parties and transfers",
         paragraphs: [
-          "We use hosting and storage providers to operate the service. We do not sell personal data or share it with advertisers.",
+          "We use hosting and storage providers, Resend for transactional email delivery and browser push services for notifications. We do not sell personal data or share it with advertisers.",
           "The source code is hosted on GitHub. Zcash addresses and transactions are public by nature; if a transparent address is used, the amount and memo may be visible on the blockchain. This is why the platform recommends shielded addresses.",
           "PodZcash does not custody funds, execute payments or receive creators' private keys.",
         ],
@@ -512,33 +531,41 @@ const en: SiteLegalContent = {
       {
         title: "7. Cookies",
         paragraphs: [
-          "We use one functional cookie called podzcash_locale to remember your language (Spanish or English). We do not use advertising cookies or third-party trackers.",
-          "You can delete the cookie from your browser. The platform will keep working and return to the default language.",
+          "We use two functional cookies: podzcash_locale to remember your language (Spanish or English) and podzcash_session to keep you signed in. The session cookie is httpOnly, SameSite=Lax and Secure in production. We do not use advertising cookies or third-party trackers.",
+          "You can delete the cookies from your browser. If you delete the session cookie, you will need to sign in again; if you delete the language cookie, the platform will return to the default language.",
         ],
       },
       {
-        title: "8. Donations",
+        title: "8. Analytics",
+        paragraphs: [
+          "We measure audio downloads, listening starts and progress milestones to show each creator aggregated audience statistics.",
+          "We do not use third-party cookies, advertising pixels or ad networks. The IP and user-agent are stored only as SHA-256 hashes with a daily salt; the hashes change every day and cannot reconstruct the IP.",
+          "Raw events are kept for 90 days. Daily aggregates, without IP or user-agent, are kept indefinitely. Analytics is not certified by IAB Tech Lab.",
+        ],
+      },
+      {
+        title: "9. Donations",
         paragraphs: [
           "Donations are direct transfers between the listener and the creator. PodZcash only generates a QR and a ZIP-321 link; it does not process, retain or refund payments.",
           "Transaction information may be public on the Zcash blockchain. The platform cannot delete or modify it.",
         ],
       },
       {
-        title: "9. Your rights",
+        title: "10. Your rights",
         paragraphs: [
           "You can request access, rectification, deletion, portability or objection to processing, and withdraw consent where that is the legal basis. Write to hola@podzcash.online.",
-          "You can also export your data and delete your account from Studio → Account. Deleting it removes your account, channel, episodes, comments, progress and files; reports you sent are kept anonymized. Encrypted backups are overwritten in their usual cycle and ZEC donations already sent cannot be deleted.",
+          "You can also export your data and delete your account from Studio → Account. Deleting it removes your account, channel, episodes, comments, progress, push subscriptions and files; reports you sent are kept anonymized. Encrypted backups are overwritten in their usual cycle and ZEC donations already sent cannot be deleted.",
           "You may also file a complaint with the data protection authority that applies in your jurisdiction.",
         ],
       },
       {
-        title: "10. Security",
+        title: "11. Security",
         paragraphs: [
-          "We apply reasonable measures: scrypt password hashing, httpOnly session cookies, attempt limits and permission controls. No system is completely infallible; if you find a problem, use the private channel in SECURITY.md.",
+          "We apply reasonable measures: scrypt password hashing, httpOnly session cookies, persistent attempt limits, permission controls and two-step verification (TOTP) with an encrypted secret and hashed recovery codes. The admin panel requires 2FA. No system is completely infallible; if you find a problem, use the private channel in SECURITY.md.",
         ],
       },
       {
-        title: "11. Changes",
+        title: "12. Changes",
         paragraphs: [
           "We may update this policy to reflect changes in the service or the law. The current version will be published on this page with its update date.",
         ],
@@ -554,7 +581,7 @@ const en: SiteLegalContent = {
     metaDescription:
       "PodZcash rules: accounts, content, donations, moderation and liability.",
     title: "Terms of service",
-    updated: "Last updated: November 5, 2026",
+    updated: "Last updated: November 16, 2026",
     intro:
       "These terms describe the rules for using PodZcash. By creating an account, publishing content or using the platform, you accept these conditions.",
     sections: [
@@ -576,7 +603,9 @@ const en: SiteLegalContent = {
         title: "3. Accounts",
         bullets: [
           "Registration is invite-only. You must provide accurate information and keep it up to date.",
-          "You are responsible for the security of your password and for activity on your account.",
+          "You are responsible for the security of your password, your second factor and activity on your account.",
+          "You can enable two-step verification (2FA). If you do, you must store your recovery codes and keep your device secure; if you lose both, you may lose access to your account.",
+          "The admin panel requires 2FA.",
           "You may not sell, transfer or share your account without authorization.",
           "We may suspend or limit an account for violations, abuse or risk to the platform or third parties.",
         ],
@@ -661,7 +690,7 @@ const en: SiteLegalContent = {
     metaDescription:
       "PodZcash accessibility statement: WCAG 2.2 AA status, implemented measures and how to report barriers.",
     title: "Accessibility statement",
-    updated: "Last updated: November 15, 2026",
+    updated: "Last updated: November 16, 2026",
     intro:
       "PodZcash wants listening, publishing and donating to be possible for everyone. This statement summarizes the current status, the measures we apply and the known limitations.",
     sections: [
@@ -672,7 +701,7 @@ const en: SiteLegalContent = {
         ],
         bullets: [
           "Public routes, studio, account and administration covered by automated tests.",
-          "Forms, navigation and player reviewed with keyboard and visible focus.",
+          "Forms, navigation, account, 2FA and player reviewed with keyboard and visible focus.",
           "Transcripts, chapters and audio descriptions are still pending.",
         ],
       },
@@ -681,6 +710,7 @@ const en: SiteLegalContent = {
         bullets: [
           "Semantic HTML, landmarks and a skip-to-content link.",
           "Labels associated with fields and readable error messages.",
+          "The security and 2FA section uses clear labels and states.",
           "Contrast reviewed on text, buttons, links and focus states.",
           "Player operable with the keyboard and respectful of prefers-reduced-motion.",
           "Document language declared and content available in Spanish and English.",
@@ -698,11 +728,11 @@ const en: SiteLegalContent = {
       {
         title: "4. Evaluation",
         paragraphs: [
-          "The automated review runs with axe-core and Playwright on the main routes for every change. Critical and serious issues are fixed before deployment. The manual keyboard review covers home, sign-in, studio, account and player.",
+          "The automated review runs with axe-core and Playwright on the main routes for every change; the current suite has 33 tests. Critical and serious issues are fixed before deployment. The manual keyboard review covers home, sign-in, studio, account, 2FA and player.",
         ],
         bullets: [
           "Tools: axe-core, Playwright and manual review.",
-          "Last review: November 15, 2026.",
+          "Last review: November 16, 2026.",
           "Environment: production build with test data.",
         ],
       },

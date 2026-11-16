@@ -17,7 +17,7 @@ const es = {
       "Esta página cuenta qué es, qué funciona hoy, qué falta para que crezca y cómo se financia. Sin métricas infladas ni promesas vacías.",
     live: "Beta cerrada en producción",
     plan: "Plan 2026 — 2029",
-    updated: "Actualizado el 10 de noviembre de 2026",
+    updated: "Actualizado el 16 de noviembre de 2026",
     ctaApp: "Ver la aplicación",
     ctaFunding: "Cómo se financia",
     tag: "Hoy, en producción",
@@ -35,9 +35,9 @@ const es = {
     },
     {
       label: "Funcionalidades",
-      value: "12",
+      value: "13",
       suffix: "",
-      sub: "Cuentas, audio, PWA, analíticas, ZEC, RSS",
+      sub: "Cuentas, 2FA, audio, PWA, analíticas, ZEC, RSS",
     },
     {
       label: "Horizonte",
@@ -172,7 +172,7 @@ const es = {
           },
           {
             label: "Accesibilidad",
-            text: "contraste, navegación por teclado, estados claros y pruebas axe",
+            text: "contraste, navegación por teclado, estados claros, pruebas axe y declaración pública",
           },
         ],
       },
@@ -197,7 +197,7 @@ const es = {
           },
           {
             label: "Seguridad y privacidad",
-            text: "CSP/HSTS, límites de peticiones, exportación y borrado de cuenta",
+            text: "CSP/HSTS, límites de peticiones, 2FA TOTP, exportación y borrado de cuenta",
           },
           {
             label: "Lista de espera",
@@ -240,7 +240,7 @@ const es = {
     done: {
       badge: "Completado",
       title: "Fases 01 — 08 + 11 + 12 · MVP y analíticas en producción",
-      body: "Un creador ya puede registrarse por invitación, crear su canal, subir audio, publicarlo con RSS, recibir ZEC directo a su wallet y ver analíticas de escucha. Con moderación, administración y copias de seguridad verificadas.",
+      body: "Un creador ya puede registrarse por invitación, crear su canal, subir audio, publicarlo con RSS, recibir ZEC directo a su wallet y ver analíticas de escucha. Con moderación, administración, 2FA y copias de seguridad verificadas.",
       chips: [
         { n: "01", label: "Fundaciones" },
         { n: "02", label: "Cuentas e invitaciones" },
@@ -339,7 +339,7 @@ const es = {
           {
             n: "Fase 21",
             title: "Accesibilidad WCAG",
-            body: "Ya hay mejoras de contraste, navegación y movimiento reducido. Faltan la auditoría WCAG y las transcripciones.",
+            body: "La primera fase de la auditoría WCAG 2.2 AA ya está hecha. Faltan la revisión con lector de pantalla y las transcripciones.",
           },
           {
             n: "Fase 22",
@@ -372,7 +372,7 @@ const es = {
     horizon: [
       {
         label: "Hoy:",
-        text: "publicar audio, tener canal, recibir ZEC y ver analíticas.",
+        text: "publicar audio, tener canal, recibir ZEC, ver analíticas y proteger la cuenta con 2FA.",
       },
       {
         label: "En 1 año:",
@@ -547,7 +547,7 @@ const en: ProjectContent = {
       "This page covers what it is, what works today, what it needs to grow and how it is funded. No inflated metrics, no empty promises.",
     live: "Closed beta in production",
     plan: "2026 — 2029 plan",
-    updated: "Updated November 10, 2026",
+    updated: "Updated November 16, 2026",
     ctaApp: "View the app",
     ctaFunding: "How it's funded",
     tag: "Live in production",
@@ -560,9 +560,9 @@ const en: ProjectContent = {
     { label: "Plan phases", value: "10", suffix: "/ 26", sub: "16 ahead" },
     {
       label: "Features",
-      value: "12",
+      value: "13",
       suffix: "",
-      sub: "Accounts, audio, PWA, analytics, ZEC, RSS",
+      sub: "Accounts, 2FA, audio, PWA, analytics, ZEC, RSS",
     },
     {
       label: "Horizon",
@@ -696,7 +696,7 @@ const en: ProjectContent = {
           },
           {
             label: "Accessibility",
-            text: "contrast, keyboard navigation, clear states and axe tests",
+            text: "contrast, keyboard navigation, clear states, axe tests and a public statement",
           },
         ],
       },
@@ -721,7 +721,7 @@ const en: ProjectContent = {
           },
           {
             label: "Security and privacy",
-            text: "CSP/HSTS, rate limiting, data export and account deletion",
+            text: "CSP/HSTS, rate limiting, TOTP 2FA, data export and account deletion",
           },
           {
             label: "Waitlist",
@@ -764,7 +764,7 @@ const en: ProjectContent = {
     done: {
       badge: "Completed",
       title: "Phases 01 — 08 + 11 + 12 · MVP and analytics in production",
-      body: "A creator can already register by invite, create their channel, upload audio, publish it with RSS, receive ZEC straight to their wallet and see listening analytics. With moderation, administration and verified backups.",
+      body: "A creator can already register by invite, create their channel, upload audio, publish it with RSS, receive ZEC straight to their wallet and see listening analytics. With moderation, administration, 2FA and verified backups.",
       chips: [
         { n: "01", label: "Foundations" },
         { n: "02", label: "Accounts and invites" },
@@ -863,7 +863,7 @@ const en: ProjectContent = {
           {
             n: "Phase 21",
             title: "WCAG accessibility",
-            body: "Contrast, navigation and reduced-motion improvements are already in. The WCAG audit and transcripts are still missing.",
+            body: "The first phase of the WCAG 2.2 AA audit is done. Screen reader testing and transcripts remain.",
           },
           {
             n: "Phase 22",
@@ -896,7 +896,7 @@ const en: ProjectContent = {
     horizon: [
       {
         label: "Today:",
-        text: "publish audio, have a channel, receive ZEC and see analytics.",
+        text: "publish audio, have a channel, receive ZEC, see analytics and protect your account with 2FA.",
       },
       {
         label: "In 1 year:",
