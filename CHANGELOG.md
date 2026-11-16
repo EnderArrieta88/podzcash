@@ -5,6 +5,13 @@ Todos los cambios relevantes de PodZcash se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y el proyecto usa [versionado semántico](https://semver.org/lang/es/).
 
+## [0.5.0](https://github.com/EnderArrieta88/podzcash/compare/v0.4.0...v0.5.0) (2026-11-16)
+
+
+### Añadido
+
+* recomendar apps de 2fa y reorganizar la cuenta ([#218](https://github.com/EnderArrieta88/podzcash/issues/218)) ([f0611a0](https://github.com/EnderArrieta88/podzcash/commit/f0611a0600c9e0dd67ed0d7c496cf1e991f8ff60))
+
 ## [0.4.0](https://github.com/EnderArrieta88/podzcash/compare/v0.3.1...v0.4.0) (2026-11-16)
 
 
