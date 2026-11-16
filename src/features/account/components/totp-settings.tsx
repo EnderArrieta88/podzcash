@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { KeyRound, ShieldCheck } from "lucide-react";
+import { KeyRound, ShieldCheck, TriangleAlert } from "lucide-react";
 import { Input, Label } from "@/components/ui/field";
 import type { StudioSecurityContent } from "@/lib/i18n/studio-security";
 import {
@@ -55,7 +55,7 @@ export function TotpSettings({
     confirmState?.recoveryCodes ?? manageState?.recoveryCodes;
 
   return (
-    <section className="mt-6 rounded-xl border border-border bg-surface p-6">
+    <section className="rounded-xl border border-border bg-surface p-6">
       <div className="flex items-start gap-3">
         <ShieldCheck size={18} className="mt-0.5 text-jade" />
         <div>
@@ -70,6 +70,55 @@ export function TotpSettings({
         <p className="mt-4 rounded-lg border border-brand/30 bg-brand-soft/30 px-3 py-2 text-xs text-brand">
           {labels.requiredNotice}
         </p>
+      )}
+
+      {!enabled && (
+        <div className="mt-4 rounded-lg border border-border bg-surface-2/60 p-3">
+          <p className="text-xs font-medium text-text">
+            {labels.recommendedTitle}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            {labels.recommendedBody}
+          </p>
+          <ul className="mt-2 space-y-1 text-xs text-muted">
+            <li>
+              <a
+                href="https://getaegis.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+              >
+                {labels.aegis}
+              </a>{" "}
+              · Android
+            </li>
+            <li>
+              <a
+                href="https://proton.me/authenticator"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand"
+              >
+                {labels.proton}
+              </a>{" "}
+              · {labels.iosAndroid}
+            </li>
+          </ul>
+        </div>
+      )}
+
+      {!enabled && (
+        <div className="mt-3 flex gap-2 rounded-lg border border-brand/30 bg-brand-soft/20 px-3 py-2">
+          <TriangleAlert size={14} className="mt-0.5 shrink-0 text-brand" />
+          <div>
+            <p className="text-xs font-medium text-brand">
+              {labels.googleWarningTitle}
+            </p>
+            <p className="mt-0.5 text-xs leading-relaxed text-muted">
+              {labels.googleWarningBody}
+            </p>
+          </div>
+        </div>
       )}
 
       {enabled ? (

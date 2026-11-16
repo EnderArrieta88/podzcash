@@ -7,9 +7,18 @@ const es = {
   requiredNotice:
     "El panel de administración requiere 2FA. Actívalo para seguir usando las herramientas de administración.",
   enable: "Activar 2FA",
+  recommendedTitle: "Apps recomendadas",
+  recommendedBody:
+    "Recomendamos estas apps por su enfoque en la privacidad y su compatibilidad con TOTP estándar:",
+  aegis: "Aegis",
+  proton: "Proton Authenticator",
+  iosAndroid: "iOS y Android",
+  googleWarningTitle: "Si usas Google Authenticator",
+  googleWarningBody:
+    "Evita vincular tus 2FA con tu cuenta de Google, ya que los códigos pueden ser robados si esa cuenta es hackeada.",
   setupTitle: "Escanea el código",
   setupHint:
-    "Usa ZODL, Google Authenticator, Aegis o cualquier app compatible con TOTP.",
+    "Escanea el código con Aegis o Proton Authenticator. También funciona cualquier app compatible con TOTP.",
   manualKey: "Clave manual",
   code: "Código de 6 dígitos",
   codeHint: "Introduce el código actual de tu app.",
@@ -49,9 +58,18 @@ const en: StudioSecurityContent = {
   requiredNotice:
     "The admin panel requires 2FA. Enable it to keep using the administration tools.",
   enable: "Enable 2FA",
+  recommendedTitle: "Recommended apps",
+  recommendedBody:
+    "We recommend these apps for their privacy focus and standard TOTP support:",
+  aegis: "Aegis",
+  proton: "Proton Authenticator",
+  iosAndroid: "iOS and Android",
+  googleWarningTitle: "If you use Google Authenticator",
+  googleWarningBody:
+    "Avoid linking your 2FA to your Google account, since the codes can be stolen if that account is hacked.",
   setupTitle: "Scan the code",
   setupHint:
-    "Use ZODL, Google Authenticator, Aegis or any TOTP-compatible app.",
+    "Scan the code with Aegis or Proton Authenticator. Any TOTP-compatible app also works.",
   manualKey: "Manual key",
   code: "6-digit code",
   codeHint: "Enter the current code from your app.",
