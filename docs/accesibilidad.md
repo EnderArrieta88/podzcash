@@ -44,7 +44,7 @@ build.
 
 ## Resultado de la última revisión
 
-- Fecha: **15 de noviembre de 2026**.
+- Fecha: **16 de noviembre de 2026**.
 - **33 pruebas de accesibilidad en verde**.
 - Sin violaciones `critical` o `serious` en las rutas cubiertas.
 - Entorno: build de producción con datos de prueba.
