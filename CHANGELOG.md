@@ -5,6 +5,14 @@ Todos los cambios relevantes de PodZcash se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y el proyecto usa [versionado semántico](https://semver.org/lang/es/).
 
+## [0.4.0](https://github.com/EnderArrieta88/podzcash/compare/v0.3.1...v0.4.0) (2026-11-16)
+
+
+### Añadido
+
+* agregar verificacion en dos pasos con totp ([#215](https://github.com/EnderArrieta88/podzcash/issues/215)) ([65dfb6f](https://github.com/EnderArrieta88/podzcash/commit/65dfb6f1c024eb8687fe73d7a3ae3a508f6f6da4))
+* auditar accesibilidad wcag 2.2 aa ([#217](https://github.com/EnderArrieta88/podzcash/issues/217)) ([bc019ae](https://github.com/EnderArrieta88/podzcash/commit/bc019ae08915b83ea7c9d4320ab522af21fb60ac))
+
 ## [0.3.1](https://github.com/EnderArrieta88/podzcash/compare/v0.3.0...v0.3.1) (2026-11-15)
 
 
