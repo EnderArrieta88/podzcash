@@ -64,5 +64,8 @@
   },
   "allowScripts": {
     "better-sqlite3@12.11.1": true
+  },
+  "overrides": {
+    "effect": "3.22.5"
   }
 }
