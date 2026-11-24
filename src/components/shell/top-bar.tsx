@@ -93,6 +93,15 @@ export function TopBar({
             {labels.nonCustodial}
           </span>
 
+          {publicMode && user && (
+            <Link
+              href="/estudio"
+              className="hidden h-9 items-center rounded-xl bg-brand px-4 text-sm font-semibold text-[#17130a] transition-colors hover:bg-brand-strong sm:inline-flex"
+            >
+              {labels.nav.studio}
+            </Link>
+          )}
+
           {!user && (
             <Link
               href="/entrar"
@@ -102,7 +111,13 @@ export function TopBar({
             </Link>
           )}
 
-          {user && <AccountMenu user={user} locale={locale} />}
+          {user && (
+            <AccountMenu
+              user={user}
+              locale={locale}
+              showStudioItems={publicMode}
+            />
+          )}
         </div>
       </div>
     </header>

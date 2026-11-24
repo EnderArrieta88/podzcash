@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { loginAsAdmin } from "./auth";
+import { loginAs, loginAsAdmin } from "./auth";
 
 test("solo la sección más específica queda activa en el menú", async ({
   page,
@@ -31,4 +31,20 @@ test("el canal público no muestra el rail del estudio", async ({ page }) => {
   await expect(
     page.getByRole("link", { name: "Pedir una invitación" }),
   ).toBeVisible();
+});
+
+test("desde una página pública se puede volver al estudio", async ({
+  page,
+}) => {
+  await loginAs(page, "e2e@podzcash.local");
+  await page.goto("/explorar");
+
+  const studio = page
+    .getByRole("link", { name: "Mi estudio", exact: true })
+    .first();
+
+  await expect(studio).toBeVisible();
+  await studio.click();
+  await page.waitForURL("**/estudio");
+  await expect(page.locator("aside[data-rail]")).toBeVisible();
 });

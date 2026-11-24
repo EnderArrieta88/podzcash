@@ -18,13 +18,16 @@ import type { RailUser } from "@/components/shell/side-rail";
 import type { Locale } from "@/lib/i18n/config";
 import { shellContent } from "@/lib/i18n/shell";
 import { studioShellContent } from "@/lib/i18n/studio-shell";
+import { cn } from "@/lib/utils";
 
 export function AccountMenu({
   user,
   locale,
+  showStudioItems = false,
 }: {
   user: NonNullable<RailUser>;
   locale: Locale;
+  showStudioItems?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const container = useRef<HTMLDivElement>(null);
@@ -120,7 +123,12 @@ export function AccountMenu({
           </div>
 
           {user.channel && (
-            <div className="border-b border-border py-1 lg:hidden">
+            <div
+              className={cn(
+                "border-b border-border py-1",
+                !showStudioItems && "lg:hidden",
+              )}
+            >
               {studioItems.map((item) => (
                 <Link
                   key={item.href}
