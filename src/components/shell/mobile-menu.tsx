@@ -24,9 +24,11 @@ import { activeHref } from "@/lib/nav";
 export function MobileMenu({
   user,
   locale,
+  publicMode = false,
 }: {
   user: RailUser;
   locale: Locale;
+  publicMode?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -57,18 +59,22 @@ export function MobileMenu({
       icon: Compass,
       exact: false,
     },
-    {
-      href: "/descargas",
-      label: labels.nav.downloads,
-      icon: Download,
-      exact: true,
-    },
-    {
-      href: "/estudio",
-      label: labels.nav.studio,
-      icon: ListMusic,
-      exact: false,
-    },
+    ...(!publicMode || user
+      ? [
+          {
+            href: "/descargas",
+            label: labels.nav.downloads,
+            icon: Download,
+            exact: true,
+          },
+          {
+            href: "/estudio",
+            label: labels.nav.studio,
+            icon: ListMusic,
+            exact: false,
+          },
+        ]
+      : []),
     ...(user?.role === "admin"
       ? [
           {

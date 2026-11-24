@@ -6,22 +6,33 @@ import { SearchBox, SearchShortcut } from "@/components/shell/search-box";
 import type { RailUser } from "@/components/shell/side-rail";
 import type { Locale } from "@/lib/i18n/config";
 import type { ShellContent } from "@/lib/i18n/shell";
+import { cn } from "@/lib/utils";
 
 export function TopBar({
   user,
   locale,
   labels,
+  publicMode = false,
 }: {
   user: RailUser;
   locale: Locale;
   labels: ShellContent;
+  publicMode?: boolean;
 }) {
   return (
     <header className="sticky top-0 z-30 glass border-b">
-      <div className="flex h-16 items-center gap-2 px-4 sm:gap-4 sm:px-6">
-        <MobileMenu user={user} locale={locale} />
+      <div
+        className={cn(
+          "flex h-16 items-center gap-2 px-4 sm:gap-4 sm:px-6",
+          publicMode && "mx-auto w-full max-w-6xl",
+        )}
+      >
+        <MobileMenu user={user} locale={locale} publicMode={publicMode} />
 
-        <Link href="/" className="flex items-center gap-2 lg:hidden">
+        <Link
+          href="/"
+          className={cn("flex items-center gap-2", !publicMode && "lg:hidden")}
+        >
           <span className="flex size-7 items-center justify-center rounded-md bg-brand text-[#17130a]">
             <svg
               width="14"
@@ -60,6 +71,15 @@ export function TopBar({
             Pod<span className="text-brand">Zcash</span>
           </span>
         </Link>
+
+        {publicMode && (
+          <Link
+            href="/explorar"
+            className="hidden text-sm text-muted transition-colors hover:text-text md:block"
+          >
+            {labels.nav.explore}
+          </Link>
+        )}
 
         <SearchShortcut />
         <SearchBox

@@ -15,6 +15,7 @@ import { sharedLabels } from "@/lib/i18n/shared";
 import { channelPath, donatePath, episodePath, feedPath } from "@/lib/routes";
 import { episodeEmbedCode } from "@/lib/embed";
 import { EmbedCode } from "@/components/embed/embed-code";
+import { CreatorCta } from "@/components/creator-cta";
 import {
   absoluteUrl,
   isoDuration,
@@ -247,6 +248,8 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
           ))}
         </div>
       )}
+
+      {!viewer && <CreatorCta locale={locale} />}
 
       {episode.status === "published" && comments && (
         <EpisodeComments

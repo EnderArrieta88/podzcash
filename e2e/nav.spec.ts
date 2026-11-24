@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { loginAsAdmin } from "./auth";
+import { loginAs, loginAsAdmin } from "./auth";
 
 test("solo la sección más específica queda activa en el menú", async ({
   page,
@@ -18,4 +18,30 @@ test("solo la sección más específica queda activa en el menú", async ({
 
   await expect(studio).toHaveAttribute("aria-current", "page");
   await expect(admin).not.toHaveAttribute("aria-current", "page");
+});
+
+test("el canal público no muestra el rail del estudio", async ({ page }) => {
+  await page.goto("/canal/@e2e-canal");
+
+  await expect(page.locator("aside[data-rail]")).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Explorar", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Tu podcast, con su propia casa")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Pedir una invitación" }),
+  ).toBeVisible();
+});
+
+test("el canal mantiene el rail para usuarios con sesión", async ({ page }) => {
+  await loginAs(page, "e2e@podzcash.local");
+  await page.goto("/canal/@e2e-canal");
+
+  const rail = page.locator("aside[data-rail]");
+
+  await expect(rail).toBeVisible();
+  await expect(
+    rail.getByRole("link", { name: "Mi estudio", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Tu podcast, con su propia casa")).toHaveCount(0);
 });
