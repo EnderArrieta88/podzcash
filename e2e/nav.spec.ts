@@ -19,3 +19,16 @@ test("solo la sección más específica queda activa en el menú", async ({
   await expect(studio).toHaveAttribute("aria-current", "page");
   await expect(admin).not.toHaveAttribute("aria-current", "page");
 });
+
+test("el canal público no muestra el rail del estudio", async ({ page }) => {
+  await page.goto("/canal/@e2e-canal");
+
+  await expect(page.locator("aside[data-rail]")).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Explorar", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Tu podcast, con su propia casa")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Pedir una invitación" }),
+  ).toBeVisible();
+});

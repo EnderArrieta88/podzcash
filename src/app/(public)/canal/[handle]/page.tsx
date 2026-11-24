@@ -12,6 +12,7 @@ import {
 import { getCurrentUser } from "@/lib/auth/session";
 import { channelPath, donatePath, feedPath } from "@/lib/routes";
 import { EpisodeRow } from "@/components/content/episode-row";
+import { CreatorCta } from "@/components/creator-cta";
 import { formatDate } from "@/lib/format";
 import { getLocale } from "@/lib/i18n/locale";
 import { channelContent } from "@/lib/i18n/channel";
@@ -278,6 +279,8 @@ export default async function ChannelPage({ params }: PageProps) {
           )}
         </aside>
       </div>
+
+      <CreatorCta locale={locale} />
     </div>
   );
 }

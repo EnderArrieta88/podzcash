@@ -41,6 +41,13 @@ const es = {
     disclaimer:
       "Proyecto independiente hecho en Venezuela. No afiliado a Zcash Foundation ni a Electric Coin Company. Zcash es una marca de Zcash Foundation.",
   },
+  creatorCta: {
+    eyebrow: "PodZcash",
+    title: "Tu podcast, con su propia casa",
+    body: "Publica audio, comparte tu feed y recibe ZEC directo a tu wallet. La beta es por invitación.",
+    primary: "Pedir una invitación",
+    secondary: "Conocer el proyecto",
+  },
 };
 
 type CommonContent = typeof es;
@@ -85,6 +92,13 @@ const en: CommonContent = {
     accessibility: "Accessibility",
     disclaimer:
       "Independent project made in Venezuela. Not affiliated with the Zcash Foundation or Electric Coin Company. Zcash is a trademark of the Zcash Foundation.",
+  },
+  creatorCta: {
+    eyebrow: "PodZcash",
+    title: "Your podcast, with a home of its own",
+    body: "Publish audio, share your feed and receive ZEC straight to your wallet. The beta is invite-only.",
+    primary: "Request an invitation",
+    secondary: "Learn about the project",
   },
 };
 
