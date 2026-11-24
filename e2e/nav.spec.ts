@@ -37,7 +37,9 @@ test("desde una página pública se puede volver al estudio", async ({
   page,
 }) => {
   await loginAs(page, "e2e@podzcash.local");
-  await page.goto("/explorar");
+  await page.goto("/canal/@e2e-canal");
+
+  await expect(page.getByText("Tu podcast, con su propia casa")).toHaveCount(0);
 
   const studio = page
     .getByRole("link", { name: "Mi estudio", exact: true })

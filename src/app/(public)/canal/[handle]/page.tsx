@@ -280,7 +280,7 @@ export default async function ChannelPage({ params }: PageProps) {
         </aside>
       </div>
 
-      <CreatorCta locale={locale} />
+      {!viewer && <CreatorCta locale={locale} />}
     </div>
   );
 }

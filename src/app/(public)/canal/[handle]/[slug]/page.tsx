@@ -249,7 +249,7 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
         </div>
       )}
 
-      <CreatorCta locale={locale} />
+      {!viewer && <CreatorCta locale={locale} />}
 
       {episode.status === "published" && comments && (
         <EpisodeComments
