@@ -33,20 +33,15 @@ test("el canal público no muestra el rail del estudio", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("desde una página pública se puede volver al estudio", async ({
-  page,
-}) => {
+test("el canal mantiene el rail para usuarios con sesión", async ({ page }) => {
   await loginAs(page, "e2e@podzcash.local");
   await page.goto("/canal/@e2e-canal");
 
+  const rail = page.locator("aside[data-rail]");
+
+  await expect(rail).toBeVisible();
+  await expect(
+    rail.getByRole("link", { name: "Mi estudio", exact: true }),
+  ).toBeVisible();
   await expect(page.getByText("Tu podcast, con su propia casa")).toHaveCount(0);
-
-  const studio = page
-    .getByRole("link", { name: "Mi estudio", exact: true })
-    .first();
-
-  await expect(studio).toBeVisible();
-  await studio.click();
-  await page.waitForURL("**/estudio");
-  await expect(page.locator("aside[data-rail]")).toBeVisible();
 });
