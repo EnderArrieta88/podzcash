@@ -17,26 +17,73 @@ jobs:
   health:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      TARGET: https://podzcash.online
+      USER_AGENT: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 
     steps:
       - name: Comprobar /api/health
         run: |
-          set -euo pipefail
+          set -uo pipefail
 
-          for attempt in 1 2 3; do
-            if response=$(curl -fsS --max-time 20 https://podzcash.online/api/health); then
-              echo "$response"
-              echo "$response" | jq -e '.ok == true' > /dev/null
+          for attempt in 1 2 3 4 5; do
+            response=$(curl -sS --compressed --max-time 20 \
+              -H "User-Agent: $USER_AGENT" \
+              -H "Accept: application/json, text/plain, */*" \
+              -H "Accept-Language: es-ES,es;q=0.9,en;q=0.8" \
+              -H "Referer: $TARGET/" \
+              -H "Cache-Control: no-cache" \
+              -w "\n%{http_code}" \
+              "$TARGET/api/health" || true)
+
+            code=$(printf '%s' "$response" | tail -n 1)
+            body=$(printf '%s' "$response" | sed '$d')
+
+            echo "Intento $attempt: HTTP ${code:-sin respuesta}"
+
+            if [ "$code" = "200" ] && printf '%s' "$body" | jq -e '.ok == true' > /dev/null 2>&1; then
+              printf '%s\n' "$body"
               exit 0
             fi
-            echo "Intento $attempt falló; reintentando en 10 s."
-            sleep 10
+
+            if printf '%s' "$body" | grep -qiE "Please wait while your request is being verified|wsidchk"; then
+              echo "El WAF del hosting devolvió un challenge; reintentando."
+            else
+              echo "Respuesta inesperada: $(printf '%s' "$body" | head -c 300)"
+            fi
+
+            sleep $((attempt * 10))
           done
 
-          echo "::error::La aplicación no responde en /api/health."
+          echo "::error::La aplicación no responde con JSON válido en /api/health."
           exit 1
 
       - name: Comprobar inicio
         run: |
-          set -euo pipefail
-          curl -fsS --max-time 20 https://podzcash.online/ > /dev/null
+          set -uo pipefail
+
+          for attempt in 1 2 3; do
+            body=$(curl -sS --compressed --max-time 20 \
+              -H "User-Agent: $USER_AGENT" \
+              -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+              -H "Accept-Language: es-ES,es;q=0.9,en;q=0.8" \
+              -H "Referer: $TARGET/" \
+              -H "Cache-Control: no-cache" \
+              "$TARGET/" || true)
+
+            if printf '%s' "$body" | grep -q "Escucha a quien"; then
+              echo "Inicio correcto en el intento $attempt."
+              exit 0
+            fi
+
+            if printf '%s' "$body" | grep -qiE "Please wait while your request is being verified|wsidchk"; then
+              echo "El WAF del hosting devolvió un challenge en el inicio; reintentando."
+            else
+              echo "El inicio no contiene el contenido esperado; reintentando."
+            fi
+
+            sleep $((attempt * 10))
+          done
+
+          echo "::error::El inicio no responde con el contenido esperado."
+          exit 1
